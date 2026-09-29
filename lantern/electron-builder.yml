@@ -196,12 +196,16 @@ desktop:
 # -----------------------------------------------------------------------------
 publish:
   provider: github
-  # TODO: replace with the real GitHub repository slug, e.g. "your-org/olympus".
   # This is where `electron-builder --publish always` pushes the installers, and
   # what generates the auto-update feed. A wrong slug publishes (or fails) in
   # the wrong repository.
-  owner: "TODO"   # TODO: GitHub org or user that owns the repo
-  repo: "TODO"    # TODO: repository slug, e.g. olympus
+  #
+  # NOTE: the repository is private today. electron-updater cannot read release
+  # assets from a private repo without a token, so either make it public before
+  # the first release, or switch to the `generic` provider below and host the
+  # installers yourself.
+  owner: "AnonymousOnyx22"
+  repo: "olympus"
   releaseType: release
   # Generate .yml (latest.yml / latest-mac.yml / latest-linux.yml) on top of the
   # installers. These files are what electron-updater polls; without them the
