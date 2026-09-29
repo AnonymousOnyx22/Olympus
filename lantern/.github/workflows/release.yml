@@ -1,0 +1,167 @@
+# =============================================================================
+# Olympus — Release
+#
+# =============================================================================
+# SECRETS THAT MUST BE CONFIGURED BEFORE THE FIRST PUBLIC RELEASE
+# ------------------------------------------------------------
+# Set these as GitHub Actions repository secrets (Settings > Secrets and
+# variables > Actions). This list is the checklist; none of them can be worked
+# around in the YAML.
+#
+#   OLYMPUS_LICENSE_SECRET        (required)
+#       The HMAC key used to sign licence keys. See electron/license.ts.
+#       If it is missing, every shipped build reports "unlicensed" and no
+#       customer can activate. If it changes, every previously issued key stops
+#       validating and every customer must re-activate. Generate with
+#         node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+#
+#   CSC_LINK                      (required for Windows)
+#       The PFX code-signing certificate, base64-encoded. electron-builder
+#       accepts either a base64 blob or a URL to fetch the blob from.
+#         [Convert]::ToBase64String([IO.File]::ReadAllBytes('cert.pfx'))
+#       Without it, SmartScreen shows "Windows protected your PC" on every
+#       download and paying users will file tickets about it.
+#
+#   CSC_KEY_PASSWORD              (required for Windows)
+#       The password for that PFX.
+#
+#   APPLE_ID                      (required for macOS notarization)
+#       The Apple ID email that owns the Developer Program membership.
+#
+#   APPLE_APP_SPECIFIC_PASSWORD   (required for macOS notarization)
+#       An app-specific password generated at appleid.apple.com. Do NOT use the
+#       Apple account's real password here.
+#
+#   APPLE_TEAM_ID                 (required for macOS notarization)
+#       The 10-character team id from the Apple Developer portal.
+#
+#       With these three set, flip `mac.notarize` to true in
+#       electron-builder.yml. macOS refuses to open an un-notarized build on any
+#       current version: the user sees "Olympus is damaged and can't be opened",
+#       which is indistinguishable from shipping malware.
+#
+#   GH_TOKEN                     (optional, but needed for publishing)
+#       electron-builder picks this up automatically to create the GitHub
+#       Release. Without it the build produces artifacts but the
+#       softprops/action-gh-release step cannot attach them, and the job fails.
+#       Use the default GITHUB_TOKEN, which needs `contents: write` in the
+#       job's permissions block below.
+#
+#   APPLE_SIGNING_IDENTITY       (optional)
+#       Name of the Developer ID Application certificate, if you have more than
+#       one. electron-builder auto-selects when there is exactly one.
+#
+# The two TODOs below are NOT secrets but must be edited in source before the
+# first release: the repository slug in electron-builder.yml, and the copyright
+# holder in both electron-builder.yml and LICENSE.
+# =============================================================================
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  # Manual re-run for a tag that already exists.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to rebuild, e.g. v0.1.0'
+        required: true
+
+# Never cancel a release build. A half-published release is worse than a
+# duplicated one: users may download a truncated installer.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+# Publishing needs to create a Release and upload assets. The default is
+# read-only, so this is widened deliberately and only here — CI stays at
+# `contents: read`.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: build and publish
+    # macOS and Windows installers must be built on their own platforms.
+    # Cross-compiling a macOS .app from Linux produces a bundle that Gatekeeper
+    # rejects, and cross-building NSIS is unreliable. This matrix is the reason
+    # a release takes several minutes instead of one.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            artifact: mac
+          - os: windows-latest
+            artifact: win
+          - os: ubuntu-latest
+            artifact: linux
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck and test before packaging
+        # Same gate as CI. A release must not be the first place a test fails.
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: Build renderer and main process
+        run: npm run build
+
+      - name: Package installers
+        run: npm run dist
+        env:
+          # Signing. See the secret list at the top of this file.
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # The licence signing key. Compiled into the main-process bundle so
+          # the app can verify keys offline. It is not sent anywhere.
+          OLYMPUS_LICENSE_SECRET: ${{ secrets.OLYMPUS_LICENSE_SECRET }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Collect installers
+        # `release/` also holds the unpacked app and the v8 *.blockmap / yml
+        # update files. Only the distributable formats are uploaded.
+        shell: bash
+        run: |
+          mkdir -p upload
+          find release -maxdepth 1 -type f \
+            \( -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.AppImage' \
+               -o -name '*.deb' -o -name '*.blockmap' -o -name 'latest*.yml' \) \
+            -exec cp {} upload/ \;
+          ls -la upload/
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          # GITHUB_TOKEN from the job's `contents: write` permission. No PAT
+          # needed for a release in the same repository.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          name: Olympus ${{ github.ref_name }}
+          # Draft so a human reviews the asset list before customers see it.
+          # Flip to false once the first release is proven.
+          draft: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: upload/*
+          # electron-builder already generates the auto-update manifests and
+          # notarization happens during the build step above.
+          fail_on_unmatched_files: true

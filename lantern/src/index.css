@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-white font-sans text-slate-900 antialiased;
+  background-color: #ffffff;
+  overflow: hidden;
+  user-select: none;
+}
+
+textarea,
+input,
+pre,
+code,
+.md {
+  user-select: text;
+}
+
+::selection {
+  background: rgba(14, 165, 233, 0.18);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(15, 23, 42, 0.2);
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Markdown rendered from agent replies */
+.md {
+  @apply text-[13.5px] leading-relaxed text-slate-700;
+}
+.md > * + * {
+  @apply mt-3;
+}
+.md h1,
+.md h2,
+.md h3,
+.md h4 {
+  @apply font-semibold text-slate-900;
+}
+.md h1 {
+  @apply text-lg;
+}
+.md h2 {
+  @apply text-base;
+}
+.md h3,
+.md h4 {
+  @apply text-[14px];
+}
+.md a {
+  @apply text-sky-600 underline decoration-sky-600/30 underline-offset-2 hover:decoration-sky-600;
+}
+.md strong {
+  @apply font-semibold text-slate-900;
+}
+.md ul {
+  @apply list-disc space-y-1 pl-5;
+}
+.md ol {
+  @apply list-decimal space-y-1 pl-5;
+}
+.md li > p {
+  @apply m-0;
+}
+.md blockquote {
+  @apply border-l-2 border-sky-300 pl-3 text-slate-500;
+}
+.md :not(pre) > code {
+  @apply rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[12px] text-slate-700;
+}
+.md pre {
+  @apply overflow-x-auto rounded-xl bg-slate-50 p-3 font-mono text-[12px] leading-relaxed text-slate-700 ring-1 ring-slate-900/10;
+}
+.md pre code {
+  @apply bg-transparent p-0;
+}
+.md table {
+  @apply w-full border-collapse text-[12.5px];
+}
+.md th,
+.md td {
+  @apply border border-slate-200 px-2.5 py-1.5 text-left;
+}
+.md th {
+  @apply bg-slate-50 font-medium text-slate-700;
+}
+.md hr {
+  @apply border-slate-200;
+}
+
+/* xterm fills its host */
+.xterm {
+  height: 100%;
+}
+.xterm-viewport {
+  background-color: transparent !important;
+}
+
+/*
+ * The app chrome is unselectable so drag-selecting a toolbar does not smear text, but the
+ * terminal has to stay selectable: being unable to copy a command you just ran is not an
+ * acceptable default in a developer's tool.
+ */
+.xterm,
+.xterm-screen,
+.xterm-viewport,
+.xterm-rows {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* The workspace uses one neutral surface hierarchy; status colors carry meaning. */
+button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+.workspace-body { display: flex; min-height: 0; flex: 1; gap: 10px; position: relative; }
+.workspace-center { border: 1px solid #e0f2fe; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgb(14 165 233 / 0.06); }
+.context-panel { width: 350px; min-width: 280px; max-width: 42%; flex-shrink: 0; border: 1px solid #e0f2fe; border-radius: 16px; overflow: hidden; background: #f8fafc; box-shadow: 0 8px 30px rgb(14 165 233 / 0.06); }
+.agent-transcript .md { font-size: 13px; line-height: 1.7; }
+.agent-transcript .md > * + * { margin-top: 8px; }
+.agent-transcript .tool-row { border-radius: 0; background: transparent; box-shadow: none; }
+.agent-transcript .tool-row > button { padding: 3px 6px; }
+.agent-transcript .prompt-line { justify-content: flex-start; border-block: 1px solid #e2e8f0; background: #f8fafc; padding: 7px 10px; }
+.agent-transcript .prompt-line > div { max-width: 100%; border-radius: 0; padding: 0; background: none; box-shadow: none; font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; }
+.agent-transcript .prompt-line > div::before { content: '\203a '; color: #94a3b8; }
+@media (max-width: 1100px) {
+  .context-panel { position: absolute; z-index: 30; right: 0; top: 0; bottom: 0; max-width: calc(100% - 16px); width: 360px; box-shadow: -20px 0 50px rgb(15 23 42 / 0.12); }
+}
+@media (max-width: 700px) {
+  .workspace-shell { padding: 6px; }
+  .workspace-body { gap: 6px; }
+  .workspace-title { display: none; }
+}
+
+/* Each project owns a grid of independent, scrollable agent conversations. */
+.agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); grid-auto-rows: minmax(400px, 1fr); gap: 8px; }
+.agent-grid-cell { display: flex; min-width: 0; min-height: 0; }
+
+/* Status orb: a radar ping while a daemon boots, an orbiting ring while an agent thinks. */
+@keyframes olympus-radar { 0% { transform: scale(0.55); opacity: 0.65; } 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes olympus-orbit { to { transform: rotate(360deg); } }
+@keyframes olympus-orbit-reverse { to { transform: rotate(-360deg); } }
+@keyframes olympus-breathe { 0%, 100% { opacity: 0.55; transform: scale(0.82); } 50% { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .status-orb * { animation: none !important; }
+}
+
+/* The plan's in-progress todo gets a slow, lit-up glow. */
+@keyframes olympus-todo-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,0); } 50% { box-shadow: 0 0 14px 1px rgba(14,165,233,0.35); } }
+.todo-active { animation: olympus-todo-glow 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .todo-active { animation: none; }
+}

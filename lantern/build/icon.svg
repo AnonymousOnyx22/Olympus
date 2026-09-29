@@ -1,0 +1,20 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aether" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="58" fill="#ffffff"/>
+  <g fill="none" stroke="url(#aether)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M40 108a88 88 0 0 1 176 0"/>
+    <path d="M36 108h184" stroke-width="18"/>
+    <path d="M88 132h80v76H88z" stroke-width="13"/>
+    <path d="M56 208h144" stroke-width="18"/>
+  </g>
+  <g fill="none" stroke="#38bdf8" stroke-width="9" stroke-linecap="round" opacity="0.4">
+    <path d="M112 148v44"/>
+    <path d="M144 148v44"/>
+  </g>
+  <circle cx="128" cy="40" r="14" fill="#fbbf24"/>
+</svg>

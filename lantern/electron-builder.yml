@@ -1,0 +1,220 @@
+# =============================================================================
+# electron-builder configuration for Olympus
+# =============================================================================
+# WHAT THIS FILE IS
+#   electron-builder reads this file when you run `npm run dist` (or any of the
+#   build:win / build:mac / build:linux scripts). It describes how the compiled
+#   app in dist/ and dist-electron/ gets assembled into an installer.
+#
+# BEFORE YOUR FIRST PUBLIC RELEASE, A HUMAN MUST:
+#   1. Replace the `repository` TODO below with the real GitHub owner/repo.
+#   2. Replace the `copyright` TODO with the real copyright holder and year.
+#   3. Set up code signing (see the `win:` and `mac:` sections below). Unsigned
+#      builds are blocked by Gatekeeper on macOS and trigger SmartScreen warnings
+#      on Windows, which reads as "malware" to paying customers.
+#   4. Turn macOS notarization ON (see `mac.notarize` below).
+#   5. Supply OLYMPUS_LICENSE_SECRET at build time so the license module can
+#      validate keys. See electron/license.ts.
+#
+# TO TEST LOCALLY WITHOUT SIGNING:
+#   npm run build && npx electron-builder --dir        # unpacked app, no installer
+#   npm run dist -- --mac                               # build only the mac target
+# =============================================================================
+
+appId: com.olympus.app
+# productName is the name shown in Finder / Explorer / the Start menu. It is
+# deliberately different from the npm `name` (which stays "olympus" so the
+# package id on npm never leaks the marketing name).
+productName: Olympus
+
+# TODO: replace with the real copyright holder and year, e.g.
+#   copyright: "Copyright (c) 2026 Your Company Ltd. All rights reserved."
+# The value is quoted because an unquoted "<TODO: ...>" contains a colon-space,
+# which YAML reads as a nested mapping and rejects. Always quote these fields.
+copyright: "Copyright (c) TODO <TODO: copyright holder> TODO <TODO: year>"
+
+# The reverse-DNS appId above must match the value the main process passes to
+# app.setAppUserModelId(). If they drift, Windows shows a second, ungrouped
+# taskbar entry and the Start-menu shortcut does not highlight the running app.
+
+directories:
+  output: release
+  buildResources: build
+
+# Only these paths end up inside the app bundle. Keep this list tight: every
+# extra glob is extra megabytes the user downloads and extra attack surface.
+# - dist/          the Vite renderer bundle (index.html + hashed assets)
+# - dist-electron/ the compiled main process (main.js) and preload (preload.js)
+# - build/icon.*   the app icon, needed at runtime for the window and tray
+# - package.json   required by Electron and by asar metadata resolution
+files:
+  - dist/**/*
+  - dist-electron/**/*
+  - build/icon.*
+  - package.json
+
+# The archive is a single packed file rather than a loose directory tree.
+# asar is NOT security: it is trivially unpacked by any user. It only stops
+# casual editing and shrinks install size slightly.
+asar: true
+
+# Vendor-specific commercial licence terms. electron-builder writes these into
+# the packaged package.json, where a user (or a lawyer) can read them. They are
+# NOT enforced by the app — electron/license.ts is what actually gates runtime,
+# and even that is a self-hosted check rather than tamper-proof DRM.
+extraMetadata:
+  homepage: "https://TODO"   # TODO: marketing site URL
+  # The same terms live as code in electron/license.ts (see LICENSE_TERMS there).
+  # Keep the two in sync: this copy is what ships in the installer, the other
+  # copy is what the running app enforces.
+  olympus:
+    license:
+      type: commercial-perpetual-per-seat
+      product: Olympus
+      allowsCommercialUse: true
+      redistribution: false
+      seatsPerPurchase: 1
+      trialDays: 14
+      terms: >-
+        Per-seat, perpetual, non-transferable licence. Commercial use permitted.
+        Redistribution, resale, sublicensing and source distribution are not
+        permitted. One licence covers one named user on any number of their own
+        machines. See LICENSE at the project root and NOTICE.md for third-party
+        component licences.
+      supportEmail: "TODO"   # TODO: support email address shown in the app
+
+# -----------------------------------------------------------------------------
+# macOS
+# -----------------------------------------------------------------------------
+mac:
+  category: public.app-category.developer-tools
+  # Both artefact formats, both architectures. dmg is what a user double-clicks;
+  # zip is what Sparkle/electron-updater requires on macOS, and it is also the
+  # only format that preserves the quarantine and signature attributes
+  # correctly for auto-update. Shipping dmg alone means no auto-update on mac.
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: zip
+      arch:
+        - x64
+        - arm64
+  # NOTE: build/icon.png is only 256x256, which is below the 512x512 macOS wants
+  # for a crisp Dock/Launchpad icon. electron-builder will accept it and scale
+  # up, but it looks soft on Retina displays. For a real release, drop a
+  # 1024x1024 build/icon.icns here and point this at it.
+  icon: build/icon.png
+  # Build a universal binary? No: we build x64 and arm64 separately below and
+  # ship both. Do NOT add `universal` here, it doubles build time for a product
+  # that has no native (non-JS) addon to unify.
+  hardenedRuntime: true
+  # The hardened runtime requires every restricted operation to be declared in
+  # the entitlements file below. Do not set this to true "to be safe" — it is
+  # only meaningful alongside a real notarization ticket.
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlemas.mac.plist
+  darkModeSupport: true
+  # TODO: notarization MUST be enabled before the first public release.
+  # With `false`, macOS will still install the app but shows
+  # "Olympus is damaged and can't be opened" and Gatekeeper blocks it on any
+  # Mac with a recent macOS. The three secrets below must be set as GitHub
+  # Actions repository secrets first:
+  #   APPLE_ID                  Apple ID email that owns the Developer account
+  #   APPLE_APP_SPECIFIC_PASSWORD  an app-specific password from appleid.apple.com
+  #   APPLE_TEAM_ID              10-char team id from the Apple Developer portal
+  # Flip this to true and electron-builder will notarize + staple automatically.
+  notarize: false
+
+# -----------------------------------------------------------------------------
+# Windows
+# -----------------------------------------------------------------------------
+win:
+  # A multi-resolution .ico: electron-builder wants >= 256x256 to look sharp in
+  # large-icon Explorer views. build/make-icon.mjs regenerates icon.ico.
+  icon: build/icon.ico
+  # TODO: code signing. Without a certificate, SmartScreen shows
+  # "Windows protected your PC" on every download, and paying users will file
+  # tickets about it. Buy an OV/EV code-signing certificate (or use Azure
+  # Trusted Signing) and export the PFX as a base64 secret named CSC_LINK, with
+  # the PFX password in CSC_KEY_PASSWORD. electron-builder picks both up
+  # automatically — no config change needed, only the secrets.
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+# NSIS: the assisted installer.
+nsis:
+  # oneClick: false shows the multi-page wizard. Keep it false — every other
+  # serious desktop tool lets the user choose an install directory, and silently
+  # installing into Program Files breaks per-machine expectations.
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  # Show a "run after install" checkbox only in the assisted wizard; with
+  # oneClick:false the installer already asks on the final page.
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  # TODO: set the installer logo/side image if you want a branded installer.
+  # installerIcon: build/icon.ico
+  # installerHeaderIcon: build/icon.ico
+  shortcutName: Olympus
+
+# -----------------------------------------------------------------------------
+# Linux
+# -----------------------------------------------------------------------------
+linux:
+  category: Development
+  # electron-builder accepts a PNG here; it generates the .desktop entry and
+  # the AppImage icon set from it.
+  icon: build/icon.png
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+
+# The .desktop entry, shown in GNOME/KDE launchers. `categories` must use the
+# freedesktop.org vocabulary; "Development" maps to the "Development" menu
+# alongside Editors and IDEs. `MimeType` is intentionally absent: Olympus has no
+# document type it claims to open, and claiming one makes the app show up as a
+# handler for files it cannot actually open.
+desktop:
+  entry:
+    Name: Olympus
+    Comment: Local-first execution harness for the opencode agent
+    Categories: Development;IDE;
+    StartupWMClass: Olympus
+
+# -----------------------------------------------------------------------------
+# Publishing
+# -----------------------------------------------------------------------------
+publish:
+  provider: github
+  # TODO: replace with the real GitHub repository slug, e.g. "your-org/olympus".
+  # This is where `electron-builder --publish always` pushes the installers, and
+  # what generates the auto-update feed. A wrong slug publishes (or fails) in
+  # the wrong repository.
+  owner: "TODO"   # TODO: GitHub org or user that owns the repo
+  repo: "TODO"    # TODO: repository slug, e.g. olympus
+  releaseType: release
+  # Generate .yml (latest.yml / latest-mac.yml / latest-linux.yml) on top of the
+  # installers. These files are what electron-updater polls; without them the
+  # app cannot auto-update.
+  generateUpdatesFilesForAllChannels: false
+
+# Alternative: a generic S3/R2/CloudFront bucket. Kept here as a reference
+# because self-hosting the download files gives you no GitHub rate limits.
+# Uncomment and fill in only if you are NOT publishing to GitHub Releases.
+#
+# publish:
+#   provider: generic
+#   url: "https://downloads.TODO"   # TODO: download host
+#   # electron-updater compares the latest.yml in this bucket against what the
+#   # running build reports, so the file must be served over HTTPS with CORS
+#   # enabled. A 403 or a wrong content-type here means "no updates", silently.

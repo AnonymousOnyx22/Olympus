@@ -1,0 +1,50 @@
+Copyright (c) TODO <TODO: copyright holder>. All Rights Reserved.
+
+PROPRIETARY SOFTWARE — NO OPEN-SOURCE LICENCE GRANTED
+====================================================
+
+This software and its source code, documentation, build configuration, and
+associated files (collectively, the "Software") are the confidential and
+proprietary property of TODO <TODO: copyright holder> (the "Licensor").
+
+NO LICENSE IS GRANTED. The Software is NOT open source. No permission to use,
+copy, modify, merge, publish, distribute, sublicense, or sell copies of the
+Software, in whole or in part, is granted except as expressly set out in a
+separate written agreement signed by the Licensor.
+
+The Software is made available to end users under a commercial, per-seat,
+perpetual licence. Those terms are stated in:
+
+  - the packaged application's own licence terms (see the `olympus.license`
+    block in electron-builder.yml), and
+  - the in-app licence screen.
+
+Permitted use is limited to what those terms allow. Commercial use by the
+purchasing organisation is permitted. Redistribution, resale, sublicensing,
+public release, and source distribution are not permitted. The licence covers
+one named user; seats are not transferable.
+
+All rights not expressly granted are reserved.
+
+THIRD-PARTY COMPONENTS
+---------------------
+The Software bundles third-party open-source components, each of which remains
+under its own licence and is NOT covered by this notice. Those licences permit
+use, modification and redistribution on their own terms. See NOTICE.md for the
+component list, and the licence files inside each dependency for the full text.
+A recipient of a copy of the Software receives those components under the
+terms stated with them, which are not withdrawn or restricted by this file.
+
+If the Licensor distributes a copy of the Software to you, that distribution is
+authorised solely under the commercial licence above; nothing in this file
+expands the rights granted under the third-party component licences, and nothing
+in those component licences expands the rights granted here.
+
+NO WARRANTY
+-----------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. TO THE MAXIMUM EXTENT
+PERMITTED BY APPLICABLE LAW, THE LICENSOR IS NOT LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR ITS USE.

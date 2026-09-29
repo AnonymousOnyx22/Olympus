@@ -1,0 +1,64 @@
+# =============================================================================
+# Olympus — CI
+#
+# Runs on every push and pull request. The order is deliberate and cheap-first:
+# typecheck (seconds), then unit tests (seconds), then the full build (minutes).
+# A typecheck failure should never cost a build.
+# =============================================================================
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+# Cancel superseded runs on the same ref. Without this, pushing five times in a
+# row to a feature branch burns five full builds. `cancel-in-progress` is only
+# safe here because CI builds no artifacts that anything consumes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Read-only by default. Nothing in this workflow writes to the repository, and
+# this token needs nothing more.
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Pinned, and it matches .nvmrc. Do not float this to "20" or "lts/*":
+          # a patch bump in the toolchain should be a deliberate commit, not a
+          # surprise on a Tuesday. 20 is the lowest version Electron 39 and
+          # Vite 8 both support, and it is an LTS release.
+          node-version: '20'
+          # npm ci, not npm install, in CI. It installs strictly from
+          # package-lock.json and fails if the lock and manifest disagree,
+          # which is the only guarantee that what you tested is what ships.
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          # electron-builder's postinstall (install-app-deps) rebuilds native
+          # deps. There are none of ours, but Electron's own postinstall
+          # downloads the binary and needs this set to skip the mirror lookup.
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '0'
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

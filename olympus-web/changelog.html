@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Changelog — Olympus</title>
+<meta name="description" content="Olympus 0.1.0, the first public build: what exists, what is known to work, and the honest list of what is not finished.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0a2f60">
+<meta name="robots" content="index, follow">
+
+<!-- ══ SITE CONSTANTS — every value here is a placeholder ═════════════════
+     The full block is in index.html; these are the ones this page uses.
+     Support            support@example.com
+     Known-good opencode line: 1.18.x
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<link rel="canonical" href="https://olympus.example.com/changelog.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Changelog — Olympus">
+<meta property="og:description" content="Olympus 0.1.0, the first public build. What exists, which opencode versions it was tested against, and what is not finished.">
+<meta property="og:url" content="https://olympus.example.com/changelog.html">
+<meta property="og:site_name" content="Olympus">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://olympus.example.com/assets/olympus-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on a plinth banded with a Greek key pattern, with snow-capped mountain ranges behind it — the artwork the whole Olympus site is taken from.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@olympusapp">
+<meta name="twitter:image" content="https://olympus.example.com/assets/olympus-og.jpg">
+<meta name="twitter:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on an inscribed plinth — the artwork the whole Olympus site is taken from.">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23ffc72c'%3E%3Cpath d='M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05'/%3E%3Ccircle cx='16' cy='13.5' r='9.8' fill='none' stroke='%23ffc72c' stroke-width='0.55'/%3E%3Cellipse cx='12.55' cy='7' rx='1' ry='0.4' transform='rotate(-30 12.55 7)'/%3E%3Cellipse cx='11.3' cy='7.9' rx='1' ry='0.4' transform='rotate(-6 11.3 7.9)'/%3E%3Cellipse cx='10.65' cy='9.05' rx='1' ry='0.4' transform='rotate(22 10.65 9.05)'/%3E%3Cellipse cx='19.45' cy='7' rx='1' ry='0.4' transform='rotate(30 19.45 7)'/%3E%3Cellipse cx='20.7' cy='7.9' rx='1' ry='0.4' transform='rotate(6 20.7 7.9)'/%3E%3Cellipse cx='21.35' cy='9.05' rx='1' ry='0.4' transform='rotate(-22 21.35 9.05)'/%3E%3C/g%3E%3Cg fill='%23fffdf6'%3E%3Ccircle cx='16' cy='13.5' r='9.55'/%3E%3C/g%3E%3Cg fill='%230a2f60'%3E%3Cpath d='M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z'/%3E%3Cpath d='M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z'/%3E%3Cellipse cx='16' cy='8.6' rx='2.75' ry='3.05'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script>document.documentElement.className += ' js';</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="colonnade" data-colonnade aria-hidden="true">
+  <span class="colonnade__capital"></span>
+  <span class="colonnade__shaft">
+    <span class="colonnade__flutes"></span>
+    <span class="colonnade__gold"></span>
+    <span class="colonnade__marker"></span>
+  </span>
+  <span class="colonnade__base"></span>
+</div>
+
+<header class="site" id="site-bar">
+  <div class="site__bar">
+    <div class="wrap site__row">
+      <a class="lockup" href="index.html" aria-label="Olympus, home">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="lockup__mark"><g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g></svg>
+        <span class="lockup__word">Olympus</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="features.html">Features</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="security.html">Security</a>
+        <a href="requirements.html">Requirements</a>
+      </nav>
+
+      <div class="site__actions">
+        <div class="dlset dlset--bar" data-dlset>
+          <a class="dlbtn dlbtn--sm" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg" aria-label="Download Olympus for macOS, Apple Silicon build"><span class="dlbtn__tag">Yours</span>macOS</a>
+          <a class="dlbtn dlbtn--sm" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe" aria-label="Download Olympus for Windows, 10 and 11"><span class="dlbtn__tag">Yours</span>Windows</a>
+          <a class="dlbtn dlbtn--sm" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage" aria-label="Download Olympus for Linux, 64-bit"><span class="dlbtn__tag">Yours</span>Linux</a>
+        </div>
+        <a class="btn btn--primary btn--sm dlbar__one" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
+        <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+          <svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="site__rule">
+      <span class="zigbar" aria-hidden="true"></span>
+      <span class="site__progress" aria-hidden="true"></span>
+    </div>
+
+    <div class="mobilenav" id="mobile-nav" data-open="false">
+      <nav aria-label="Primary, mobile">
+        <a href="index.html">Home</a>
+        <a href="features.html">Features</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="security.html">Security</a>
+        <a href="requirements.html">Requirements</a>
+        <a href="index.html#faq">Questions</a>
+        <a href="changelog.html" aria-current="page">Changelog</a>
+        <a class="btn btn--primary" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="pagehead">
+    <div class="wrap">
+      <p class="eyebrow">Changelog</p>
+      <h1>What changed, and when</h1>
+      <p class="lede">One entry, because there has only ever been one public build. It will not stay that way, and the format will not change when it does.</p>
+      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Changelog</span></p>
+    </div>
+  </div>
+
+  <section class="section section--tint" id="releases" data-scrub aria-labelledby="releases-h">
+    <div class="wrap">
+      <div class="sec__head sec__head--fill">
+        <p class="eyebrow">Releases</p>
+        <h2 id="releases-h">Everything so far</h2>
+        <p class="lede">Newest first. Every release records the <code>opencode</code> versions it was tested against, because that is the number most likely to matter to you.</p>
+        <span class="fillet" aria-hidden="true"></span>
+      </div>
+
+      <div class="rel">
+        <article class="rel__item">
+          <div class="rel__head">
+            <p class="rel__v">0.1.0</p>
+            <p class="rel__date"><time datetime="2026-09-28">28 September 2026</time></p>
+            <p class="rel__tag">First public build</p>
+          </div>
+
+          <p>Tested against <code>opencode 1.18.x</code>. Platforms: macOS on Apple Silicon and Intel, Windows 10 and 11, Linux x64. Licence $49 one-time, or free to keep as 0.1.0.</p>
+
+          <h3 style="margin-top:26px;margin-bottom:12px">What works</h3>
+          <ul>
+            <li><strong>One supervised agent per project.</strong> Each project gets its own <code>opencode serve</code> on <code>127.0.0.1</code>, on a randomised high port, with a fresh HTTP basic-auth credential generated for that launch. Switching projects does not stop the other one, and busy state stays visible in the project tree.</li>
+            <li><strong>Local model discovery.</strong> Ollama, LM Studio, vLLM, llama.cpp and any other loopback OpenAI-compatible server are found automatically and listed with what each has loaded. Providers already configured in opencode appear in the picker as well.</li>
+            <li><strong>Three views on one session.</strong> Agent, Code and Thread. Same session and same composer draft across all three; switching never restarts a run or discards a pending approval.</li>
+            <li><strong>Streamed reasoning, tool cards and an agent-output console,</strong> with expandable per-tool output and an inline diff on every tool call that touched a file.</li>
+            <li><strong>Edit review.</strong> Edits made through the edit tool stop in a diff viewer and stay there until accepted. Shell commands ask for separate approval.</li>
+            <li><strong>Project library.</strong> Search, sort, list or grid, watch folders, pin, reveal in the file manager, hide, remove. A folder that has gone missing is reported as missing rather than silently dropped.</li>
+            <li><strong>Git in the window header.</strong> Branch, tracking branch, changed files, ahead and behind. Commit and push are separate buttons and nothing is committed for you.</li>
+            <li><strong>Run and live preview.</strong> Starts the detected project command and embeds a preview of your real localhost dev server next to the agent changing it.</li>
+            <li><strong>A real interactive shell,</strong> not a scrollback of a log.</li>
+            <li><strong>Offline licence validation.</strong> No activation call, so the app works with the network switched off.</li>
+          </ul>
+
+          <h3 style="margin-top:26px;margin-bottom:12px">What is not in this build</h3>
+          <ul>
+            <li>No auto-update mechanism yet. Builds are downloaded by hand, which is why <a href="pricing.html#included">every 0.x update</a> is a manual step for now.</li>
+            <li>No 1.0. The interfaces the app drives in opencode may change without notice, and when they do this build will say so rather than pretending to work. See <a href="requirements.html#opencode">the compatibility note</a>.</li>
+            <li>No Linux ARM build, and no distro packages. The AppImage is the only Linux artefact and it is tested on one distribution.</li>
+            <li>No import or export of projects, threads or settings. Moving machines means setting the project list up again.</li>
+            <li>No localisation. Interface strings are English only.</li>
+            <li>No crash reporting, because there is nowhere to send it. A crash is yours to report at <a href="mailto:support@example.com">support@example.com</a>.</li>
+          </ul>
+
+          <h3 style="margin-top:26px;margin-bottom:12px">Known rough edges</h3>
+          <ul>
+            <li>Model discovery polls. A server started after Olympus is already open may need a refresh to appear.</li>
+            <li>The live preview is a plain frame of your dev server. Anything that depends on a service worker or a cross-origin frame will not render in it.</li>
+            <li>Very large diffs are slow to open. There is no virtualised diff view yet.</li>
+          </ul>
+
+          <p style="margin-top:20px">
+            <a class="btn btn--ghost btn--sm" data-track="download" href="https://downloads.example.com/olympus/0.1.0/">Download 0.1.0</a>
+          </p>
+        </article>
+      </div>
+
+      <p class="note">
+        <strong>Pre-1.0 means the interfaces may move.</strong> Every build in the 0.x line keeps working against the <code>opencode</code> versions it was tested with, and each release here records which those are. A future 1.0 will be a one-off upgrade priced before it ships, not a subscription and not a repurchase. <a href="pricing.html">The reasoning is on the pricing page</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="pager-h">
+    <div class="wrap">
+      <h2 id="pager-h" class="visually-hidden">Read next</h2>
+      <div class="pager">
+        <a href="pricing.html">
+          <small>Previous</small>
+          <strong>Forty-nine dollars, once</strong>
+        </a>
+        <a class="is-next" href="license.html">
+          <small>Next</small>
+          <strong>The licence, in full</strong>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__row">
+    <div class="foot__brand">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
+      </svg>
+      <span class="lockup__word">Olympus</span>
+    </div>
+
+    <nav class="foot__nav" aria-label="Footer">
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="security.html">Security</a>
+      <a href="requirements.html">Requirements</a>
+      <a href="changelog.html" aria-current="page">Changelog</a>
+    </nav>
+  </div>
+
+  <div class="wrap foot__cols">
+    <div class="foot__col">
+      <p class="foot__colh">Support</p>
+      <ul>
+        <li><a href="https://docs.example.com/olympus">Documentation</a></li>
+        <li><a href="mailto:support@example.com">support@example.com</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+        <li>Report a security problem: email <a href="mailto:security@example.com">security@example.com</a>. Please do not open a public issue for anything exploitable &mdash; a public issue is a disclosure.</li>
+      </ul>
+    </div>
+    <div class="foot__col">
+      <p class="foot__colh">The small print</p>
+      <ul>
+        <li><a href="license.html">Licence</a></li>
+        <li><a href="terms.html">Terms of sale</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="refunds.html">Refunds</a></li>
+      </ul>
+    </div>
+    <div class="foot__col">
+      <p class="foot__colh">What this is</p>
+      <ul>
+        <li>A desktop app for the <code>opencode</code> agent. It runs on your machine, against models you already run.</li>
+        <li>opencode is a separate third-party project. Olympus is not affiliated with it and is not endorsed by it.</li>
+        <li>Nothing on this site collects anything about you. There is no tracker in the app and none in these pages.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap foot__legal">
+    <p>&copy; 2026 Olympus. A one-time-purchase desktop licence, sold by an individual. Placeholder legal entity and jurisdiction &mdash; see <a href="terms.html">terms</a>.</p>
+    <p>Olympus sends no telemetry and runs no server.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,2512 @@
+/* ==========================================================================
+   Olympus — "Pigment from the artwork"
+
+   Every colour and every shape on this page is taken from one drawing: a
+   radiant gold sun over a marble temple on a warm stone ridge, with three
+   mountain ranges behind it in flat blues. Nothing here is a photograph and
+   nothing here is a gradient — the look is built from flat fields, cut
+   outlines and one repeating zigzag bar, the way a painted Attic frieze is
+   built from a stock of shapes rather than from shading.
+
+   Deliberately, almost nothing on this site moves. Scroll-linked motion is
+   spent on exactly two things: the sun's rays turning in the frieze, and the
+   gold climbing the column pinned to the edge of the page. Everything else
+   is a static ornament. Both survivors are pure functions of scroll position
+   (`--p`, `--pg`), so scrolling back up plays them backwards.
+
+   01 Tokens · 02 Reset · 03 Zigzag · 04 Column · 05 Header · 06 Hero
+   07 Frieze · 08 Mark · 09 Mock window · 10 Content · 11 Page head
+   12 Marquee · 13 Footer · 14 Download & price · 15 Compare · 16 FAQ
+   17 Prose · 18 Changelog · 19 Scrub · 20 Load motion · 21 Responsive
+   ========================================================================== */
+
+/* ── 01 Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Stone and paper. Warmer and a touch deeper than a first pass at "marble
+     white" — a page that is nearly pure white for this much surface area
+     reads as glare rather than as stone. */
+  --marble: #f6f1e6;
+  --limestone: #ece1c9;
+  --kyanos: #dceaf8;
+  --stone: #ddd6c6;
+
+  /* Sky, lifted off the artwork */
+  --sky: #cfe4f3;
+  --sky-hi: #e8f2fa;
+
+  /* The five blues of the ranges, back to front */
+  --aether: #4a86c4;
+  --aegean: #0b4a9b;
+  --kyanos-deep: #2c6aa8;
+  --aegean-deep: #0a2f60;
+  --nave: #1d3057;
+
+  /* Warm stone under the temple */
+  --warm-stone: #d9c69c;
+  --warm-light: #efe0bd;
+  --temple: #f7f0e0;
+  --temple-shade: #d9cdb2;
+
+  /* One gold, for the things that ask for a decision and nothing else */
+  --helios: #ffc72c;
+  --helios-ink: #8f6200;
+  --helios-wash: #fff4d6;
+
+  /* Warm black, the black of black-figure pottery */
+  --attic: #17140f;
+  --attic-500: #4a4437;
+  --attic-400: #6b6353;
+
+  /* Carved stone, not moulded plastic. Almost nothing is rounded. */
+  --r: 3px;
+
+  /* The zigzag bar that closes every block. 36x15 tile, 3px stroke.
+     Verified to start and end on the same baseline so it repeats cleanly. */
+  --zig-h: 15px;
+  --zig-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='15'%3E%3Cpath d='M0 12.5h6V6.5h6V1.5h6v5h6v6h6' fill='none' stroke='%23ffc72c' stroke-width='3'/%3E%3C/svg%3E");
+  --zig-marble: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='15'%3E%3Cpath d='M0 12.5h6V6.5h6V1.5h6v5h6v6h6' fill='none' stroke='%23f6f1e6' stroke-width='3'/%3E%3C/svg%3E");
+
+  /* Fluting for the column pinned to the edge of the page */
+  --flute-stone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Crect width='12' height='8' fill='%23ddd6c6'/%3E%3Cpath d='M3 0v8M9 0v8' stroke='%230b4a9b' stroke-width='1' opacity='.4'/%3E%3C/svg%3E");
+  --flute-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Crect width='12' height='8' fill='%23ffc72c'/%3E%3Cpath d='M3 0v8M9 0v8' stroke='%230a2f60' stroke-width='1' opacity='.45'/%3E%3C/svg%3E");
+
+  /* Capital and base of that column, as flat shapes */
+  --capital: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='20'%3E%3Cpath d='M0 0h34v5H0z' fill='%230b4a9b'/%3E%3Cpath d='M4 5h26l-3 8H7z' fill='%230a2f60'/%3E%3Cpath d='M0 13h34v2H0z' fill='%23ffc72c'/%3E%3Cpath d='M8 15h18v5H8z' fill='%230b4a9b'/%3E%3C/svg%3E");
+  --base: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='16'%3E%3Cpath d='M0 0h34v4H0z' fill='%230b4a9b'/%3E%3Cpath d='M0 4h34v2H0z' fill='%23ffc72c'/%3E%3Cpath d='M8 6h18l3 7H5z' fill='%230a2f60'/%3E%3Cpath d='M0 13h34v3H0z' fill='%230b4a9b'/%3E%3C/svg%3E");
+
+  /* Type */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font: "Archivo", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+
+  /* Rhythm */
+  --wrap: 1120px;
+  --bar-h: 74px;
+  --sec-pad: clamp(64px, 7.5vw, 104px);
+  --dur: 560ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  /* A stronger ease-out for the newer, bolder entrances and presses: starts
+     fast so the interface reads as responsive rather than gliding in. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Written by the scroll engine every frame */
+  --pg: 0;
+  --vel: 0;
+}
+
+/* ── 02 Reset & base ───────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--bar-h) + var(--zig-h) + 44px);
+}
+
+body {
+  margin: 0;
+  /* Reserves the header and its zigzag bar so the sticky bar can shrink
+     without pushing the page around. */
+  padding-top: calc(var(--bar-h) + var(--zig-h));
+  background: var(--marble);
+  color: var(--attic);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.66;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p, ul, ol, figure, figcaption { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+img, svg { display: block; }
+code { font-family: var(--mono); font-size: 0.9em; }
+
+a { color: var(--aegean); text-decoration-color: var(--stone); text-underline-offset: 3px; }
+a:hover { text-decoration-color: currentColor; }
+
+:focus-visible { outline: 2px solid var(--aegean); outline-offset: 3px; }
+:focus:not(:focus-visible) { outline: none; }
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--helios);
+  color: var(--attic);
+  border: 1px solid var(--attic);
+  border-radius: var(--r);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 180ms var(--ease);
+}
+.skip:focus { top: 12px; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.section { padding-block: var(--sec-pad); }
+.section--tint { background: var(--limestone); border-bottom: 1px solid var(--stone); }
+/* The bar is only worth drawing where the ground actually changes. As the page grew,
+   it ended up on every section, which turned an ornament into a border. A section can
+   opt out — used for the short trailing block that runs straight into the footer, where
+   a bar would collide with the footer's own. */
+.section--plain::before { display: none; }
+
+/* ── 03 The zigzag bar ─────────────────────────────────────────────────── */
+/* One ornament, used everywhere a block needs an edge: the top of every
+   section, the top of every question card, under the header, above the
+   footer, and under the hero. Blue ground, gold step. The step is a single
+   36x15 tile that starts and ends on the same baseline, so `repeat-x` has
+   nothing to hide. */
+.zigbar,
+.section::before,
+.card-lg::before,
+.foot::before {
+  height: var(--zig-h);
+  background-color: var(--aegean);
+  background-image: var(--zig-gold);
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: 36px var(--zig-h);
+}
+
+.zigbar { display: block; }
+
+/* Pushed to the very top of its section, above the padding, so the bar
+   reads as the section's own cut edge rather than as content inside it. */
+.section::before {
+  content: "";
+  display: block;
+  margin-top: calc(-1 * var(--sec-pad));
+  margin-bottom: calc(var(--sec-pad) - var(--zig-h));
+}
+
+/* ── 04 The column ─────────────────────────────────────────────────────── */
+/* A single fluted shaft pinned to the edge of the page, taken from the
+   temple in the artwork. The gold fill runs down it with page progress and
+   the gold marker slides with it, so both run back up when you scroll up. */
+.colonnade {
+  position: fixed;
+  z-index: 45;
+  left: 20px;
+  top: calc(var(--bar-h) + var(--zig-h) + 24px);
+  bottom: 24px;
+  width: 34px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  transform: skewX(calc(var(--vel, 0) * 2.4deg));
+  transform-origin: 50% 50%;
+}
+
+.colonnade__capital,
+.colonnade__base { flex: none; width: 34px; background-repeat: no-repeat; background-position: center; }
+.colonnade__capital { height: 20px; background-image: var(--capital); }
+.colonnade__base { height: 16px; background-image: var(--base); }
+
+.colonnade__shaft { position: relative; flex: 1; width: 24px; }
+
+.colonnade__flutes,
+.colonnade__gold {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+}
+.colonnade__flutes {
+  background-image: var(--flute-stone);
+  border-inline: 1px solid var(--stone);
+}
+.colonnade__gold {
+  background-image: var(--flute-gold);
+  clip-path: inset(0 0 calc(100% - var(--pg, 0) * 100%) 0);
+}
+
+.colonnade__marker {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--pg, 0) * (100% - 11px));
+  width: 34px;
+  height: 11px;
+  margin-left: -17px;
+  background: var(--helios);
+  border: 1px solid var(--aegean-deep);
+  transform: rotate(45deg) scaleX(1);
+}
+.colonnade__marker::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: var(--aegean-deep);
+}
+
+/* ── 05 Header ─────────────────────────────────────────────────────────── */
+.site {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  background: var(--aegean-deep);
+  transition: height 260ms var(--ease);
+}
+.site.is-stuck { --bar-h: 62px; }
+
+.site__bar { position: relative; }
+
+.site__row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: var(--bar-h);
+  transition: height 260ms var(--ease);
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.lockup__mark { width: 32px; height: 32px; transition: width 260ms var(--ease), height 260ms var(--ease); }
+.site.is-stuck .lockup__mark { width: 26px; height: 26px; }
+.lockup__word {
+  color: var(--marble);
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 40;
+}
+
+/* The mark is the logo: a radiant gold medallion struck with a bearded,
+   laurel-crowned head, in the coin-profile spirit of the marble Zeus bust
+   the whole site is drawn from. Three fills, re-coloured as a pair per
+   context: the disc and the head always contrast with each other. */
+.mk__sun { fill: var(--helios); }
+.mk__ring { fill: none; stroke: var(--helios); }
+.mk__laurel { fill: var(--helios); }
+.mk__temple { fill: var(--marble); }
+.mk__bust { fill: var(--aegean-deep); }
+.mk__step { fill: var(--helios); }
+
+.nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-left: auto;
+}
+.nav a {
+  padding: 4px 0;
+  color: #a9c6e6;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 180ms var(--ease);
+}
+.nav a:hover { color: var(--marble); }
+.nav a.is-active { color: var(--helios); }
+
+/* The gold tick under the current page now also previews on hover, drawing
+   in from the left rather than appearing — the same tick, one extra state. */
+.nav a[aria-current="page"] { color: var(--helios); }
+.nav a { position: relative; }
+.nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 3px;
+  background: var(--helios);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 220ms var(--ease-out);
+}
+.nav a:hover::after,
+.nav a[aria-current="page"]::after { transform: scaleX(1); }
+
+.site__actions { display: flex; align-items: center; gap: 10px; }
+.site .btn--primary { background: var(--helios); border-color: var(--helios); color: var(--attic); }
+.site .btn--primary:hover { background: var(--marble); border-color: var(--marble); }
+
+/* The bar that closes the header, and the progress rule sitting on it.
+   The zigzag draws itself in once on load; the progress line is a plain
+   scroll indicator, not decoration. */
+.site__rule { position: relative; display: block; }
+.site__rule .zigbar { transition: clip-path 900ms var(--ease); }
+.js .site__rule .zigbar { clip-path: inset(0 100% 0 0); }
+.js .site.is-in .site__rule .zigbar { clip-path: inset(0 0 0 0); }
+
+.site__progress {
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  z-index: 2;
+  height: 2px;
+  background: var(--marble);
+  pointer-events: none;
+  transform: scaleX(var(--pg, 0));
+  transform-origin: left center;
+}
+
+.navtoggle {
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #1f4a80;
+  border-radius: var(--r);
+  color: var(--marble);
+  cursor: pointer;
+}
+.navtoggle__close { display: none; }
+.navtoggle[aria-expanded="true"] .navtoggle__open { display: none; }
+.navtoggle[aria-expanded="true"] .navtoggle__close { display: block; }
+
+.mobilenav {
+  display: none;
+  padding: 4px 24px 22px;
+  background: var(--aegean-deep);
+  border-top: 1px solid #143a6b;
+}
+.mobilenav nav { display: grid; gap: 2px; padding: 10px 0 14px; }
+.mobilenav a:not(.btn) {
+  display: block;
+  padding: 10px 2px;
+  color: #a9c6e6;
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.mobilenav a:not(.btn):hover { color: var(--helios); }
+
+/* ── 06 Hero ───────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(44px, 5vw, 72px) 0;
+}
+
+/* The zigzag, printed flat across the whole hero as texture rather than as
+   a picture. Static: it is the page's wallpaper, not an animation. */
+.hero__key {
+  position: absolute;
+  inset: -70px 0;
+  z-index: 0;
+  background-image: var(--zig-marble);
+  background-repeat: repeat-x;
+  background-size: 36px var(--zig-h);
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+.hero__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+  align-items: center;
+  gap: clamp(32px, 4vw, 60px);
+  padding-bottom: clamp(44px, 5.5vw, 74px);
+}
+
+.hero__copy { max-width: 470px; }
+
+.hero__brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+.hero__mark { position: relative; width: 58px; height: 58px; }
+.hero__mark .mk__temple { fill: var(--aegean); }
+.hero__mark .mk__bust { fill: var(--marble); }
+.hero__mark .mk__step { fill: var(--helios); }
+/* A slow, quiet breath of gold behind the medallion — the one thing in the
+   hero that moves without being asked to, so the page feels alive before
+   anyone scrolls or points at anything. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__mark::before {
+    content: "";
+    position: absolute;
+    inset: -16px;
+    background: radial-gradient(circle, var(--helios-wash) 0%, transparent 72%);
+    border-radius: 50%;
+    animation: godlight 5s var(--ease) infinite;
+  }
+  @keyframes godlight {
+    0%, 100% { opacity: 0.35; transform: scale(0.92); }
+    50%      { opacity: 0.8;  transform: scale(1.08); }
+  }
+}
+
+/* Boot bar: a solid gold segment running a dark track. */
+.boot {
+  position: relative;
+  width: 132px;
+  height: 4px;
+  overflow: hidden;
+  background: var(--stone);
+  border-radius: var(--r);
+}
+.boot__seg {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 34%;
+  background: var(--aegean);
+  animation: boot-sweep 2.6s var(--ease) infinite;
+}
+@keyframes boot-sweep {
+  from { transform: translateX(-110%); }
+  to   { transform: translateX(400%); }
+}
+
+.hero h1 {
+  margin-bottom: 18px;
+  font-family: var(--font-display);
+  font-size: clamp(54px, 8vw, 92px);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.038em;
+  color: var(--attic);
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 144;
+}
+
+/* Architrave: the thick beam over the thin fillet that runs under a temple
+   entablature. It draws itself across on load. */
+.arch {
+  position: relative;
+  display: block;
+  height: 7px;
+  margin-bottom: 24px;
+  background: var(--aegean);
+  transform-origin: left center;
+}
+.arch::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 7px;
+  height: 2px;
+  background: var(--helios);
+}
+.js .arch { transform: scaleX(0); }
+.js [data-hero].is-in .arch { animation: arch-draw 900ms var(--ease) 260ms both; }
+@keyframes arch-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.hero__lede {
+  color: var(--attic-500);
+  font-size: clamp(17px, 1.7vw, 19px);
+  line-height: 1.56;
+}
+.hero__lede strong { color: var(--attic); font-weight: 600; }
+
+.hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+.hero__facts { margin-top: 22px; color: var(--attic-400); font-size: 13.5px; }
+.hero__facts code { color: var(--attic-500); }
+
+/* ── 07 The frieze ─────────────────────────────────────────────────────── */
+/* Drawn from the artwork rather than photographed from it. The band drifts,
+   the rays turn and the temple settles — all three in section 14, because
+   they are the one place on this site that listens to scroll. */
+.hero__band {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-top: 3px solid var(--helios);
+}
+
+.frieze {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1400 / 428;
+}
+
+.fr__sky { fill: var(--sky); }
+.fr__sky-hi { fill: var(--sky-hi); }
+.fr__disc { fill: var(--helios); }
+.fr__rays {
+  fill: var(--helios);
+  transform-box: view-box;
+  transform-origin: 30.714% 35.514%;
+}
+
+.fr__range--aether { fill: var(--aether); }
+.fr__range--kyanos { fill: var(--kyanos-deep); }
+.fr__range--nave { fill: var(--nave); }
+
+/* Cloud, lifted off the artwork the same way the mountains were: soft,
+   overlapping and pale, sitting in front of the ranges and behind the
+   ridge. Each cluster drifts on its own slow clock — the one ambient motion
+   in the frieze that runs on a timer rather than on scroll, because it is
+   weather, not a reaction to anything the reader does. */
+.fr__cloud { fill: var(--sky-hi); opacity: 0.9; transform-box: view-box; }
+@media (prefers-reduced-motion: no-preference) {
+  .fr__cloud--a { animation: cloud-drift 46s var(--ease) infinite; }
+  .fr__cloud--b { animation: cloud-drift 58s var(--ease) infinite reverse; }
+  .fr__cloud--c { animation: cloud-drift 37s var(--ease) infinite; animation-delay: -6s; }
+  @keyframes cloud-drift {
+    0%, 100% { transform: translateX(0); }
+    50%      { transform: translateX(20px); }
+  }
+}
+.fr__ridge { fill: var(--warm-stone); }
+.fr__ridge-hi { fill: none; stroke: var(--warm-light); stroke-width: 6; }
+.fr__cypress { fill: var(--aegean-deep); }
+
+.fr__pediment { fill: var(--temple); }
+.fr__pediment-in { fill: var(--temple-shade); }
+.fr__arch { fill: var(--temple); }
+.fr__fillet { fill: var(--helios); }
+.fr__cols-shade { fill: var(--temple-shade); }
+.fr__step { fill: var(--temple-shade); }
+.fr__fore { fill: var(--nave); }
+.fr__fore-hi { fill: none; stroke: var(--kyanos-deep); stroke-width: 5; }
+
+/* ── 08 Mark ───────────────────────────────────────────────────────────── */
+/* The logo as a single reusable figure. Re-coloured per context: gold sun,
+   temple in whatever the ground is. */
+.mk { width: 14px; height: 14px; }
+.mk .mk__temple { fill: var(--marble); }
+
+/* ── 09 Mock window ────────────────────────────────────────────────────── */
+.shot { position: relative; perspective: 1400px; }
+
+/* A hard, offset, unblurred block instead of a soft glow. */
+.shot::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 10px -10px -10px 10px;
+  background: var(--kyanos);
+  border: 1px solid var(--aegean);
+  border-radius: var(--r);
+}
+
+.shot__win {
+  aspect-ratio: 3 / 2;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--marble);
+  border: 1px solid var(--aegean-deep);
+  border-radius: var(--r);
+  font-size: 12px;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 340ms var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .shot:hover .shot__win { box-shadow: 14px 14px 0 var(--kyanos); }
+}
+
+.shot__boot { position: relative; flex: none; height: 4px; overflow: hidden; background: var(--aegean); }
+.shot__boot::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 28%;
+  background: var(--helios);
+  animation: boot-sweep 3.2s var(--ease) infinite;
+}
+
+.shot__head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--limestone);
+  border-bottom: 1px solid var(--stone);
+}
+.shot__id { display: flex; align-items: center; gap: 6px; }
+.shot__title { color: var(--attic); font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+
+.shot__modes {
+  display: flex;
+  flex: none;
+  padding: 2px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+}
+.shot__modes span {
+  padding: 2px 9px;
+  border-radius: 2px;
+  color: var(--attic-400);
+  font-size: 10px;
+  font-weight: 500;
+}
+.shot__modes .on { background: var(--aegean); color: var(--marble); }
+
+.shot__tags { display: flex; align-items: center; gap: 6px; min-width: 0; margin-left: auto; overflow: hidden; }
+
+.chip {
+  padding: 2px 8px;
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  background: var(--marble);
+  color: var(--attic-500);
+  font-size: 9.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.chip--sm { font-size: 9px; }
+.chip--ask { color: var(--attic); }
+.chip--gold {
+  border-color: var(--helios);
+  background: var(--helios-wash);
+  color: var(--helios-ink);
+  font-weight: 600;
+}
+
+.shot__body { flex: 1; min-height: 0; display: grid; grid-template-columns: 26% 44% 30%; }
+
+.pane {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  border-right: 1px solid var(--stone);
+}
+.pane:last-child { border-right: 0; }
+.pane--agent { display: flex; flex-direction: column; background: var(--marble); }
+
+.pane__label {
+  margin-bottom: 8px;
+  color: var(--attic-400);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.pane__label--row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 5px 8px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  color: var(--attic-400);
+  font-size: 10px;
+}
+.field__ico { width: 8px; height: 8px; border: 1.4px solid var(--attic-400); border-radius: 50%; }
+.tree { display: grid; gap: 2px; }
+.tree__row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border-radius: var(--r);
+  color: var(--attic-500);
+  font-size: 10.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tree__row.is-on { background: var(--kyanos); color: var(--attic); box-shadow: inset 3px 0 0 var(--aegean); }
+.tree__row.is-off { opacity: 0.55; }
+.tree__note { color: var(--attic-400); }
+
+.dot { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+.dot--busy { background: var(--aegean); }
+
+.line { font-size: 10.5px; line-height: 1.5; }
+.line--you { margin-bottom: 9px; color: var(--attic); font-weight: 500; }
+
+.bar {
+  display: block;
+  width: var(--w, 80%);
+  height: 5px;
+  margin-bottom: 5px;
+  border-radius: var(--r);
+  background: var(--stone);
+}
+
+/* `.mc` (mock card) is deliberately not `.card`: the feature cards in
+   section 10 are far larger and would otherwise inherit their padding. */
+.mc {
+  margin-bottom: 9px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+}
+.mc__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border-bottom: 1px solid var(--stone);
+}
+.mc__name {
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: var(--kyanos);
+  color: var(--aegean-deep);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+.mc__bar code {
+  color: var(--attic-500);
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chev {
+  width: 6px; height: 6px;
+  margin-left: auto;
+  border-right: 1.2px solid var(--attic-400);
+  border-bottom: 1.2px solid var(--attic-400);
+  transform: rotate(45deg) translateY(-2px);
+}
+.mc__body { padding: 9px; }
+
+.mc--edit { border-color: var(--helios); }
+.mc--edit .mc__bar { border-bottom-color: #f0dda6; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 1.5px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--r);
+  font-size: 8.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pill--gold { background: var(--helios-wash); border-color: var(--helios); color: var(--helios-ink); }
+
+.approve__btns,
+.approve__txt,
+.approve__done { transition: opacity 240ms var(--ease), transform 240ms var(--ease); }
+.approve {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border-top: 1px solid #f0dda6;
+}
+.approve__txt { color: var(--attic-400); font-size: 8.5px; line-height: 1.3; }
+.approve__btns { display: flex; gap: 5px; margin-left: auto; }
+.mini {
+  padding: 2.5px 8px;
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  color: var(--attic-500);
+  font-size: 8.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mini--gold { border-color: var(--aegean); background: var(--aegean); color: var(--marble); }
+.approve__done {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  color: var(--aegean);
+  font-size: 8.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.approve__done svg { width: 11px; height: 11px; stroke-dasharray: 30; stroke-dashoffset: 30; }
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 7px 10px;
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  background: var(--marble);
+  color: var(--attic-400);
+  font-size: 10px;
+}
+.send { width: 12px; height: 12px; margin-left: auto; background: var(--aegean); border-radius: 2px; }
+
+.diff { padding: 5px 0; background: var(--limestone); }
+.diff__row { display: flex; gap: 7px; padding: 2.5px 9px; }
+.diff__row code {
+  color: var(--attic-500);
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.diff__s { flex: none; width: 6px; color: var(--attic-400); font-family: var(--mono); font-size: 9px; }
+.diff__row--add { background: #d5e6f7; }
+.diff__row--add code { color: var(--aegean-deep); }
+.diff__row--add .diff__s { color: var(--aegean); font-weight: 700; }
+
+.js .diff__row[data-seq] {
+  opacity: 0.16;
+  transform: translateX(-5px);
+  transition: opacity 280ms var(--ease), transform 280ms var(--ease);
+}
+.js .diff__row[data-seq].is-on { opacity: 1; transform: none; }
+
+.pane--preview { display: flex; flex-direction: column; }
+.wire {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+}
+.wire__nav { width: 44%; height: 7px; border-radius: var(--r); background: var(--stone); }
+.wire__nav--short { width: 24%; }
+.wire__hero { height: 26%; min-height: 18px; border-radius: var(--r); background: var(--kyanos); border: 1px solid #a9c8e8; }
+.wire__col { height: 14%; min-height: 10px; border-radius: var(--r); background: var(--limestone); border: 1px solid var(--stone); }
+.wire__row { display: flex; gap: 5px; height: 18%; min-height: 12px; }
+.wire__row .wire__col { flex: 1; height: 100%; min-height: 0; }
+.wire__cap { margin-top: 7px; color: var(--attic-400); font-size: 8.5px; text-align: center; }
+
+/* Above the hard offset block: the block is a positioned element, so without
+   this the caption is painted under it and only its first letter survives. */
+.shot figcaption { position: relative; z-index: 2; margin-top: 16px; color: var(--attic-400); font-size: 13px; }
+
+/* ── 09b Mock window state machine ────────────────────────────────────── */
+/* Script only sets `data-state`; every visual below is CSS, and with
+   scripting off the card sits in its static pending state. */
+[data-t] { display: none; }
+[data-t="pending"] { display: inline; }
+[data-shot][data-state="approved"] [data-t="pending"] { display: none; }
+[data-shot][data-state="approved"] [data-t="approved"] { display: inline; }
+
+[data-shot][data-state="approved"] .approve__btns { opacity: 0; transform: translateY(4px) scale(0.96); }
+[data-shot][data-state="approved"] .approve__txt { opacity: 0; }
+[data-shot][data-state="approved"] .approve__done { display: inline-flex; animation: pop-in 300ms var(--ease) both; }
+[data-shot][data-state="approved"] .approve__done svg { animation: draw-tick 520ms var(--ease) 120ms both; }
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(5px) scale(0.9); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes draw-tick {
+  from { stroke-dashoffset: 30; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.js [data-shot][data-state="streaming"] .dot--busy,
+.js [data-shot][data-state="pending"] .dot--busy { animation: dot-pulse 1.4s var(--ease) infinite; }
+.js [data-shot][data-state="streaming"] .bar { animation: bar-fade 1.1s steps(4, end) infinite; }
+.js [data-shot][data-state="pending"] .mc--edit { animation: ask 1.9s var(--ease) infinite; }
+.js [data-shot][data-state="approved"] .mc--edit { border-color: var(--stone); }
+.js [data-shot][data-state="approved"] .pill--gold,
+.js [data-shot][data-state="approved"] .chip--gold {
+  background: var(--kyanos);
+  border-color: var(--aegean);
+  color: var(--aegean-deep);
+}
+
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(11 74 155 / 0.45); }
+  70%      { box-shadow: 0 0 0 5px rgb(11 74 155 / 0); }
+}
+@keyframes bar-fade {
+  0%   { background: var(--stone); }
+  50%  { background: var(--aegean); }
+  100% { background: var(--stone); }
+}
+@keyframes ask {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(255 199 44 / 0); }
+  45%      { box-shadow: 0 0 0 3px rgb(255 199 44 / 0.55); }
+}
+
+/* ── 09c The transcript ────────────────────────────────────────────────
+   A working replay of the app's own transcript, in the site's material. It
+   is the product demo the site was missing, and it is honest about being a
+   replay: the caption says so in as many words.
+
+   Progressive enhancement is the whole design here. Every step is present
+   and readable in the source, with no script and no `is-playing` class. The
+   controller only *adds* `is-playing`, which is what starts hiding steps
+   that have not arrived yet. So the failure mode is a complete static
+   transcript, never a blank one. */
+.tr {
+  margin: 0;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  overflow: hidden;
+  /* The gold sun's glow, barely there, so the panel reads as lit from the
+     same direction as the rest of the page. */
+  box-shadow: 0 30px 70px -50px rgb(122 92 24 / 0.55);
+}
+/* The caveat sits ABOVE the panel, not below it, so it is read before the
+   replay rather than after it. Same typographic voice as every other caption
+   on the site. */
+.tr__cap {
+  padding: 0 2px 16px;
+  color: var(--attic-400);
+  font-size: 13.5px;
+  line-height: 1.6;
+  max-width: 78ch;
+}
+.tr__cap strong { color: var(--attic-500); }
+.tr__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  background: var(--limestone);
+  border-bottom: 1px solid var(--stone);
+  font-family: var(--font);
+  font-size: 12.5px;
+  color: var(--attic-500);
+}.tr__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--aegean);
+  flex: none;
+}
+.tr__title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--attic);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tr__state {
+  margin-left: auto;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--attic-400);
+  flex: none;
+}
+/* Working: the dot breathes on the same 1.6s the rest of the site's
+   "something is happening" motion uses. */
+.tr.is-working .tr__dot { animation: dot-pulse 1.6s var(--ease) infinite; }
+.tr.is-working .tr__state { color: var(--aegean); }
+.tr.is-waiting .tr__dot { background: var(--helios); animation: dot-pulse 1.6s var(--ease) infinite; }
+.tr.is-waiting .tr__state { color: #8a6412; }
+
+.tr__body {
+  padding: 18px 18px 20px;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* The prompt reads as terminal input, matching the app's own `›` prefix. */
+.tr__prompt {
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  background: var(--limestone);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--attic);
+}
+.tr__you { color: var(--attic-400); margin-right: 8px; }
+.tr__you::after { content: " ›"; }
+
+/* Reasoning: the arrow, then italic, one line at a time. Each line is its
+   own block so the reveal can be a stagger — which is what streaming
+   actually looks like, without typing a character at a time. */
+.tr__think {
+  position: relative;
+  padding-left: 22px;
+  margin: 0 0 14px;
+  color: var(--attic-500);
+  font-size: 13.5px;
+  font-style: italic;
+  line-height: 1.65;
+}
+.tr__think p { margin: 0; }
+.tr__think p span { display: block; }
+.tr__arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--aegean);
+  font-style: normal;
+  font-size: 14px;
+}
+/* A caret that exists only while the agent is actually thinking. */
+.tr.is-thinking .tr__arrow::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 3px;
+  vertical-align: -0.16em;
+  background: var(--aegean);
+  animation: caret 1s steps(2, start) infinite;
+}
+@keyframes caret { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+/* Tool rows: flat, single-line, opening into output on click. */
+.tr__row { margin: 0 0 2px; }
+.tr__trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--attic-500);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 180ms var(--ease);
+}
+.tr__trigger:hover { background: var(--limestone); }
+.tr__trigger:focus-visible { outline: 2px solid var(--aegean); outline-offset: 1px; }
+.tr__ico { display: grid; place-items: center; width: 15px; height: 15px; flex: none; color: var(--attic-400); }
+.tr__ico svg { width: 13px; height: 13px; }
+.tr__row.is-done .tr__ico { color: var(--aegean); }
+.tr__name { flex: none; font-weight: 600; color: var(--attic-400); }
+.tr__sep { flex: none; color: var(--stone); }
+.tr__arg { flex: 1 1 auto; min-width: 0; font-family: var(--mono); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tr__time { flex: none; font-size: 10.5px; color: var(--attic-400); font-variant-numeric: tabular-nums; }
+.tr__ok {
+  flex: none;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #2f6b3a;
+}
+.tr__wait {
+  flex: none;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8a6412;
+  background: var(--helios-wash);
+  border: 1px solid var(--helios);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+.tr__chev {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-left: 2px;
+  border-right: 2px solid var(--attic-400);
+  border-bottom: 2px solid var(--attic-400);
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 220ms var(--ease), opacity 220ms var(--ease);
+  opacity: 0;
+}
+/* The chevron is a promise that clicking does something, so it only appears
+   once clicking can. Without scripting the output is already on screen and
+   the chevron would be a lie. */
+.tr.is-collapsible .tr__chev { opacity: 0.55; }
+.tr.is-collapsible .tr__trigger:hover .tr__chev,
+.tr.is-collapsible .tr__trigger:focus-visible .tr__chev { opacity: 1; }
+.tr.is-collapsible .tr__trigger[aria-expanded="true"] .tr__chev {
+  transform: rotate(225deg) translate(-3px, -3px);
+  opacity: 1;
+}
+
+/* Output and diff panels. These are VISIBLE BY DEFAULT and only become
+   collapsible once the script adds `is-collapsible`. Hiding them behind a
+   click that cannot happen without JavaScript would mean the no-script
+   transcript lost its most interesting content — the actual output. */
+.tr__out,
+.tr__diff {
+  display: block;
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: var(--limestone);
+  border-left: 2px solid var(--stone);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--attic-500);
+  overflow-x: auto;
+}
+.tr__diff { border-left-color: var(--helios); }
+.tr__out code, .tr__diff code { font: inherit; }
+.tr.is-collapsible .tr__out,
+.tr.is-collapsible .tr__diff { display: none; }
+.tr.is-collapsible .tr__row.is-open .tr__out,
+.tr.is-collapsible .tr__row.is-open .tr__diff { display: block; }
+.d-add { display: block; color: #2f6b3a; }
+.d-dele { display: block; color: #a13a3a; }
+
+/* The approval gate. Gold, because gold is what the rest of the site uses
+   for "this is waiting on a decision and it is yours". */
+.tr__gate {
+  margin: 16px 0;
+  padding: 14px 16px;
+  background: var(--helios-wash);
+  border: 1px solid var(--helios);
+  border-radius: var(--r);
+}
+.tr__gatetxt { margin: 0 0 12px; font-size: 13.5px; color: var(--attic); }
+.tr__acts { display: flex; gap: 8px; margin: 0; }
+.tr__btn {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--stone);
+  background: var(--marble);
+  color: var(--attic-500);
+  transition: translate 180ms var(--ease), border-color 180ms var(--ease);
+}
+.tr__btn--go { background: #2f6b3a; border-color: #2f6b3a; color: #fff; }
+.tr__btn--go:hover { translate: 0 -1px; }
+.tr.is-approved .tr__gate { background: #eef6ef; border-color: #bcd9c1; }
+.tr.is-approved .tr__gate .tr__btn { display: none; }
+.tr.is-approved .tr__gate .tr__gatetxt::after {
+  content: "Allowed. Written to disk.";
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: #2f6b3a;
+}
+/* Denied is the outcome the demo is allowed to show, so it gets the same
+   quiet treatment as allowed: the gate changes colour, the buttons go, and
+   a line says what happened. The Edit row is marked refused rather than
+   done, because nothing was written. */
+.tr.is-denied .tr__gate { background: #f6f1f1; border-color: #d9c3c3; }
+.tr.is-denied .tr__gate .tr__btn { display: none; }
+.tr.is-denied .tr__gate .tr__gatetxt::after {
+  content: "Denied. Nothing was written to disk.";
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: #8a3a3a;
+}
+.tr__row.is-refused .tr__wait { color: #8a3a3a; background: #f6f1f1; border-color: #d9c3c3; }
+
+.tr__foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 11px 16px;
+  border-top: 1px solid var(--stone);
+  background: var(--limestone);
+}
+.tr__replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border: 1px solid var(--stone);
+  border-radius: 999px;
+  background: var(--marble);
+  color: var(--attic);
+  cursor: pointer;
+  transition: border-color 180ms var(--ease), translate 180ms var(--ease);
+}
+.tr__replay:hover { border-color: var(--aegean); translate: 0 -1px; }
+.tr__replay:focus-visible { outline: 2px solid var(--aegean); outline-offset: 2px; }
+.tr__replayico {
+  width: 11px;
+  height: 11px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  border-top-color: transparent;
+  rotate: -45deg;
+}
+.tr.is-playing .tr__replayico { animation: spin 1.1s linear infinite; }
+@keyframes spin { to { rotate: 315deg; } }
+.tr__hint { margin: 0; font-size: 11.5px; color: var(--attic-400); }
+
+/* ---- the reveal, and only while the replay is running ------------------
+   `data-at` is the step index. Without `is-playing` on the root these rules
+   do not apply, which is what keeps the no-script and reduced-motion states
+   complete and static. */
+.tr.is-playing [data-at] {
+  opacity: 0;
+  transform: translateY(5px);
+}
+.tr.is-playing [data-at].is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 320ms var(--ease), transform 320ms var(--ease);
+}
+.tr__think p span { display: block; }
+.tr.is-playing .tr__think p span { opacity: 0; }
+.tr.is-playing .tr__think.is-in p span {
+  animation: think-in 380ms var(--ease) forwards;
+}
+.tr.is-playing .tr__think.is-in p span:nth-child(2) { animation-delay: 620ms; }
+.tr.is-playing .tr__think.is-in p span:nth-child(3) { animation-delay: 1240ms; }
+@keyframes think-in { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
+
+/* Hovering or focusing the panel takes the controls away from the timer,
+   so a reader who wants to read a step is never raced by it. */
+.tr:hover .tr__replay,
+.tr:focus-within .tr__replay { border-color: var(--aegean); }
+
+@media (max-width: 640px) {
+  .tr__body { padding: 14px 12px 16px; }
+  .tr__time { display: none; }
+  .tr__think { font-size: 13px; }
+}
+
+
+/* ── 10 Content ────────────────────────────────────────────────────────── */
+.cards { display: grid; gap: 22px; }
+.cards--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cards--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* Section heading: a pediment above a blue fillet. Both are static — the
+   heading is furniture, it is not part of the scroll. */
+.sec__head { max-width: 660px; margin-bottom: clamp(36px, 4vw, 56px); }
+.sec__head::before {
+  content: "";
+  display: block;
+  width: 126px;
+  height: 19px;
+  margin-bottom: 20px;
+  background: var(--helios);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.sec__head::after {
+  content: "";
+  display: block;
+  height: 3px;
+  margin-top: 22px;
+  background: var(--aegean);
+}
+
+.eyebrow {
+  margin-bottom: 10px;
+  color: var(--aegean);
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3.6vw, 44px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.024em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 100;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+}
+
+.lede {
+  margin-top: 16px;
+  max-width: 62ch;
+  color: var(--attic-500);
+  font-size: clamp(16px, 1.5vw, 18px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 24px;
+  border: 1px solid var(--aegean);
+  border-radius: var(--r);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 180ms var(--ease), color 180ms var(--ease),
+              border-color 180ms var(--ease), transform 180ms var(--ease);
+}
+.btn--sm { min-height: 38px; padding: 0 16px; font-size: 14px; }
+.btn--primary { background: var(--aegean); border-color: var(--aegean); color: var(--marble); }
+.btn--primary:hover { background: var(--helios); border-color: var(--helios); color: var(--attic); transform: translateY(-2px); }
+.btn--ghost { background: transparent; border-color: var(--stone); color: var(--attic); }
+.btn--ghost:hover { border-color: var(--aegean); color: var(--aegean); }
+.btn:active { transform: scale(0.97); }
+
+.ico {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 20px;
+  background: var(--aegean);
+  border-radius: var(--r);
+  color: var(--marble);
+  transition: background-color 240ms var(--ease);
+}
+.ico svg { width: 22px; height: 22px; }
+.ico--gold { background: var(--helios); color: var(--attic); }
+
+.note {
+  margin-top: clamp(32px, 4vw, 48px);
+  padding: 22px 24px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-left: 4px solid var(--helios);
+  border-radius: var(--r);
+  color: var(--attic-500);
+  font-size: 15px;
+}
+.note strong { color: var(--attic); }
+.note code { color: var(--attic); }
+
+/* Question cards carry the zigzag bar across their own top edge, clipped to
+   the card's radius, and drawn in as the card arrives. */
+.card-lg {
+  position: relative;
+  overflow: hidden;
+  padding: calc(30px + var(--zig-h)) 28px 32px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  transition: border-color 200ms var(--ease), translate 200ms var(--ease);
+}
+.card-lg::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  margin: 0;
+}
+.card-lg__q {
+  margin-bottom: 12px;
+  font-family: var(--font-display);
+  color: var(--attic);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.018em;
+}
+.card-lg p:last-child { color: var(--attic-500); font-size: 16px; }
+
+.card {
+  position: relative;
+  padding: 28px 28px 30px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  transition: border-color 200ms var(--ease), translate 200ms var(--ease);
+}
+.card h3 { margin-bottom: 10px; }
+.card p { color: var(--attic-500); font-size: 15.5px; }
+.card--plain { padding-top: 26px; }
+.card--plain h3 { font-size: 17px; }
+.card--plain p { font-size: 15px; }
+
+/* The cornice and the sill. They fill toward the pointer, so the ornament
+   on a card follows the cursor and drains away when it leaves.
+
+   A `.card-lg` only gets the sill: its top edge is already taken by the
+   zigzag bar, and a rail there would draw straight across the zigzag. */
+.card::before,
+.card::after,
+.card-lg::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  transition: transform 260ms var(--ease);
+  transform: scaleX(var(--cx, 0));
+}
+.card::before { top: 0; background: var(--helios); transform-origin: left center; }
+.card::after,
+.card-lg::after { bottom: 0; background: var(--aegean); transform-origin: right center; }
+
+@media (hover: hover) {
+  /* The lift uses the independent `translate` property so it composes with
+     the scrub transform instead of overwriting it. */
+  .card:hover,
+  .card-lg:hover { border-color: var(--aegean); translate: 0 -3px; }
+  .card:hover .ico { background: var(--helios); color: var(--attic); }
+  .card:hover { box-shadow: 7px 7px 0 var(--kyanos); }
+  .card-lg:hover { box-shadow: 7px 7px 0 var(--kyanos); }
+}
+
+/* Steps hang from a single gold rail. Static: no fill, no per-step draw. */
+.steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 26px;
+}
+.steps::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--helios);
+}
+
+.step { position: relative; padding-top: 22px; border-top: 2px solid var(--stone); }
+.step__n {
+  margin-bottom: 10px;
+  color: var(--helios-ink);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.step__n::after {
+  content: "";
+  display: block;
+  width: 26px;
+  height: 3px;
+  margin-top: 8px;
+  background: var(--helios);
+}
+.step h3 { margin-bottom: 10px; font-size: 18px; }
+.step p { color: var(--attic-500); font-size: 15px; }
+.step code { color: var(--attic); background: var(--kyanos); padding: 1px 5px; border-radius: 2px; }
+
+#security .card p code {
+  padding: 1px 5px;
+  border: 1px solid var(--stone);
+  border-radius: 2px;
+  background: var(--limestone);
+  color: var(--attic);
+}
+
+.reqs { display: grid; gap: 12px; max-width: 780px; }
+.reqs li {
+  position: relative;
+  padding: 18px 22px 18px 46px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  color: var(--attic-500);
+  font-size: 16px;
+}
+/* A gold lozenge, set as a diamond. */
+.reqs li::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 24px;
+  width: 10px;
+  height: 10px;
+  background: var(--helios);
+  border: 1px solid var(--aegean);
+  transform: rotate(45deg);
+}
+.reqs strong { color: var(--attic); }
+.reqs code { color: var(--aegean); }
+
+/* ── 10b Micro-interactions ────────────────────────────────────────────
+   The ornaments were already there — cards fill a cornice and a sill toward
+   the pointer, the gold sill draws as you arrive. What was missing was a
+   response to *arriving*: nothing lifted, nothing acknowledged a click
+   beyond a colour change. These rules add the physical half, and all of it
+   is gated on a real pointer, because on touch a "hover" state is a lie
+   the reader can see through. */
+@media (hover: hover) and (pointer: fine) {
+  .btn,
+  .dlbtn,
+  .tr__replay {
+    transition:
+      translate 200ms var(--ease),
+      background-color 200ms var(--ease),
+      border-color 200ms var(--ease),
+      box-shadow 200ms var(--ease);
+  }
+  .btn:hover,
+  .dlbtn:hover {
+    translate: 0 -2px;
+  }
+  .btn--primary:hover {
+    box-shadow: 0 8px 20px -10px rgb(255 199 44 / 0.85);
+  }
+
+  /* A card answers the pointer twice: it lifts, and the gold sill along its
+     bottom edge is drawn from the side you came from. */
+  .card,
+  .card-lg {
+    transition:
+      translate 240ms var(--ease),
+      border-color 240ms var(--ease),
+      box-shadow 240ms var(--ease);
+  }
+  .card:hover {
+    translate: 0 -3px;
+    border-color: var(--helios);
+    box-shadow: 0 20px 44px -34px rgb(122 92 24 / 0.7);
+  }
+  .card-lg:hover {
+    translate: 0 -3px;
+    box-shadow: 0 24px 52px -38px rgb(122 92 24 / 0.8);
+  }
+  .card-lg--blue:hover { border-color: var(--aegean); }
+
+  /* FAQ rows: the question itself is the control, so it gets the clearest
+     hover in the block. */
+  .faq__item > summary:hover { background: var(--limestone); }
+  .faq__item > summary:hover .faq__mark { color: var(--aegean); }
+
+  /* Table rows: tint the whole row so scanning down a column still reads. */
+  .cmp tbody tr:hover th,
+  .cmp tbody tr:hover td { background: var(--limestone); }
+  .cmp tbody tr:hover td.is-ours { background: #fdf3d8; }
+
+  /* The header mark turns slowly, and faster while you are on it. */
+  .lockup svg .mk__sun { transform-origin: 16px 11.4px; animation: sun-turn 48s linear infinite; }
+  .lockup:hover svg .mk__sun { animation-duration: 9s; }
+  .foot__brand svg .mk__sun { transform-origin: 16px 11.4px; animation: sun-turn 64s linear infinite; }
+}
+@keyframes sun-turn { to { transform: rotate(360deg); } }
+
+/* The eyebrow picks up a short gold rule on hover of its section heading —
+   the same gold-step ornament as the zigzag, at a smaller scale. */
+.sec__head .eyebrow { transition: color 240ms var(--ease); }
+.sec__head:hover .eyebrow { color: var(--attic); }
+
+/* Focus is a first-class state everywhere, not an afterthought. */
+a:focus-visible,
+summary:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--aegean);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── 10c Scroll-linked reveals ─────────────────────────────────────────
+   The site deliberately stopped scrubbing every element: giving each card its
+   own clock made scrolling read as twitching. But that left the page almost
+   inert between the frieze and the top bar — content simply existed.
+
+   This is the middle path. A whole *group* reveals as one staggered run
+   driven by the same `--p` the existing scroll pass already writes, so it is
+   still a pure function of position and still plays backwards when you
+   scroll up. Four blocks, not thirty-eight elements.
+
+   `--p` is only ever set on `[data-scrub]`, so without scripting the
+   `var(--p, 1)` fallback is 1 and everything is simply visible. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] > * {
+    /* 0 as the group arrives, 1 once the group is 1/5th of the way in. The
+       multiplier is deliberately high: this is a settle, not a performance. */
+    --r: clamp(0, (var(--p, 1) - var(--d, 0)) * 5, 1);
+    opacity: var(--r);
+    transform: translateY(calc((1 - var(--r)) * 16px));
+  }
+  /* The stagger, in fifths of the run. */
+  [data-reveal] > *:nth-child(1) { --d: 0; }
+  [data-reveal] > *:nth-child(2) { --d: 0.09; }
+  [data-reveal] > *:nth-child(3) { --d: 0.18; }
+  [data-reveal] > *:nth-child(4) { --d: 0.27; }
+  [data-reveal] > *:nth-child(5) { --d: 0.36; }
+  [data-reveal] > *:nth-child(6) { --d: 0.45; }
+  [data-reveal] > *:nth-child(7) { --d: 0.54; }
+  [data-reveal] > *:nth-child(8) { --d: 0.63; }
+}
+
+/* ── 11 Page head ──────────────────────────────────────────────────────── */
+/* Inner pages open with the same pediment and fillet the home page uses for
+   its section headings, so the pages feel like one frieze cut into panels.
+   No zigzag bar of its own: the header already closes with one, and the
+   section below gets its own, so a bar here would just repeat the page. */
+.pagehead {
+  position: relative;
+  padding-block: clamp(52px, 6vw, 84px) 0;
+}
+.pagehead h1 {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 5.4vw, 62px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 144;
+}
+.pagehead .lede { margin-top: 18px; }
+
+/* A short breadcrumb back to the top, so the pages interlock. */
+.pagehead__crumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 26px;
+  font-size: 14.5px;
+}
+.pagehead__crumbs a { color: var(--attic-400); text-decoration: none; }
+.pagehead__crumbs a:hover { color: var(--aegean); }
+.pagehead__crumbs span { color: var(--stone); }
+
+/* Next/previous, so the pages read as a sequence rather than as loose files. */
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: clamp(48px, 6vw, 76px);
+  background: var(--stone);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.pager a {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 22px 24px 24px;
+  background: var(--marble);
+  text-decoration: none;
+  transition: background-color 200ms var(--ease);
+}
+.pager a:hover { background: var(--kyanos); }
+.pager a.is-next { text-align: right; align-items: flex-end; }
+.pager small {
+  color: var(--attic-400);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.pager strong {
+  color: var(--attic);
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+}
+.pager a.is-next strong { color: var(--aegean); }
+.pager a.is-empty { background: var(--limestone); pointer-events: none; }
+
+/* ── 12 Marquee ────────────────────────────────────────────────────────── */
+/* A painted frieze: solid Aegean, gold lettering, running on a plain clock.
+   It used to answer scroll velocity, which meant it lurched every time the
+   page moved. Now it just runs. */
+.marquee { overflow: hidden; padding-block: 15px; background: var(--aegean); }
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee-run 42s linear infinite;
+}
+@keyframes marquee-run {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+.marquee__half { display: flex; gap: 54px; padding-right: 54px; }
+.marquee__half span {
+  display: inline-flex;
+  align-items: center;
+  color: var(--marble);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.marquee__half span::before {
+  content: "";
+  width: 7px; height: 7px;
+  margin-right: 54px;
+  background: var(--helios);
+  transform: rotate(45deg);
+}
+
+/* ── 12 Footer ─────────────────────────────────────────────────────────── */
+.foot {
+  padding-block: 0 52px;
+  background: var(--aegean-deep);
+  color: var(--marble);
+}
+.foot::before { content: ""; display: block; }
+.foot__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 40px 26px;
+}
+.foot__brand { display: flex; align-items: center; gap: 10px; }
+.foot__brand .mk__temple { fill: var(--marble); }
+.foot__brand .mk__bust { fill: var(--aegean-deep); }
+.foot__brand .mk__step { fill: var(--helios); }
+.foot__brand .lockup__word { color: var(--marble); }
+.foot__nav { display: flex; flex-wrap: wrap; gap: 22px; }
+.foot__nav a { color: #a9c6e6; font-size: 14.5px; text-decoration: none; }
+.foot__nav a:hover { color: var(--helios); }
+
+/* Where to go for help, and where the paper is. Three columns, because a
+   support address, a documentation link and a licence are three different
+   kinds of destination and lumping them into one row loses all three. */
+.foot__cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 48px);
+  padding-block: 26px 30px;
+  border-top: 1px solid #143a6b;
+}
+.foot__colh {
+  margin-bottom: 13px;
+  color: var(--helios);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.foot__col ul { display: grid; gap: 9px; }
+.foot__col li { color: #8aa8c9; font-size: 14.5px; line-height: 1.5; }
+.foot__col a { color: #a9c6e6; text-decoration: none; }
+.foot__col a:hover { color: var(--helios); }
+
+.foot__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  padding-top: 24px;
+  border-top: 1px solid #143a6b;
+  color: #8aa8c9;
+  font-size: 13.5px;
+}
+.foot__legal a { color: #a9c6e6; }
+
+/* ── 14 Download & price ───────────────────────────────────────────────── */
+/* The one place money is mentioned. Three real links, a price, a refund
+   window and a trial, in that order, because that is the order you read
+   them in.
+
+   The three download buttons are always all three. Scripting reorders them
+   so the reader's own platform is first and marks it, but with scripting
+   off they stay in the order they are written in: macOS, Windows, Linux. */
+.get__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+  align-items: start;
+  gap: clamp(30px, 3.6vw, 54px);
+}
+.get__fig {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--attic);
+  font-family: var(--font-display);
+  font-size: clamp(56px, 6.4vw, 78px);
+  font-weight: 600;
+  line-height: 0.94;
+  letter-spacing: -0.038em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 144;
+}
+.get__unit { color: var(--attic-400); font-family: var(--font); font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.get__terms { margin-top: 14px; max-width: 46ch; color: var(--attic-500); font-size: 16.5px; }
+.get__terms strong { color: var(--attic); }
+.get__buy { margin-top: 26px; }
+
+.dlset { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.dlbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 18px;
+  background: var(--marble);
+  border: 1px solid var(--aegean);
+  border-radius: var(--r);
+  color: var(--attic);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  transition: background-color 180ms var(--ease), color 180ms var(--ease),
+              border-color 180ms var(--ease), transform 180ms var(--ease);
+}
+/* A drawn arrow, not an icon font and not a glyph that may not render. */
+.dlbtn::after {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-left: 2px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+.dlbtn:hover { background: var(--kyanos); border-color: var(--aegean-deep); color: var(--aegean-deep); }
+.dlbtn:active { transform: scale(0.97); }
+.dlbtn--sm { min-height: 38px; padding: 0 13px; font-size: 13.5px; }
+.dlbtn--go { background: var(--aegean); border-color: var(--aegean); color: var(--marble); }
+.dlbtn--go:hover { background: var(--helios); border-color: var(--helios); color: var(--attic); }
+
+/* Set by script once it has read `navigator.userAgent`. Absent without
+   scripting, which is the honest default: no platform picked for you. */
+.dlbtn__tag {
+  display: none;
+  padding: 1px 6px;
+  background: var(--helios);
+  border-radius: 2px;
+  color: var(--attic);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dlbtn.is-pick { background: var(--aegean); border-color: var(--aegean); color: var(--marble); }
+.dlbtn.is-pick .dlbtn__tag { display: inline; }
+.dlbtn.is-pick:hover { background: var(--helios); border-color: var(--helios); color: var(--attic); }
+
+/* In the bar, three compact links; below 1080px they are replaced by a
+   single link into the download block, so the row never wraps. */
+.dlset--bar { display: flex; }
+.dlbar__one { display: none; }
+@media (max-width: 1079px) {
+  .dlset--bar { display: none; }
+  .dlbar__one { display: inline-flex; }
+}
+
+/* A scrubbed heading carries its own fillet instead of the static one the
+   `.sec__head::after` rule draws, so there is only ever one bar. */
+.sec__head--fill::after { display: none; }
+
+/* The fillet under a section heading, as its own element so the gold half
+   can be scrubbed. The blue track is the one `.sec__head::after` already
+   draws; this is the same bar with a gold run along it, and that run is a
+   pure function of scroll, so it fills as the section arrives and drains
+   as you scroll back up. Scripting off, it is a solid blue bar. */
+.fillet {
+  position: relative;
+  display: block;
+  height: 3px;
+  margin-top: 22px;
+  background: var(--aegean);
+}
+.fillet::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 100%;
+  background: var(--helios);
+  transform: scaleX(var(--p, 0));
+  transform-origin: right center;
+}
+
+/* A flat panel with a small caps label. Used wherever a block needs a
+   heading and a list but not a card's hover lift. */
+.panel {
+  padding: 26px 28px 28px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+}
+.panel--tint { background: var(--limestone); }
+.panel--blue { background: var(--aegean-deep); border-color: var(--aegean-deep); color: var(--marble); }
+.panel__label {
+  margin-bottom: 15px;
+  color: var(--attic-400);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.panel--blue .panel__label { color: var(--helios); }
+.panel p { color: var(--attic-500); font-size: 15.5px; }
+.panel--blue p { color: #a9c6e6; }
+/* Aegean on Aegean-deep is unreadable, so anything on a dark panel takes
+   the gold. One rule, because the palette has no light link colour. */
+.panel--blue a,
+.ticks--light a { color: var(--helios); }
+
+/* A tick is a drawn check. A cross is a struck stone, not a red mark: this
+   palette has no red in it and adding one would be a lie. */
+.ticks { display: grid; gap: 11px; }
+.ticks li { position: relative; padding-left: 28px; color: var(--attic-500); font-size: 15.5px; line-height: 1.55; }
+.ticks li::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  top: 6px;
+  width: 12px;
+  height: 7px;
+  border-left: 2px solid var(--aegean);
+  border-bottom: 2px solid var(--aegean);
+  transform: rotate(-45deg);
+}
+.ticks strong { color: var(--attic); }
+.ticks code { color: var(--aegean); }
+.ticks--off li::before {
+  top: 14px;
+  width: 11px;
+  height: 2px;
+  border: 0;
+  background: var(--stone);
+  transform: none;
+}
+.ticks--light li { color: #a9c6e6; }
+.ticks--light li strong { color: var(--marble); }
+.ticks--light li::before { border-color: var(--helios); }
+
+/* The hero's price line, and the three pricing cards. The cards are the
+   ordinary `.card-lg` question card — zigzag across the top, sill at the
+   bottom — so a price is dressed like everything else on the site. */
+.hero__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-top: 26px;
+  color: var(--attic-500);
+  font-size: 16px;
+}
+.hero__price b {
+  color: var(--attic);
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.024em;
+  line-height: 1;
+}
+.hero__price span { color: var(--attic-400); }
+.hero__need {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--attic-400);
+  font-size: 13.5px;
+}
+.hero__need code { color: var(--attic-500); }
+
+.card-lg--gold { background: var(--helios-wash); border-color: var(--helios); }
+.card-lg--blue { background: var(--aegean-deep); border-color: var(--aegean-deep); }
+.card-lg--blue .card-lg__q,
+.card-lg--blue h3 { color: var(--marble); }
+.card-lg--blue p { color: #a9c6e6; }
+
+.price__fig {
+  margin-bottom: 4px;
+  color: var(--attic);
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 72;
+}
+.price__fig sup { font-size: 20px; vertical-align: super; letter-spacing: 0; }
+.price__terms { margin-bottom: 0; color: var(--attic-500); font-size: 14.5px; line-height: 1.5; }
+.price__list { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--stone); }
+.price__list li { font-size: 15px; }
+.price__cta { margin-top: 22px; }
+
+/* ── 15 Compare ─────────────────────────────────────────────────────────── */
+/* A real table, because the comparison is between two tools and a table is
+   the honest shape for that. It scrolls sideways on a phone rather than
+   reflowing into something that no longer means what it said. */
+.cmp__fig { margin: 0; }
+.cmp__scroll {
+  overflow-x: auto;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+}
+.cmp {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: 15.5px;
+}
+.cmp caption { padding: 16px 20px 0; text-align: left; }
+.cmp th,
+.cmp td {
+  padding: 15px 20px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--stone);
+}
+.cmp thead th {
+  background: var(--aegean-deep);
+  color: var(--marble);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+.cmp thead th small { display: block; font-family: var(--font); font-size: 12.5px; font-weight: 500; color: #a9c6e6; }
+.cmp thead th .cmp__corner { font-size: 11.5px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; }
+.cmp thead th.is-ours { background: var(--aegean); }
+.cmp thead th.is-ours small { color: var(--kyanos); }
+.cmp tbody th { width: 25%; color: var(--attic); font-weight: 600; }
+.cmp td { color: var(--attic-500); }
+.cmp td.is-ours { background: var(--helios-wash); color: var(--attic-500); }
+.cmp tbody tr:last-child th,
+.cmp tbody tr:last-child td { border-bottom: 0; }
+.cmp code { color: var(--attic); }
+.cmp__cap { margin-top: 16px; color: var(--attic-400); font-size: 13.5px; }
+
+/* ── 16 FAQ ─────────────────────────────────────────────────────────────── */
+/* `<details>` and nothing else: no script, no observer, no state to keep in
+   sync. The summary is the only control and it is a real one. */
+.faq { border-top: 1px solid var(--stone); }
+.faq__item { border-bottom: 1px solid var(--stone); }
+.faq__item > summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 21px 4px;
+  color: var(--attic);
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.8vw, 20px);
+  font-weight: 600;
+  line-height: 1.32;
+  letter-spacing: -0.014em;
+  cursor: pointer;
+  list-style: none;
+}
+.faq__item > summary::-webkit-details-marker { display: none; }
+.faq__item > summary::after {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin: 9px 2px 0 auto;
+  border-right: 2px solid var(--aegean);
+  border-bottom: 2px solid var(--aegean);
+  transform: rotate(45deg);
+  transition: transform 220ms var(--ease);
+}
+.faq__item[open] > summary::after { transform: rotate(225deg); margin-top: 13px; }
+.faq__a { padding: 0 40px 24px 4px; max-width: 70ch; color: var(--attic-500); font-size: 16.5px; }
+.faq__a > :first-child { margin-top: 0; }
+.faq__a p + p,
+.faq__a ul,
+.faq__a p + .note { margin-top: 14px; }
+.faq__a code { color: var(--attic); }
+.faq__a a { color: var(--aegean); }
+
+/* Thirteen questions stacked full-width made the block a tall thin-feeling wall, with
+   display-serif questions stretched far past a comfortable measure. Two columns turn it
+   into a single stone field and roughly halve its height. An item never splits across
+   the gutter, so an expanded answer stays whole. The container's own top rule is left
+   alone deliberately: it spans the full width above both columns, which is the header
+   line the block wants. */
+@media (min-width: 1000px) {
+  .faq {
+    columns: 2;
+    column-gap: clamp(32px, 5vw, 72px);
+  }
+  .faq__item {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+  }
+}
+
+/* ── 16b The closing band ───────────────────────────────────────────────── */
+/* The page used to end on a half-empty "read next" pager, which gave a visitor
+   who had just read the whole thing no action at all. This is the last thing
+   they see: the pitch restated, the price, and the two ways to act. It borrows
+   the dark blue of the compare header and the gold of the price figure, and it
+   sits directly above the footer's own zigzag, so it carries no bar of its own. */
+.decide {
+  position: relative;
+  background: var(--aegean-deep);
+  color: var(--marble);
+  overflow: hidden;
+}
+.decide::after {
+  /* A single gold rule, echoing the price figure, as the band's only ornament. */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--helios);
+}
+.decide__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: center;
+  padding-block: clamp(48px, 6vw, 82px);
+}
+.decide__pitch {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.022em;
+  margin: 0;
+  text-wrap: balance;
+}
+.decide__sub {
+  margin-top: 16px;
+  max-width: 46ch;
+  color: #a9c6e6;
+  font-size: 16.5px;
+}
+.decide__side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+.decide__fig {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.4vw, 52px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--helios);
+}
+.decide__fig sup { font-size: 0.5em; vertical-align: super; }
+.decide__terms { margin-top: 6px; color: #a9c6e6; font-size: 14.5px; }
+.decide__acts { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.decide .btn--primary { background: var(--helios); color: #2a2210; border-color: var(--helios); }
+.decide .btn--primary:hover { background: #f2c765; border-color: #f2c765; }
+.decide .btn--ghost { color: var(--marble); border-color: rgba(255, 255, 255, 0.34); background: transparent; }
+.decide .btn--ghost:hover { background: rgba(255, 255, 255, 0.1); }
+@media (max-width: 860px) {
+  .decide__grid { grid-template-columns: minmax(0, 1fr); }
+  .decide__side { align-items: stretch; }
+}
+
+/* ── 17 Prose ───────────────────────────────────────────────────────────── */
+/* The licence, the terms, the privacy policy and the refunds. Long-form
+   reading, so a narrow measure and generous leading, and nothing that
+   moves. */
+.prose { max-width: 70ch; }
+.prose h2 {
+  margin-top: clamp(40px, 4.4vw, 58px);
+  margin-bottom: 14px;
+  font-size: clamp(23px, 2.5vw, 30px);
+}
+.prose > h2:first-child,
+.prose > :first-child { margin-top: 0; }
+.prose h3 { margin-top: 28px; margin-bottom: 8px; font-size: 18px; }
+.prose p,
+.prose li { color: var(--attic-500); font-size: 16.5px; }
+.prose p + p,
+.prose p + ul,
+.prose p + ol,
+.prose ul + p,
+.prose h3 + p { margin-top: 15px; }
+.prose ul,
+.prose ol { display: grid; gap: 11px; margin-top: 15px; }
+.prose ol { counter-reset: clause; }
+.prose ol > li { counter-increment: clause; }
+.prose li { position: relative; padding-left: 26px; }
+.prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 11px;
+  height: 11px;
+  background: var(--helios);
+  border: 1px solid var(--aegean);
+  transform: rotate(45deg);
+}
+.prose ol > li::before {
+  content: counter(clause);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  color: var(--helios-ink);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+}
+.prose strong { color: var(--attic); }
+.prose code {
+  padding: 1px 5px;
+  background: var(--limestone);
+  border: 1px solid var(--stone);
+  border-radius: 2px;
+  color: var(--attic);
+}
+.prose .prose__meta {
+  margin-bottom: 34px;
+  padding-bottom: 22px;
+  border-bottom: 3px solid var(--helios);
+  color: var(--attic-400);
+  font-size: 14.5px;
+}
+.prose__toc { margin-top: 30px; }
+.prose__toc ul { margin-top: 12px; gap: 8px; }
+.prose__toc a { color: var(--aegean); }
+
+/* ── 18 Changelog ───────────────────────────────────────────────────────── */
+.rel { display: grid; gap: 26px; max-width: 860px; }
+.rel__item {
+  padding: 26px 28px 30px;
+  background: var(--marble);
+  border: 1px solid var(--stone);
+  border-radius: var(--r);
+}
+.rel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 16px;
+  margin-bottom: 18px;
+  padding-bottom: 15px;
+  border-bottom: 3px solid var(--helios);
+}
+.rel__v {
+  color: var(--attic);
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.024em;
+}
+.rel__date { color: var(--attic-400); font-size: 13.5px; }
+.rel__tag {
+  margin-left: auto;
+  padding: 2px 9px;
+  background: var(--helios-wash);
+  border: 1px solid var(--helios);
+  border-radius: var(--r);
+  color: var(--helios-ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.rel__item ul { display: grid; gap: 11px; }
+.rel__item li { position: relative; padding-left: 26px; color: var(--attic-500); font-size: 16px; }
+.rel__item li::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 8px;
+  width: 11px;
+  height: 11px;
+  background: var(--helios);
+  border: 1px solid var(--aegean);
+  transform: rotate(45deg);
+}
+.rel__item li strong { color: var(--attic); }
+.rel__item code { color: var(--attic); }
+.rel__item > p + p { margin-top: 14px; }
+.rel__item > p { color: var(--attic-500); font-size: 16px; }
+
+/* ── 19 Scrub ──────────────────────────────────────────────────────────── */
+/* A small, coordinated set of things is tied to scroll — deliberately not
+   38 independently-clocked blocks, which an earlier draft tried and which
+   read as a page twitching at you rather than being read.
+
+   1. The frieze. The rays turn, the temple settles and the three mountain
+      ranges drift at different rates, back to front, as the band passes —
+      all driven by the same `--p` the band writes.
+   2. The column. The gold fill and the marker run down it with page progress
+      (`--pg`), and it leans with signed velocity (`--vel`).
+   3. `.reveal` (10c below, and 20a): a single settle-in, applied to the
+      common content blocks — cards, panels, steps, the page head — on every
+      page. Once per element, driven by IntersectionObserver, not by a clock.
+
+   All three are either a pure function of scroll position (1 and 2, so
+   scrolling back up runs them backwards) or fire once and stop (3). Nothing
+   here loops forever off-screen and nothing re-triggers on every scroll. */
+.js .frieze {
+  transform: translate3d(calc(var(--p, 0) * -22px), 0, 0) scale(1.045);
+  transform-origin: 50% 62%;
+}
+.js .fr__rays { transform: rotate(calc(var(--p, 0) * 96deg)); }
+.js .fr__temple { transform: translate3d(0, calc((1 - var(--p, 0)) * 7px), 0); }
+/* The three ranges settle at different rates, back to front, so the same
+   pass that turns the rays and drops the temple also gives the mountains
+   depth instead of moving them as one flat sheet. */
+.js .fr__range--aether { transform: translate3d(0, calc((1 - var(--p, 0)) * 9px), 0); }
+.js .fr__range--kyanos { transform: translate3d(0, calc((1 - var(--p, 0)) * 15px), 0); }
+.js .fr__range--nave   { transform: translate3d(0, calc((1 - var(--p, 0)) * 22px), 0); }
+
+/* ── 20 Load motion ────────────────────────────────────────────────────── */
+/* The .js class is set by a blocking script in <head>, so everything gated
+   on it only ever applies when scripting is available. */
+.js .rise {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.js [data-hero].is-in .rise { opacity: 1; transform: none; }
+
+/* ── 20a Site-wide reveal ──────────────────────────────────────────────── */
+/* The home page's card grids already settle in as you reach them, driven by
+   scroll position (10c above). Every inner page has the same kind of content
+   — a page head, cards, a panel, a row of steps, an FAQ list — with nothing
+   like it at all: those blocks simply exist the moment the page renders.
+
+   `.reveal` is that same settle, generalised. Script adds the class to a
+   fixed list of content blocks and watches each with one IntersectionObserver,
+   which is the only thing that ever adds `.is-inview` — once, then it stops
+   watching. Opacity and transform only, per the performance rule elsewhere
+   in this file, so it costs nothing during the scroll it is tied to.
+   `--rd` is a short per-element stagger script sets once; it does nothing
+   until `.reveal` is present, so plain elements are never delayed. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 620ms var(--ease-out) var(--rd, 0ms),
+                transform 620ms var(--ease-out) var(--rd, 0ms);
+  }
+  .reveal.is-inview { opacity: 1; transform: none; }
+}
+
+.foot__brand svg { transition: transform 460ms var(--ease); }
+@media (hover: hover) {
+  .foot__brand:hover svg { transform: rotate(-9deg); }
+}
+
+/* The mobile menu is a plain block without scripting, so a phone with JS off
+   still gets working navigation and a dead button is never shown. */
+.js .mobilenav { display: none; }
+.js .mobilenav[data-open="true"] { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+  /* Nothing may be left half-played, and no ornament may stay clipped. */
+  .boot__seg,
+  .shot__boot::after { animation: none !important; }
+  .marquee__track { animation: none !important; }
+  .js .arch { transform: scaleX(1) !important; }
+  .js .rise { opacity: 1 !important; transform: none !important; }
+  .js .frieze,
+  .fr__rays,
+  .fr__temple,
+  .fr__range--aether,
+  .fr__range--kyanos,
+  .fr__range--nave,
+  .colonnade { transform: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .fillet::after { transform: scaleX(1) !important; }
+  .js .site__rule .zigbar { clip-path: none !important; }
+  .colonnade__gold { clip-path: none !important; }
+  .colonnade__marker { display: none; }
+  .card::before,
+  .card::after,
+  .card-lg::after { transform: scaleX(0) !important; }
+  .js .diff__row[data-seq] { opacity: 1 !important; transform: none !important; }
+  /* The FAQ chevron is a transform, and the download buttons translate on
+     hover. Neither is a scroll-linked effect, but both are motion, so they
+     go to their resting state along with everything else. */
+  .faq__item > summary::after { transform: rotate(45deg) !important; }
+  .faq__item[open] > summary::after { transform: rotate(225deg) !important; }
+  .btn:hover, .dlbtn:hover, .dlbtn.is-pick:hover { transform: none !important; }
+}
+
+/* ── 21 Responsive ─────────────────────────────────────────────────────── */
+@media (min-width: 1200px) {
+  .colonnade { display: flex; }
+}
+
+@media (max-width: 1080px) {
+  .hero__grid { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+  .hero__copy { max-width: 620px; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
+  .get__grid { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+}
+
+@media (max-width: 900px) {
+  body { font-size: 16.5px; }
+  .nav { display: none; }
+  .site__actions { margin-left: auto; }
+  .mobilenav { display: block; }
+  .js .navtoggle { display: grid; }
+  .cards--2, .cards--3 { grid-template-columns: minmax(0, 1fr); }
+  .steps::before { display: none; }
+  .foot__cols { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+}
+
+@media (max-width: 720px) {
+  .wrap { padding-inline: 20px; }
+  /* Three panes stop fitting side by side, so the window stacks. */
+  .shot__win { aspect-ratio: auto; height: 680px; }
+  .shot__body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr 1fr; }
+  .pane { border-right: 0; border-bottom: 1px solid var(--stone); }
+  .pane--tree { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-content: center; }
+  .pane--tree .pane__label,
+  .pane--tree .field { display: none; }
+  .tree { display: contents; }
+  .tree__row { padding: 8px; border: 1px solid var(--stone); }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .pager { grid-template-columns: minmax(0, 1fr); }
+  .foot__row { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .shot::after { display: none; }
+  .js .frieze { transform: none; }
+  .js .fr__temple { transform: none; }
+  .faq__a { padding-right: 4px; }
+  .panel { padding: 22px 20px 24px; }
+  .rel__item { padding: 22px 20px 24px; }
+  .cmp th, .cmp td { padding: 13px 16px; }
+}
+
+@media (max-width: 520px) {
+  :root { --bar-h: 66px; }
+  .site.is-stuck { --bar-h: 58px; }
+  .hero__cta { flex-direction: column; align-items: stretch; }
+  .hero__cta .btn { flex: 1 1 auto; justify-content: center; }
+  .hero__mark { width: 48px; height: 48px; }
+  .boot { width: 104px; }
+  /* At 360px the three download buttons stop fitting on one line, so each
+     one takes the full measure rather than wrapping mid-label. The bar's
+     own set is excluded: it is already hidden below 1080px and must not be
+     brought back by this rule. */
+  .dlset:not(.dlset--bar) { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .dlset:not(.dlset--bar) .dlbtn { justify-content: space-between; }
+  .get__fig { font-size: 52px; }
+}

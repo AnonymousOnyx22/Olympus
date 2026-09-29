@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refunds — Olympus</title>
+<meta name="description" content="Fourteen days from purchase, no questions asked, no form. How to ask, how long it takes, and the two situations where a refund is not the right answer.">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0a2f60">
+<meta name="robots" content="index, follow">
+
+<!-- ══ SITE CONSTANTS — every value here is a placeholder ═════════════════
+     The full block is in index.html. Every [SQUARE BRACKETED] value in the
+     body of this page is a placeholder and is listed in README.md.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<link rel="canonical" href="https://olympus.example.com/refunds.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Refunds — Olympus">
+<meta property="og:description" content="Fourteen days from purchase, no questions asked, no form. How to ask, how long it takes, and the two situations where a refund is not the right answer.">
+<meta property="og:url" content="https://olympus.example.com/refunds.html">
+<meta property="og:site_name" content="Olympus">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://olympus.example.com/assets/olympus-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on a plinth banded with a Greek key pattern, with snow-capped mountain ranges behind it — the artwork the whole Olympus site is taken from.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@olympusapp">
+<meta name="twitter:image" content="https://olympus.example.com/assets/olympus-og.jpg">
+<meta name="twitter:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on an inscribed plinth — the artwork the whole Olympus site is taken from.">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23ffc72c'%3E%3Cpath d='M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05'/%3E%3Ccircle cx='16' cy='13.5' r='9.8' fill='none' stroke='%23ffc72c' stroke-width='0.55'/%3E%3Cellipse cx='12.55' cy='7' rx='1' ry='0.4' transform='rotate(-30 12.55 7)'/%3E%3Cellipse cx='11.3' cy='7.9' rx='1' ry='0.4' transform='rotate(-6 11.3 7.9)'/%3E%3Cellipse cx='10.65' cy='9.05' rx='1' ry='0.4' transform='rotate(22 10.65 9.05)'/%3E%3Cellipse cx='19.45' cy='7' rx='1' ry='0.4' transform='rotate(30 19.45 7)'/%3E%3Cellipse cx='20.7' cy='7.9' rx='1' ry='0.4' transform='rotate(6 20.7 7.9)'/%3E%3Cellipse cx='21.35' cy='9.05' rx='1' ry='0.4' transform='rotate(-22 21.35 9.05)'/%3E%3C/g%3E%3Cg fill='%23fffdf6'%3E%3Ccircle cx='16' cy='13.5' r='9.55'/%3E%3C/g%3E%3Cg fill='%230a2f60'%3E%3Cpath d='M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z'/%3E%3Cpath d='M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z'/%3E%3Cellipse cx='16' cy='8.6' rx='2.75' ry='3.05'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script>document.documentElement.className += ' js';</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="colonnade" data-colonnade aria-hidden="true">
+  <span class="colonnade__capital"></span>
+  <span class="colonnade__shaft">
+    <span class="colonnade__flutes"></span>
+    <span class="colonnade__gold"></span>
+    <span class="colonnade__marker"></span>
+  </span>
+  <span class="colonnade__base"></span>
+</div>
+
+<header class="site" id="site-bar">
+  <div class="site__bar">
+    <div class="wrap site__row">
+      <a class="lockup" href="index.html" aria-label="Olympus, home">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="lockup__mark"><g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g></svg>
+        <span class="lockup__word">Olympus</span>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="features.html">Features</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="security.html">Security</a>
+        <a href="requirements.html">Requirements</a>
+      </nav>
+
+      <div class="site__actions">
+        <div class="dlset dlset--bar" data-dlset>
+          <a class="dlbtn dlbtn--sm" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg" aria-label="Download Olympus for macOS, Apple Silicon build"><span class="dlbtn__tag">Yours</span>macOS</a>
+          <a class="dlbtn dlbtn--sm" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe" aria-label="Download Olympus for Windows, 10 and 11"><span class="dlbtn__tag">Yours</span>Windows</a>
+          <a class="dlbtn dlbtn--sm" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage" aria-label="Download Olympus for Linux, 64-bit"><span class="dlbtn__tag">Yours</span>Linux</a>
+        </div>
+        <a class="btn btn--primary btn--sm dlbar__one" data-track="cta" href="pricing.html#buy">Download</a>
+        <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+          <svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="site__rule">
+      <span class="zigbar" aria-hidden="true"></span>
+      <span class="site__progress" aria-hidden="true"></span>
+    </div>
+
+    <div class="mobilenav" id="mobile-nav" data-open="false">
+      <nav aria-label="Primary, mobile">
+        <a href="index.html">Home</a>
+        <a href="features.html">Features</a>
+        <a href="how-it-works.html">How it works</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="security.html">Security</a>
+        <a href="requirements.html">Requirements</a>
+        <a href="index.html#faq">Questions</a>
+        <a href="changelog.html">Changelog</a>
+        <a class="btn btn--primary" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="pagehead">
+    <div class="wrap">
+      <p class="eyebrow">The small print</p>
+      <h1>Refunds</h1>
+      <p class="lede">Fourteen days. No questions, no form, no retention script. This is the shortest page on the site because there is not much to say.</p>
+      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Refunds</span></p>
+    </div>
+  </div>
+
+  <section class="section section--tint" id="refunds" data-scrub aria-labelledby="refunds-h">
+    <div class="wrap">
+      <div class="sec__head sec__head--fill">
+        <p class="eyebrow">The promise</p>
+        <h2 id="refunds-h">Ask within 14 days, get your money back</h2>
+        <p class="lede">One condition: you bought it. Nothing else is required, and we will not ask you to justify it.</p>
+        <span class="fillet" aria-hidden="true"></span>
+      </div>
+
+      <div class="cards cards--2">
+        <article class="card-lg card-lg--gold">
+          <h3>What you get</h3>
+          <ul class="ticks price__list">
+            <li><strong>All of it back.</strong> The full $49, not a pro-rated remainder, not a credit.</li>
+            <li><strong>No reason needed.</strong> You will not be asked what went wrong.</li>
+            <li><strong>No form.</strong> One email is the entire process.</li>
+            <li><strong>Back to the original method.</strong> Card, bank transfer, whatever you paid with.</li>
+            <li><strong>Your licence ends</strong> and you stop using the software. We do not mind, and we do not follow up to find out why.</li>
+          </ul>
+        </article>
+        <article class="card-lg">
+          <h3>How to ask</h3>
+          <p>Email <a href="mailto:support@example.com">support@example.com</a> from the address you bought with, put &ldquo;refund&rdquo; in the subject, and say which purchase. That is the whole thing.</p>
+          <ul class="ticks price__list">
+            <li>We acknowledge within <strong>three working days</strong>.</li>
+            <li>The refund is issued within <strong>five working days</strong> of that.</li>
+            <li>It then takes your bank as long as it takes, which is outside our control and is the only part of this you may have to wait for.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="prose" style="margin-top:clamp(38px,4.4vw,54px)">
+        <h2>What the 14 days are for</h2>
+        <p>Mostly for the <a href="requirements.html#opencode">opencode compatibility risk</a>. Olympus depends on somebody else&rsquo;s fast-moving project, and 0.1.0 is tested against <code>opencode 1.18.x</code>. A fortnight is enough time to open a real project, run a real task and find out whether the thing works for you. If it does not, that is a bad outcome for you and a full refund is the correct response to it.</p>
+        <p>It is also enough time to notice that the app is not something you want, which is a perfectly good reason on its own.</p>
+
+        <h2>What is not refundable</h2>
+        <ul>
+          <li><strong>After 14 days.</strong> Past the window we cannot refund a purchase. We would rather say that plainly than leave it implied.</li>
+          <li><strong>The free build.</strong> It was never paid for, so there is nothing to return.</li>
+          <li><strong>Third-party costs.</strong> Your opencode licence, your model server, your provider&rsquo;s tokens and your electricity are not part of this purchase and cannot be refunded by us.</li>
+        </ul>
+
+        <h2>What happens after 14 days</h2>
+        <p>Two things, and it is better to know about both before you buy.</p>
+        <ul>
+          <li><strong>If the software is broken.</strong> Email <a href="mailto:support@example.com">support@example.com</a>. A defect that makes the software unusable is not a matter of taste and we will treat it as one. We cannot commit in advance to how many of these there will be, and we would rather not write a promise we cannot keep.</li>
+          <li><strong>If we are not maintaining it.</strong> Your licence is perpetual: the build keeps running, the <a href="changelog.html">changelog</a> stays published, and the version of <code>opencode</code> it worked with stays installable. A licence that stops working because the maintainer lost interest is a worse product than one that is never sold, and it is not what this is.</li>
+        </ul>
+
+        <h2>Where refunds are not the right answer</h2>
+        <p>If you want a different operating system build, or a licence for a colleague, or a major-version upgrade when one exists, that is a new purchase rather than a refund &mdash; <a href="pricing.html">see pricing</a>, and email if the situation does not fit any of the cases on it.</p>
+        <p>Volume purchases of two or more licences are refundable on the same 14-day terms, all of them together or none of them. Splitting a purchase to keep some seats and return others is not a thing we will do.</p>
+
+        <h2>Statutory rights</h2>
+        <p>Nothing on this page limits any right you have under the consumer law that applies to you, and where such a right gives you more than 14 days, it still applies. Where the law requires a mandatory notice or a prescribed form, that takes precedence over this page. [PLACEHOLDER &mdash; a consumer-facing app sold direct to individuals in the EU, UK, Australia or California will have statutory cooling-off and disclosure duties that this draft does not yet satisfy. Have this section reviewed for the selling jurisdiction before launch.]</p>
+
+        <h2>Contact</h2>
+        <p><a href="mailto:support@example.com">support@example.com</a>. [LEGAL NAME], [REGISTERED ADDRESS].</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="pager-h">
+    <div class="wrap">
+      <h2 id="pager-h" class="visually-hidden">Other documents</h2>
+      <div class="pager">
+        <a href="privacy.html">
+          <small>Previous</small>
+          <strong>Privacy</strong>
+        </a>
+        <a class="is-next" href="index.html">
+          <small>Next</small>
+          <strong>Home</strong>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer class="foot">
+  <div class="wrap foot__row">
+    <div class="foot__brand">
+      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
+      </svg>
+      <span class="lockup__word">Olympus</span>
+    </div>
+
+    <nav class="foot__nav" aria-label="Footer">
+      <a href="features.html">Features</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="security.html">Security</a>
+      <a href="requirements.html">Requirements</a>
+      <a href="changelog.html">Changelog</a>
+    </nav>
+  </div>
+
+  <div class="wrap foot__cols">
+    <div class="foot__col">
+      <p class="foot__colh">Support</p>
+      <ul>
+        <li><a href="https://docs.example.com/olympus">Documentation</a></li>
+        <li><a href="mailto:support@example.com">support@example.com</a></li>
+        <li><a href="changelog.html">Changelog</a></li>
+        <li>Report a security problem: email <a href="mailto:security@example.com">security@example.com</a>. Please do not open a public issue for anything exploitable &mdash; a public issue is a disclosure.</li>
+      </ul>
+    </div>
+    <div class="foot__col">
+      <p class="foot__colh">The small print</p>
+      <ul>
+        <li><a href="license.html" aria-current="page">Licence</a></li>
+        <li><a href="terms.html">Terms of sale</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="refunds.html">Refunds</a></li>
+      </ul>
+    </div>
+    <div class="foot__col">
+      <p class="foot__colh">What this is</p>
+      <ul>
+        <li>A desktop app for the <code>opencode</code> agent. It runs on your machine, against models you already run.</li>
+        <li>opencode is a separate third-party project. Olympus is not affiliated with it and is not endorsed by it.</li>
+        <li>Nothing on this site collects anything about you. There is no tracker in the app and none in these pages.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap foot__legal">
+    <p>&copy; 2026 Olympus. A one-time-purchase desktop licence, sold by an individual. Placeholder legal entity and jurisdiction &mdash; see <a href="terms.html">terms</a>.</p>
+    <p>Olympus sends no telemetry and runs no server.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

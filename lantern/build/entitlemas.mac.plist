@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Inherited (helper) entitlements for Olympus.
+
+  electron-builder's `mac.entitlementsInherit` points here. macOS applies this
+  file to every Chrome Helper process Electron spawns: the GPU process, the
+  network service, the renderer processes, and the utility processes.
+
+  The important difference from the main app's entitlements is `disable-library-
+  validation`. Electron's helper processes load the Chromium framework
+  dylibs and, in a packaged app, they load them from a path that is not
+  signed by the same identity as the outer bundle. Under hardened runtime the
+  kernel refuses to load a dylib signed by a different team, and every helper
+  dies with SIGKILL — which presents to the user as "the app opens a window and
+  then goes blank". This key is the documented, Apple-sanctioned exception for
+  exactly that situation, and it is required for Electron's multi-process model
+  to work at all under the hardened runtime.
+
+  Everything else is deliberately absent for the same reasons given in
+  entitlements.mac.plist: no camera, no microphone, no location, and no
+  App Sandbox network keys (loopback-only traffic needs no entitlement, and
+  Olympus is not sandboxed because it must spawn processes and touch the
+  user's filesystem).
+
+  If you add native Node addons later, you will also need
+  com.apple.security.cs.allow-dyld-environment-variables only for development
+  builds; never ship that.
+-->
+<plist version="1.0">
+  <dict>
+    <key>com.apple.security.cs.allow-jit</key>
+    <true/>
+    <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+  </dict>
+</plist>

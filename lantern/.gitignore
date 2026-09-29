@@ -1,0 +1,31 @@
+node_modules
+dist
+dist-electron
+release
+
+# TypeScript incremental build info. tsconfig.json is noEmit today, so this
+# only appears if a future change turns on incremental compilation.
+*.tsbuildinfo
+
+# Lint
+.eslintcache
+
+# electron-builder also writes to out/ when a build config overrides the
+# output directory, and leaves the unpacked app there on a failed build.
+out/
+
+# Auto-update metadata. electron-builder generates these into the release
+# directory; they are build artifacts, never source.
+*.blockmap
+latest*.yml
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+
+# NOTE: build/entitlemas.mac.plist and build/entitlements.mac.plist are
+# deliberately NOT ignored. They are source — electron-builder reads them to
+# sign the macOS app, and an unsigned build is a Gatekeeper failure. Ignoring
+# them by accident is the kind of thing that only shows up on a release day,
+# so `build/icon.*` and `build/*.plist` are tracked.

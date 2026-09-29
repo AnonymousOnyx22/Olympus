@@ -1,0 +1,10 @@
+# Olympus — https://olympus.example.com/
+# TODO before launch: replace the Sitemap URL with the real origin.
+
+User-agent: *
+Allow: /
+
+# Nothing here is behind a login, nothing is a duplicate, and there is no
+# crawl-delay worth setting: these are eleven static files.
+
+Sitemap: https://olympus.example.com/sitemap.xml
