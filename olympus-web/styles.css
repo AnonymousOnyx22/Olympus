@@ -566,7 +566,7 @@ a:hover { text-decoration-color: currentColor; }
    ridge. Each cluster drifts on its own slow clock — the one ambient motion
    in the frieze that runs on a timer rather than on scroll, because it is
    weather, not a reaction to anything the reader does. */
-.fr__cloud { fill: var(--sky-hi); opacity: 0.9; transform-box: view-box; }
+.fr__cloud { fill: var(--marble); opacity: 0.94; transform-box: view-box; }
 @media (prefers-reduced-motion: no-preference) {
   .fr__cloud--a { animation: cloud-drift 46s var(--ease) infinite; }
   .fr__cloud--b { animation: cloud-drift 58s var(--ease) infinite reverse; }
@@ -2392,11 +2392,22 @@ button:focus-visible,
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
     opacity: 0;
-    transform: translateY(26px);
-    transition: opacity 620ms var(--ease-out) var(--rd, 0ms),
-                transform 620ms var(--ease-out) var(--rd, 0ms);
+    transform: translateY(42px) scale(0.985);
+    transition: opacity 700ms var(--ease-out) var(--rd, 0ms),
+                transform 700ms var(--ease-out) var(--rd, 0ms);
   }
   .reveal.is-inview { opacity: 1; transform: none; }
+
+  /* A section heading gets the longer travel of the two: it is the thing a
+     reader's eye lands on first as a block scrolls up, so it is the thing
+     worth moving. The rule under it draws across afterwards rather than
+     arriving already drawn. */
+  .reveal.sec__head { transform: translateY(58px); }
+  .reveal.sec__head .fillet::after { transform: scaleX(0); }
+  .reveal.sec__head.is-inview .fillet::after {
+    transform: scaleX(1);
+    transition: transform 720ms var(--ease-out) 240ms;
+  }
 }
 
 .foot__brand svg { transition: transform 460ms var(--ease); }
