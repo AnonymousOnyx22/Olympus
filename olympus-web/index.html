@@ -173,11 +173,16 @@
 
 <main id="main">
 
-  <!-- ── Hero ─────────────────────────────────────────────────────── -->
-  <section class="hero" id="overview" data-hero>
+  <!-- ── Hero ──────────────────────────────────────────────────────────
+       The first room, and the only one that owns a whole viewport. Dark
+       ground, because the window illustration is the brightest thing the
+       site has and it should be the thing that is lit. The window is cut
+       by the right edge on purpose: a thing that continues off screen is a
+       better invitation to keep going than an arrow pointing down. -->
+  <section class="chamber chamber--dark chamber--full hero" id="overview" data-hero>
     <div class="hero__key" aria-hidden="true"></div>
 
-    <div class="wrap hero__grid">
+    <div class="wrap hero2__grid">
       <div class="hero__copy">
         <div class="hero__brand rise" style="--i:0">
           <svg class="hero__mark" width="58" height="58" viewBox="0 0 32 32" fill="none" aria-hidden="true">
@@ -186,24 +191,20 @@
           <span class="boot" aria-hidden="true"><span class="boot__seg"></span></span>
         </div>
         <p class="eyebrow rise" style="--i:1">A desktop harness for local coding agents</p>
-        <h1 class="rise" style="--i:2">Olympus</h1>
-        <span class="arch" aria-hidden="true"></span>
-        <p class="hero__lede rise" style="--i:3">A local-first desktop harness for local coding agents, running <strong>opencode</strong> today, for developers running models on their own machine.</p>
+        <h1 class="mega rise" style="--i:2">Olympus</h1>
+        <p class="mega__lede rise" style="--i:3">Your agent already works. This is the window that shows you it working, on your machine, against your models.</p>
 
-        <div class="hero__cta rise" style="--i:4">
-          <div class="dlset" data-dlset>
-            <a class="dlbtn dlbtn--go" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg"><span class="dlbtn__tag">Yours</span>macOS</a>
-            <a class="dlbtn dlbtn--go" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe"><span class="dlbtn__tag">Yours</span>Windows</a>
-            <a class="dlbtn dlbtn--go" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage"><span class="dlbtn__tag">Yours</span>Linux</a>
-          </div>
-          <a class="btn btn--ghost" data-track="cta" href="#pricing">Buy a licence</a>
+        <div class="hero2__cta rise" style="--i:4">
+          <a class="cta-bar" data-track="download" href="https://downloads.example.com/olympus/0.1.0/">
+            Download Olympus, free
+          </a>
+          <p class="cta-bar__note"><b>$49</b> once, per seat, when you want the updates. Free to try with no card, no account and no time limit.</p>
         </div>
 
-        <p class="hero__price rise" style="--i:5"><b>$49</b> <span>once, per seat</span> <span>&middot;</span> <span>free to try first</span> <span>&middot;</span> <span>14-day refund</span></p>
-        <p class="hero__need rise" style="--i:5">You need <code>Node 18+</code>, <code>opencode</code> on your PATH, and a model already running locally. <a href="requirements.html">All four prerequisites</a>.</p>
+        <p class="hero2__meta rise" style="--i:5">Runs <code>opencode</code> today, Kilo next. You need <code>Node 18+</code>, the agent on your PATH, and a model already running locally. <a href="requirements.html">All four prerequisites</a>.</p>
       </div>
 
-      <figure class="shot rise" style="--i:5" data-tilt>
+      <figure class="shot hero2__shot rise" style="--i:5" data-tilt>
         <div class="shot__win" role="img" data-shot data-state="idle" aria-label="Stylised illustration of the Olympus window: a project tree on the left, an agent transcript in the middle with an edit waiting for your approval, and an embedded preview of a local dev server on the right. The illustration replays an approval on a loop.">
 
           <div class="shot__boot"></div>
@@ -294,16 +295,19 @@
       </figure>
 
     </div>
+  </section>
 
-    <!-- ── The frieze ────────────────────────────────────────────────
-         Drawn from the artwork rather than photographed from it: pale sky,
-         a radiant gold sun, three mountain ranges in flat blues, a warm
-         stone ridge, a marble temple, cypresses, dark foreground.
+  <!-- ── The frieze ──────────────────────────────────────────────────────
+       Drawn from the artwork rather than photographed from it: pale sky,
+       a radiant gold sun, three mountain ranges in flat blues, a warm
+       stone ridge, a marble temple, cypresses, dark foreground.
 
-         The rays turn and the band drifts as you scroll, and both run
-         backwards when you scroll back up. This is the one ornament on the
-         site that listens to scroll. -->
-    <figure class="hero__band rise" style="--i:6" data-scrub="hold">
+       It sits between the first room and the second rather than inside
+       either, so it reads as the ground the hero stands on and the horizon
+       the next room opens onto. The rays turn, the ranges drift at three
+       different rates and the band slides as you scroll, and all of it runs
+       backwards when you scroll back up. -->
+    <figure class="hero__band" data-scrub="hold">
       <svg class="frieze" viewBox="0 0 1400 428" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="frieze-cap">
         <title id="frieze-cap">A radiant sun rising behind a marble temple on a warm stone ridge, with three mountain ranges behind it and cypresses in front.</title>
         <defs>
@@ -372,12 +376,10 @@
       <figcaption class="visually-hidden">The frieze the whole site is drawn from.</figcaption>
     </figure>
 
-    <span class="zigbar hero__zig" aria-hidden="true"></span>
-  </section>
-
   <!-- ── Provider marquee ───────────────────────────────────────────────
-       A static running frieze. It used to answer scroll velocity, which
-       made it lurch every time the page moved. -->
+       The threshold strip between two rooms. A static running frieze: it
+       used to answer scroll velocity, which made it lurch every time the
+       page moved. -->
   <div class="marquee">
     <p class="visually-hidden">Runs against local model servers you are already running: Ollama, LM Studio, vLLM, llama.cpp, any loopback OpenAI-compatible server.</p>
     <div class="marquee__track" aria-hidden="true">

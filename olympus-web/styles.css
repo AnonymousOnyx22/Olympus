@@ -414,19 +414,20 @@ a:hover { text-decoration-color: currentColor; }
 .hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(44px, 5vw, 72px) 0;
 }
 
 /* The zigzag, printed flat across the whole hero as texture rather than as
-   a picture. Static: it is the page's wallpaper, not an animation. */
+   a picture. Static: it is the page's wallpaper, not an animation. On the
+   dark ground it is a faint gold weave rather than a pale one, and it is
+   dialled right down: at full strength on navy it reads as noise. */
 .hero__key {
   position: absolute;
   inset: -70px 0;
   z-index: 0;
-  background-image: var(--zig-marble);
+  background-image: var(--zig-gold);
   background-repeat: repeat-x;
   background-size: 36px var(--zig-h);
-  opacity: 0.34;
+  opacity: 0.07;
   pointer-events: none;
 }
 
@@ -449,10 +450,9 @@ a:hover { text-decoration-color: currentColor; }
   gap: 16px;
   margin-bottom: 26px;
 }
-.hero__mark { position: relative; width: 58px; height: 58px; }
-.hero__mark .mk__temple { fill: var(--aegean); }
-.hero__mark .mk__bust { fill: var(--marble); }
-.hero__mark .mk__step { fill: var(--helios); }
+/* The hero ground is dark now, so the mark takes the default pairing: a
+   marble disc with the head cut out of it in navy. No override needed. */
+.hero__mark { position: relative; width: 62px; height: 62px; }
 /* A slow, quiet breath of gold behind the medallion, the one thing in the
    hero that moves without being asked to, so the page feels alive before
    anyone scrolls or points at anything. */
@@ -2469,9 +2469,243 @@ button:focus-visible,
   .btn:hover, .dlbtn:hover, .dlbtn.is-pick:hover { transform: none !important; }
 }
 
+/* ── 20b Chambers ──────────────────────────────────────────────────────── */
+/* The home page used to be nine blocks of the same shape: a centred column
+   with a card grid under it, nine times. No amount of styling fixes that,
+   because the problem is that every block asks for the same amount of
+   attention in the same way, so the eye stops registering the boundaries.
+
+   A chamber is one full-bleed room doing one job, with its own ground.
+   They alternate light and dark down the page, so scrolling reads as moving
+   between rooms rather than down a column, and the boundary between two of
+   them is doing the work an ornament used to be asked to do. */
+.chamber {
+  position: relative;
+  padding-block: clamp(78px, 10vw, 136px);
+}
+/* A room that owns the whole viewport. `svh` rather than `vh` so a phone's
+   collapsing address bar does not crop the action out of the first screen. */
+.chamber--full {
+  display: grid;
+  align-content: center;
+  /* The header is fixed and `body` already reserves its height, so a full
+     room is the viewport minus that reservation. Without the subtraction
+     the first screen is always one header taller than the screen. */
+  min-height: calc(100svh - var(--bar-h) - var(--zig-h));
+  padding-block: clamp(32px, 4vw, 56px);
+}
+.chamber--dark {
+  background: var(--aegean-deep);
+  color: #bcd4ee;
+}
+.chamber--dark h1,
+.chamber--dark h2,
+.chamber--dark h3,
+.chamber--dark strong { color: var(--marble); }
+.chamber--dark .eyebrow { color: var(--helios); }
+.chamber--dark code { color: var(--kyanos); background: rgba(255, 255, 255, 0.08); }
+/* Links in a dark room go gold. The action bar is excluded: it is already a
+   gold field, and gold on gold is an invisible button. */
+.chamber--dark a:not(.btn):not(.dlbtn):not(.cta-bar) { color: var(--helios); }
+.chamber--tint { background: var(--limestone); }
+
+/* The seam between two rooms. A single gold rule, because the zigzag is
+   already doing enough work elsewhere on the page. */
+.chamber + .chamber { border-top: 3px solid var(--helios); }
+
+/* Display type, the one place on the site that is allowed to be loud.
+   `--mega` tracks the viewport hard: at phone width it is still the biggest
+   thing on screen, and on a wide display it is deliberately enormous. */
+.mega {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(66px, 13.5vw, 188px);
+  font-weight: 600;
+  line-height: 0.84;
+  letter-spacing: -0.045em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 144;
+  text-wrap: balance;
+}
+.chamber--dark .mega { color: var(--marble); }
+
+/* The lede under a mega: set larger than body copy and held to a short
+   measure, so it reads as part of the statement rather than as paragraph. */
+.mega__lede {
+  max-width: 30ch;
+  margin-top: clamp(20px, 2.4vw, 30px);
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.5;
+}
+
+/* One action, full width of its column, impossible to miss. Lifted from the
+   single-button layouts that make a one-job screen work. */
+.cta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 62px;
+  padding: 0 28px;
+  background: var(--helios);
+  border: 1px solid var(--helios);
+  border-radius: var(--r);
+  color: var(--attic);
+  font-family: var(--font-display);
+  font-size: clamp(17px, 1.8vw, 20px);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  text-decoration: none;
+  transition: background-color 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+.cta-bar:hover { background: #ffd457; }
+.cta-bar:active { transform: scale(0.99); }
+.cta-bar__note {
+  margin-top: 12px;
+  font-size: 14.5px;
+  color: var(--attic-400);
+}
+.chamber--dark .cta-bar__note { color: #8fb0d4; }
+
+/* Hero. The wordmark takes the left, the window bleeds off the right edge.
+   The crop is the point: a window cut by the viewport reads as a thing that
+   continues, which is a better invitation to scroll than an arrow. */
+.hero2__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 56px);
+}
+.hero2__cta { margin-top: clamp(26px, 3vw, 38px); max-width: 430px; }
+.hero2__meta {
+  margin-top: 22px;
+  max-width: 44ch;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #8fb0d4;
+}
+.hero2__meta code { font-size: 13px; }
+/* An earlier pass ran the window off the right edge of the viewport, which
+   looked confident and cropped away the approval card, which is the one
+   thing the illustration exists to show. It stays whole. The dark ground
+   around it is doing the work the crop was supposed to do. */
+.hero2__shot {
+  margin: 0;
+  /* Runs out to the viewport edge and stops there. Touching the edge reads
+     as a window that belongs to the screen rather than to the column.
+     A percentage margin would resolve against this grid column rather than
+     against the wrap, which over-pulls, so the gap is measured directly:
+     half the difference between the wrap and the viewport, and never
+     positive, so a narrow screen is left alone. */
+  margin-right: min(0px, calc((var(--wrap) - 100vw) / 2 + 24px));
+}
+.hero2__shot figcaption { display: none; }
+/* The offset block behind the window is a pale blue on a pale page. On navy
+   it has to be the gold, or it disappears and the window looks unmoored. */
+.chamber--dark .shot::after {
+  background: transparent;
+  border-color: var(--helios);
+}
+@media (hover: hover) {
+  .chamber--dark .shot:hover .shot__win { box-shadow: 14px 14px 0 rgba(255, 199, 44, 0.22); }
+}
+/* The boot bar beside the mark is a pale track on a pale ground. On navy it
+   needs its own pairing or it reads as a stray scratch. */
+.chamber--dark .boot { background: rgba(255, 255, 255, 0.16); }
+.chamber--dark .boot__seg { background: var(--helios); }
+
+/* A question band. One giant question, one answer, full width, alternating
+   sides. Three of these replace three cards in a row: same three ideas, but
+   each one now gets a whole screen's worth of attention instead of a third
+   of a row. */
+.band {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(24px, 5vw, 80px);
+  padding-block: clamp(56px, 7vw, 96px);
+}
+.band + .band { border-top: 1px solid var(--stone); }
+.chamber--dark .band + .band { border-top-color: rgba(255, 255, 255, 0.16); }
+.band__n {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--helios-ink);
+}
+.chamber--dark .band__n { color: var(--helios); }
+.band__q {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4.6vw, 62px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 100;
+  text-wrap: balance;
+}
+.band__a {
+  font-size: clamp(16.5px, 1.7vw, 19px);
+  line-height: 1.6;
+  color: var(--attic-500);
+}
+.chamber--dark .band__a { color: #bcd4ee; }
+.band__a strong { color: var(--attic); }
+.chamber--dark .band__a strong { color: var(--marble); }
+.band--flip .band__head { order: 2; }
+.band--flip .band__a { order: 1; }
+
+/* The price room. One number, the size of a building. */
+.figure-huge {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(96px, 19vw, 250px);
+  font-weight: 600;
+  line-height: 0.8;
+  letter-spacing: -0.05em;
+  font-variation-settings: "SOFT" 0, "WONK" 1, "opsz" 144;
+}
+.figure-huge sup {
+  font-size: 0.36em;
+  vertical-align: super;
+  letter-spacing: -0.02em;
+}
+.figure-unit {
+  display: block;
+  margin-top: 18px;
+  font-family: var(--font-display);
+  font-size: clamp(19px, 2.2vw, 26px);
+  letter-spacing: -0.01em;
+}
+
+/* The transcript room keeps the lights off, so the panel is the only lit
+   thing on screen. Same component as before, different ground. */
+.chamber--night { background: var(--attic); color: #b8b2a3; }
+.chamber--night h2 { color: var(--marble); }
+.chamber--night .eyebrow { color: var(--helios); }
+.chamber--night .lede { color: #b8b2a3; }
+.chamber--night .tr { box-shadow: 0 40px 90px rgba(0, 0, 0, 0.45); }
+
 /* ── 21 Responsive ─────────────────────────────────────────────────────── */
 @media (min-width: 1200px) {
   .colonnade { display: flex; }
+}
+
+@media (max-width: 1080px) {
+  .hero2__grid { grid-template-columns: minmax(0, 1fr); }
+  .hero2__shot { margin-right: 0; }
+  .hero2__cta { max-width: none; }
+}
+
+@media (max-width: 760px) {
+  .band { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .band--flip .band__head { order: 0; }
+  .band--flip .band__a { order: 1; }
+  .chamber--full { min-height: 0; }
 }
 
 @media (max-width: 1080px) {
