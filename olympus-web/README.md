@@ -63,10 +63,10 @@ These are bracketed in the body text of the four legal pages, and the whole
 set of them needs a lawyer or at least a competent review before a licence is
 sold:
 
-- `[LEGAL NAME]` — the selling individual or entity. `license.html`, `terms.html`, `privacy.html`, `refunds.html`
-- `[REGISTERED ADDRESS]` — same pages
-- `[REGISTERED ADDRESS FOR SERVICE OF PROCESS]` — `terms.html` section 13, `license.html` section 12
-- `[THE LICENSOR]` / `[THE SELLER]` — defined-term shorthands in `license.html` and `terms.html`
+- `[LEGAL NAME]`: the selling individual or entity. `license.html`, `terms.html`, `privacy.html`, `refunds.html`
+- `[REGISTERED ADDRESS]`: same pages
+- `[REGISTERED ADDRESS FOR SERVICE OF PROCESS]`: `terms.html` section 13, `license.html` section 12
+- `[THE LICENSOR]` / `[THE SELLER]`: defined-term shorthands in `license.html` and `terms.html`
 - Selling jurisdiction, and the statutory-rights carve-outs in `license.html` sections 5 and 6, `terms.html` section 8, `privacy.html` section 8, and the consumer-law paragraph in `refunds.html`
 - The data-controller identity and any named representative or regulator, `privacy.html` section 1
 - Retention period for tax records, `privacy.html` section 4
@@ -77,7 +77,7 @@ sold:
 
 - `1.18.x` is stated as the known-good `opencode` line in `index.html`, `requirements.html`, `changelog.html` and `refunds.html`. Check it against the shipped build before publishing.
 - `0.1.0` and the dates `2026-09-28` / `2026-09-29` in `changelog.html`, `sitemap.xml` and the four legal pages. The changelog has exactly one entry and no invented history, which is deliberate.
-- The "known rough edges" list in `changelog.html` — that has to be true.
+- The "known rough edges" list in `changelog.html`: that has to be true.
 
 ### Favicons
 
@@ -130,7 +130,7 @@ it coherent, so that future edits do not break it:
 
 1. **No new colours.** Every colour is a custom property in `styles.css`
    section 01, lifted from that drawing. No hex literals outside section 01
-   and the frieze SVG, no gradients anywhere, and no red — the palette has no
+   and the frieze SVG, no gradients anywhere, and no red, the palette has no
    red in it, so a "not included" mark is a struck stone rule, not a cross.
 2. **Carved stone, not moulded plastic.** `--r: 3px` and nothing softer.
 3. **Flat fields only.** Solid fills and cut outlines. The only shadow in the
@@ -142,7 +142,7 @@ it coherent, so that future edits do not break it:
    `JetBrains Mono` for code. Loaded from Google Fonts, which is the single
    third-party request the site makes.
 6. **Scroll is the only clock.** Animation is a pure function of scroll
-   position — `--p` per element, `--pg` for page progress — so scrolling up
+   position, `--p` per element, `--pg` for page progress, so scrolling up
    plays the page backwards. `script.js` sets those two properties and
    nothing else; every visual is CSS. New sections are annotated
    `data-scrub` and the gold run on their heading fillet is the one thing that
@@ -172,7 +172,7 @@ Events currently emitted: `download` (with `props.os`), `cta`, `nav` (with
 `props.to` and `props.label`), and `faq_open` (with `props.question` and
 `props.label`) when an FAQ `<details>` is opened.
 
-To wire a tool in later, add one listener in `script.js` — do not edit the
+To wire a tool in later, add one listener in `script.js`, do not edit the
 call sites:
 
 ```js

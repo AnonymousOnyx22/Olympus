@@ -1,10 +1,10 @@
 /* ==========================================================================
-   Olympus — "Pigment from the artwork"
+   Olympus: "Pigment from the artwork"
 
    Every colour and every shape on this page is taken from one drawing: a
    radiant gold sun over a marble temple on a warm stone ridge, with three
    mountain ranges behind it in flat blues. Nothing here is a photograph and
-   nothing here is a gradient — the look is built from flat fields, cut
+   nothing here is a gradient, the look is built from flat fields, cut
    outlines and one repeating zigzag bar, the way a painted Attic frieze is
    built from a stock of shapes rather than from shading.
 
@@ -23,7 +23,7 @@
 /* ── 01 Tokens ─────────────────────────────────────────────────────────── */
 :root {
   /* Stone and paper. Warmer and a touch deeper than a first pass at "marble
-     white" — a page that is nearly pure white for this much surface area
+     white", a page that is nearly pure white for this much surface area
      reads as glare rather than as stone. */
   --marble: #f6f1e6;
   --limestone: #ece1c9;
@@ -75,8 +75,12 @@
   --base: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='16'%3E%3Cpath d='M0 0h34v4H0z' fill='%230b4a9b'/%3E%3Cpath d='M0 4h34v2H0z' fill='%23ffc72c'/%3E%3Cpath d='M8 6h18l3 7H5z' fill='%230a2f60'/%3E%3Cpath d='M0 13h34v3H0z' fill='%230b4a9b'/%3E%3C/svg%3E");
 
   /* Type */
+  /* One typeface for everything that is prose. Fraunces sets the whole page
+     now, not only the headings, so a label, a paragraph and a heading are
+     the same voice at different sizes. Code keeps a mono, because a diff and
+     a terminal have to line up in columns. */
   --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
-  --font: "Archivo", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font: "Fraunces", "Iowan Old Style", Georgia, serif;
   --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
 
   /* Rhythm */
@@ -114,7 +118,12 @@ body {
   color: var(--attic);
   font-family: var(--font);
   font-size: 17px;
-  line-height: 1.66;
+  line-height: 1.72;
+  /* Fraunces carries an optical-size axis. Left to itself the browser picks
+     a cut to match the size, so body copy gets the text cut and a headline
+     gets the display cut. Headings that need a specific cut set their own
+     font-variation-settings, which wins over this. */
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -167,7 +176,7 @@ a:hover { text-decoration-color: currentColor; }
 .section--tint { background: var(--limestone); border-bottom: 1px solid var(--stone); }
 /* The bar is only worth drawing where the ground actually changes. As the page grew,
    it ended up on every section, which turned an ornament into a border. A section can
-   opt out — used for the short trailing block that runs straight into the footer, where
+   opt out, used for the short trailing block that runs straight into the footer, where
    a bar would collide with the footer's own. */
 .section--plain::before { display: none; }
 
@@ -327,7 +336,7 @@ a:hover { text-decoration-color: currentColor; }
 .nav a.is-active { color: var(--helios); }
 
 /* The gold tick under the current page now also previews on hover, drawing
-   in from the left rather than appearing — the same tick, one extra state. */
+   in from the left rather than appearing, the same tick, one extra state. */
 .nav a[aria-current="page"] { color: var(--helios); }
 .nav a { position: relative; }
 .nav a::after {
@@ -444,7 +453,7 @@ a:hover { text-decoration-color: currentColor; }
 .hero__mark .mk__temple { fill: var(--aegean); }
 .hero__mark .mk__bust { fill: var(--marble); }
 .hero__mark .mk__step { fill: var(--helios); }
-/* A slow, quiet breath of gold behind the medallion — the one thing in the
+/* A slow, quiet breath of gold behind the medallion, the one thing in the
    hero that moves without being asked to, so the page feels alive before
    anyone scrolls or points at anything. */
 @media (prefers-reduced-motion: no-preference) {
@@ -532,7 +541,7 @@ a:hover { text-decoration-color: currentColor; }
 
 /* ── 07 The frieze ─────────────────────────────────────────────────────── */
 /* Drawn from the artwork rather than photographed from it. The band drifts,
-   the rays turn and the temple settles — all three in section 14, because
+   the rays turn and the temple settles, all three in section 14, because
    they are the one place on this site that listens to scroll. */
 .hero__band {
   position: relative;
@@ -563,7 +572,7 @@ a:hover { text-decoration-color: currentColor; }
 
 /* Cloud, lifted off the artwork the same way the mountains were: soft,
    overlapping and pale, sitting in front of the ranges and behind the
-   ridge. Each cluster drifts on its own slow clock — the one ambient motion
+   ridge. Each cluster drifts on its own slow clock, the one ambient motion
    in the frieze that runs on a timer rather than on scroll, because it is
    weather, not a reaction to anything the reader does. */
 .fr__cloud { fill: var(--marble); opacity: 0.94; transform-box: view-box; }
@@ -1043,7 +1052,7 @@ a:hover { text-decoration-color: currentColor; }
 .tr__you::after { content: " ›"; }
 
 /* Reasoning: the arrow, then italic, one line at a time. Each line is its
-   own block so the reveal can be a stagger — which is what streaming
+   own block so the reveal can be a stagger, which is what streaming
    actually looks like, without typing a character at a time. */
 .tr__think {
   position: relative;
@@ -1148,7 +1157,7 @@ a:hover { text-decoration-color: currentColor; }
 /* Output and diff panels. These are VISIBLE BY DEFAULT and only become
    collapsible once the script adds `is-collapsible`. Hiding them behind a
    click that cannot happen without JavaScript would mean the no-script
-   transcript lost its most interesting content — the actual output. */
+   transcript lost its most interesting content, the actual output. */
 .tr__out,
 .tr__diff {
   display: block;
@@ -1296,7 +1305,7 @@ a:hover { text-decoration-color: currentColor; }
 .cards--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cards--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-/* Section heading: a pediment above a blue fillet. Both are static — the
+/* Section heading: a pediment above a blue fillet. Both are static, the
    heading is furniture, it is not part of the scroll. */
 .sec__head { max-width: 660px; margin-bottom: clamp(36px, 4vw, 56px); }
 .sec__head::before {
@@ -1545,7 +1554,7 @@ h3 {
 .reqs code { color: var(--aegean); }
 
 /* ── 10b Micro-interactions ────────────────────────────────────────────
-   The ornaments were already there — cards fill a cornice and a sill toward
+   The ornaments were already there, cards fill a cornice and a sill toward
    the pointer, the gold sill draws as you arrive. What was missing was a
    response to *arriving*: nothing lifted, nothing acknowledged a click
    beyond a colour change. These rules add the physical half, and all of it
@@ -1606,8 +1615,8 @@ h3 {
 }
 @keyframes sun-turn { to { transform: rotate(360deg); } }
 
-/* The eyebrow picks up a short gold rule on hover of its section heading —
-   the same gold-step ornament as the zigzag, at a smaller scale. */
+/* The eyebrow picks up a short gold rule on hover of its section heading.
+   It is the same gold-step ornament as the zigzag, at a smaller scale. */
 .sec__head .eyebrow { transition: color 240ms var(--ease); }
 .sec__head:hover .eyebrow { color: var(--attic); }
 
@@ -1624,7 +1633,7 @@ button:focus-visible,
 /* ── 10c Scroll-linked reveals ─────────────────────────────────────────
    The site deliberately stopped scrubbing every element: giving each card its
    own clock made scrolling read as twitching. But that left the page almost
-   inert between the frieze and the top bar — content simply existed.
+   inert between the frieze and the top bar, content simply existed.
 
    This is the middle path. A whole *group* reveals as one staggered run
    driven by the same `--p` the existing scroll pass already writes, so it is
@@ -1987,8 +1996,8 @@ button:focus-visible,
 .ticks--light li::before { border-color: var(--helios); }
 
 /* The hero's price line, and the three pricing cards. The cards are the
-   ordinary `.card-lg` question card — zigzag across the top, sill at the
-   bottom — so a price is dressed like everything else on the site. */
+   ordinary `.card-lg` question card, zigzag across the top, sill at the
+   bottom, so a price is dressed like everything else on the site. */
 .hero__price {
   display: flex;
   flex-wrap: wrap;
@@ -2336,17 +2345,17 @@ button:focus-visible,
 .rel__item > p { color: var(--attic-500); font-size: 16px; }
 
 /* ── 19 Scrub ──────────────────────────────────────────────────────────── */
-/* A small, coordinated set of things is tied to scroll — deliberately not
+/* A small, coordinated set of things is tied to scroll, deliberately not
    38 independently-clocked blocks, which an earlier draft tried and which
    read as a page twitching at you rather than being read.
 
    1. The frieze. The rays turn, the temple settles and the three mountain
-      ranges drift at different rates, back to front, as the band passes —
-      all driven by the same `--p` the band writes.
+      ranges drift at different rates, back to front, as the band passes.
+      All of it is driven by the same `--p` the band writes.
    2. The column. The gold fill and the marker run down it with page progress
       (`--pg`), and it leans with signed velocity (`--vel`).
    3. `.reveal` (10c below, and 20a): a single settle-in, applied to the
-      common content blocks — cards, panels, steps, the page head — on every
+      common content blocks (cards, panels, steps, the page head) on every
       page. Once per element, driven by IntersectionObserver, not by a clock.
 
    All three are either a pure function of scroll position (1 and 2, so
@@ -2379,12 +2388,12 @@ button:focus-visible,
 /* ── 20a Site-wide reveal ──────────────────────────────────────────────── */
 /* The home page's card grids already settle in as you reach them, driven by
    scroll position (10c above). Every inner page has the same kind of content
-   — a page head, cards, a panel, a row of steps, an FAQ list — with nothing
+   (a page head, cards, a panel, a row of steps, an FAQ list) with nothing
    like it at all: those blocks simply exist the moment the page renders.
 
    `.reveal` is that same settle, generalised. Script adds the class to a
    fixed list of content blocks and watches each with one IntersectionObserver,
-   which is the only thing that ever adds `.is-inview` — once, then it stops
+   which is the only thing that ever adds `.is-inview`, once, then it stops
    watching. Opacity and transform only, per the performance rule elsewhere
    in this file, so it costs nothing during the scroll it is tied to.
    `--rd` is a short per-element stagger script sets once; it does nothing

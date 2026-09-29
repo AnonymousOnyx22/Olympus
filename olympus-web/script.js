@@ -1,16 +1,16 @@
-/* Olympus — site behaviour.
+/* Olympus: site behaviour.
 
    This file used to drive 38 scrubbed elements, one per block on the page.
    That was far too much: every card, every step and every requirement row
    moved on its own clock, so scrolling read as a page twitching rather than
    as a page being read. It now drives a small, coordinated set of things:
 
-     1. the frieze on the home page — the sun's rays turn, the temple
-        settles and the mountain ranges drift at different rates as the
-        band passes;
-     2. the column pinned to the edge of the page — gold fills it with
-        reading progress, and it leans with the direction you are going;
-     3. the site-wide reveal — cards, panels, steps and the page head settle
+     1. The frieze on the home page. The sun's rays turn, the temple
+        settles, and the mountain ranges drift at different rates as the
+        band passes.
+     2. The column pinned to the edge of the page. Gold fills it with
+        reading progress, and it leans with the direction you are going.
+     3. The site-wide reveal. Cards, panels, steps and the page head settle
         into place the first time each one enters the viewport, on every
         page, not only the home page.
 
@@ -188,14 +188,14 @@
   /* ── Site-wide reveal ──────────────────────────────────────────────────
      The home page's card grids already settle in via the scroll pass above
      (`--p`, written onto `[data-reveal]`'s ancestor). Every inner page has
-     the same kind of content — a page head, cards, a panel, a row of steps,
-     the FAQ list — with no entrance at all. This adds one, generically:
+     the same kind of content, a page head, cards, a panel, a row of steps,
+     the FAQ list, with no entrance at all. This adds one, generically:
      watch a fixed list of content blocks and add `is-inview` the first time
      each one crosses into view. CSS does the rest (20a in styles.css).
 
      Anything already inside [data-reveal] is skipped, so nothing is ever
      driven by both mechanisms at once. Runs once per element, then stops
-     watching it — this is an entrance, not a loop. */
+     watching it, this is an entrance, not a loop. */
   if (!isOff() && 'IntersectionObserver' in window) {
     var revealAll = [].slice.call(document.querySelectorAll(
       '.sec__head, .card, .card-lg, .panel, .steps .step, .cmp__fig, .faq__item, .pagehead, .price__cta, .note, .rel__item'
@@ -470,7 +470,7 @@
     /* Under reduced motion: never start, and make sure every step is present
        with its output open, in case the user flips the OS setting off while
        the page is open. The panel becomes a plain, complete, readable
-       transcript — which is the right thing for a reader who asked for less
+       transcript, which is the right thing for a reader who asked for less
        movement, not a worse version of the same thing. */
     function settle() {
       for (var s = 0; s < steps.length; s += 1) steps[s].classList.add('is-in');

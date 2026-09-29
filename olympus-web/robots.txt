@@ -1,4 +1,4 @@
-# Olympus — https://olympus.example.com/
+# Olympus: https://olympus.example.com/
 # TODO before launch: replace the Sitemap URL with the real origin.
 
 User-agent: *
