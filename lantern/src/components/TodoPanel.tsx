@@ -55,21 +55,21 @@ export default function TodoPanel({ todos }: { todos: Todo[] }) {
               <motion.li
                 key={todo.id}
                 layout
-                className={`flex items-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-500 ${active ? 'todo-active bg-sky-50 ring-1 ring-sky-200' : ''}`}
+                className={`flex items-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-500 ${active ? 'todo-active bg-aether-50 ring-1 ring-aether-200' : ''}`}
               >
                 <span
                   aria-hidden="true"
                   className={`mt-0.5 grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border transition-colors duration-500 ${
-                    completed ? 'border-emerald-500 bg-emerald-500' : active ? 'border-sky-500' : 'border-slate-300'
+                    completed ? 'border-emerald-500 bg-emerald-500' : active ? 'border-aether-500' : 'border-slate-300'
                   }`}
                 >
                   {completed && (
                     <svg className="h-2 w-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 5 5 9-10" /></svg>
                   )}
-                  {active && <span className="h-1.5 w-1.5 rounded-full bg-sky-500 motion-safe:animate-pulse" />}
+                  {active && <span className="h-1.5 w-1.5 rounded-full bg-aether-500 motion-safe:animate-pulse" />}
                 </span>
                 <span className="relative min-w-0 flex-1 text-[12px] leading-snug">
-                  <span className={`transition-colors duration-700 ${completed ? 'text-slate-400' : active ? 'text-sky-700' : 'text-slate-700'}`}>{todo.content}</span>
+                  <span className={`transition-colors duration-700 ${completed ? 'text-slate-400' : active ? 'text-aether-700' : 'text-slate-700'}`}>{todo.content}</span>
                   <span aria-hidden="true" className="absolute left-0 top-1/2 h-px bg-slate-300" style={{ width: completed ? '100%' : '0%', transition: 'width 700ms ease' }} />
                 </span>
               </motion.li>

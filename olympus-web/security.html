@@ -4,284 +4,52 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Security | Olympus</title>
-<meta name="description" content="What Olympus actually does about security, stated precisely: a sandboxed renderer with no network route, loopback-only endpoints, a per-launch authenticated opencode daemon, and approval before any write.">
+<meta name="description" content="Review changes, control approvals, and choose where your AI work happens. Learn about your privacy and control in Olympus.">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#0a2f60">
+<meta name="theme-color" content="#eaf2f6">
 <meta name="robots" content="index, follow">
 
-<!-- ══ SITE CONSTANTS: every value here is a placeholder ═════════════════
-     The full block is in index.html. Security reports go to
-     security@example.com, and never to a public issue.
-     ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Every entity, contact, URL and artifact value on this page is injected at
+     build time from site.config.json. tools/build-site.mjs refuses to build while
+     any required value is still a TODO, so a page like this cannot ship unnamed. -->
 
-<link rel="canonical" href="https://olympus.example.com/security.html">
+<link rel="canonical" href="{{urls.site}}/security.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Security | Olympus">
-<meta property="og:description" content="A sandboxed renderer with no network route of its own, loopback-only endpoints, a fresh credential on every daemon launch, and approval before any write.">
-<meta property="og:url" content="https://olympus.example.com/security.html">
+<meta property="og:description" content="Review changes, control approvals, and choose where your AI work happens. Learn about your privacy and control in Olympus.">
+<meta property="og:url" content="{{urls.site}}/security.html">
 <meta property="og:site_name" content="Olympus">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on a plinth banded with a Greek key pattern, with snow-capped mountain ranges behind it. This is the artwork the whole Olympus site is taken from.">
+<meta property="og:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@olympusapp">
-<meta name="twitter:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta name="twitter:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on an inscribed plinth. This is the artwork the whole Olympus site is taken from.">
+<meta name="twitter:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta name="twitter:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23ffc72c'%3E%3Cpath d='M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05'/%3E%3Ccircle cx='16' cy='13.5' r='9.8' fill='none' stroke='%23ffc72c' stroke-width='0.55'/%3E%3Cellipse cx='12.55' cy='7' rx='1' ry='0.4' transform='rotate(-30 12.55 7)'/%3E%3Cellipse cx='11.3' cy='7.9' rx='1' ry='0.4' transform='rotate(-6 11.3 7.9)'/%3E%3Cellipse cx='10.65' cy='9.05' rx='1' ry='0.4' transform='rotate(22 10.65 9.05)'/%3E%3Cellipse cx='19.45' cy='7' rx='1' ry='0.4' transform='rotate(30 19.45 7)'/%3E%3Cellipse cx='20.7' cy='7.9' rx='1' ry='0.4' transform='rotate(6 20.7 7.9)'/%3E%3Cellipse cx='21.35' cy='9.05' rx='1' ry='0.4' transform='rotate(-22 21.35 9.05)'/%3E%3C/g%3E%3Cg fill='%23fffdf6'%3E%3Ccircle cx='16' cy='13.5' r='9.55'/%3E%3C/g%3E%3Cg fill='%230a2f60'%3E%3Cpath d='M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z'/%3E%3Cpath d='M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z'/%3E%3Cellipse cx='16' cy='8.6' rx='2.75' ry='3.05'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="assets/olympus-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="styles.css">
-<script>document.documentElement.className += ' js';</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
+    <link rel="stylesheet" href="olympus.css" />
+
 </head>
-<body>
-
+<body class="page-document">
 <a class="skip" href="#main">Skip to content</a>
-
-<div class="colonnade" data-colonnade aria-hidden="true">
-  <span class="colonnade__capital"></span>
-  <span class="colonnade__shaft">
-    <span class="colonnade__flutes"></span>
-    <span class="colonnade__gold"></span>
-    <span class="colonnade__marker"></span>
-  </span>
-  <span class="colonnade__base"></span>
-</div>
-
-<header class="site" id="site-bar">
-  <div class="site__bar">
-    <div class="wrap site__row">
-      <a class="lockup" href="index.html" aria-label="Olympus, home">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="lockup__mark"><g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g></svg>
-        <span class="lockup__word">Olympus</span>
-      </a>
-
-      <nav class="nav" aria-label="Primary">
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html" aria-current="page">Security</a>
-        <a href="requirements.html">Requirements</a>
-      </nav>
-
-      <div class="site__actions">
-        <div class="dlset dlset--bar" data-dlset>
-          <a class="dlbtn dlbtn--sm" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg" aria-label="Download Olympus for macOS, Apple Silicon build"><span class="dlbtn__tag">Yours</span>macOS</a>
-          <a class="dlbtn dlbtn--sm" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe" aria-label="Download Olympus for Windows, 10 and 11"><span class="dlbtn__tag">Yours</span>Windows</a>
-          <a class="dlbtn dlbtn--sm" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage" aria-label="Download Olympus for Linux, 64-bit"><span class="dlbtn__tag">Yours</span>Linux</a>
-        </div>
-        <a class="btn btn--primary btn--sm dlbar__one" data-track="cta" href="pricing.html#buy">Download</a>
-        <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
-          <svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          <svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="site__rule">
-      <span class="zigbar" aria-hidden="true"></span>
-      <span class="site__progress" aria-hidden="true"></span>
-    </div>
-
-    <div class="mobilenav" id="mobile-nav" data-open="false">
-      <nav aria-label="Primary, mobile">
-        <a href="index.html">Home</a>
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html" aria-current="page">Security</a>
-        <a href="requirements.html">Requirements</a>
-        <a href="index.html#faq">Questions</a>
-        <a href="changelog.html">Changelog</a>
-        <a class="btn btn--primary" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
-      </nav>
-    </div>
-  </div>
-</header>
-
-<main id="main">
-
-  <div class="pagehead">
-    <div class="wrap">
-      <p class="eyebrow">Security</p>
-      <h1>What is actually true</h1>
-      <p class="lede">Olympus is a local app that supervises a local agent. That is a much smaller attack surface than a service, but it is not zero, and this page is written to be checkable rather than reassuring.</p>
-      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Security</span></p>
-    </div>
-  </div>
-
-  <section class="section section--tint" id="security" data-scrub aria-labelledby="security-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">The mechanisms</p>
-        <h2 id="security-h">Four things the app does, concretely</h2>
-        <p class="lede">Each of these is a property of the build, not a setting you can forget to turn on.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <div class="cards cards--2">
-        <article class="card card--plain">
-          <h3>The page cannot open its own connections</h3>
-          <p>The window runs with <code>contextIsolation</code> on, <code>nodeIntegration</code> off, and the Chromium sandbox enabled. The renderer has no Node integration and no direct route to the network: the packaged renderer ships with a strict Content-Security-Policy whose <code>connect-src</code> is <code>'self'</code>, so the only address it may reach is its own origin. Every model call, agent call and preview load is proxied through the main process, which decides what to connect to.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>Each daemon gets a fresh, unguessable credential</h3>
-          <p>Every <code>opencode serve</code> process Olympus starts is bound to <code>127.0.0.1</code> only, not to <code>0.0.0.0</code> and not to a routable interface, on a randomised high port, and is protected with HTTP basic auth using a random credential generated afresh for that launch. The credential is never written to a shared location and never reused, so another process on the machine or a web page in another application has to guess both the port and the credential.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>Endpoints you add are restricted to loopback</h3>
-          <p>Model servers and any endpoint you configure in the app are checked to be on loopback before they are used. You can point Olympus at <code>127.0.0.1</code>, <code>localhost</code> or <code>::1</code>. You cannot point it at a host out on the network from the in-app endpoint editor. Providers you have already configured inside <code>opencode</code> are a separate matter and are described below.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>Writes are a decision, not a side effect</h3>
-          <p>An edit made through the edit tool is a proposal. It stops in a diff viewer and stays there until you accept it. Reject it and nothing is written. Shell commands ask separately, because a command can change files the edit tool never touched. Leaving a project folder, or an agent asking politely, is not a reason to accept anything.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="limits" data-scrub aria-labelledby="limits-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">The other half</p>
-        <h2 id="limits-h">What this does not protect you from</h2>
-        <p class="lede">A security page that only lists strengths is a marketing page wearing a lanyard. Here is the other list, and it is longer.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <div class="cards cards--2">
-        <article class="card card--plain">
-          <h3>opencode is somebody else&rsquo;s software</h3>
-          <p>Olympus supervises a process it does not ship. Whatever opencode does with your prompts, your repository and your keys is opencode&rsquo;s behaviour, and we do not control it, audit it or stand behind it. Treat the agent as you would treat any other program you are running against your own source.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>An agent on loopback is still an agent on loopback</h3>
-          <p>The credential and the loopback binding make the daemon hard to reach by accident. They are not a claim that it cannot be reached, and they are not a claim that a running agent is harmless. Do not run one against a machine you would not hand the keys to.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>Approving is a human process, not a technical control</h3>
-          <p>Diff review works because you read the diffs. Under time pressure, on the tenth edit of an afternoon, approval degrades into a reflex. Olympus will not stop you clicking Accept on a destructive patch, because it cannot tell that you are not paying attention.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>The shell is a shell</h3>
-          <p>An approved command runs with your privileges, in your working directory, with your environment. Approval is the only gate in front of it.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>Cloud providers are outside all of this</h3>
-          <p>The loopback restriction applies to endpoints you add in Olympus. If you have configured a cloud provider inside <code>opencode</code>, then that traffic leaves the machine, and the Content-Security-Policy is not involved: it constrains the renderer, not the agent. This is the single most important thing to understand on this page.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>No encryption claim</h3>
-          <p>Traffic between Olympus and a local model server is ordinary HTTP on loopback. It is not end-to-end encrypted, and it does not need to be to stay on the machine, but we are not going to describe plain loopback HTTP as if it were a security feature.</p>
-        </article>
-      </div>
-
-      <p class="note">
-        <strong>And one thing we are not saying at all.</strong> We do not claim the daemon is unreachable. We do not claim opencode is secure. We do not claim there is end-to-end encryption, because there is not. The mechanisms on the previous page are real and specific. That is the entire claim.
-      </p>
-    </div>
-  </section>
-
-  <section class="section section--tint" id="reporting" data-scrub aria-labelledby="reporting-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">Reporting</p>
-        <h2 id="reporting-h">Found something?</h2>
-        <p class="lede">Email, not a public issue. A public issue is a disclosure: it is indexed, it is cached, and it cannot be taken back.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <ul class="reqs">
-        <li><strong>Email <a href="mailto:security@example.com">security@example.com</a>.</strong> Describe the problem, the build you are on, your operating system, and how to reproduce it. Plain text is fine and preferred.</li>
-        <li><strong>You will get an acknowledgement.</strong> Realistically within a few days, from whoever maintains the app. There is no security team, so there is no response-time guarantee, and pretending otherwise would be the first dishonest thing on this site.</li>
-        <li><strong>Ordinary bugs go in the open.</strong> If it is not exploitable, say a crash, a wrong message, or a model that will not load, a public issue is the right and welcome place for it. <a href="mailto:support@example.com">support@example.com</a> also works.</li>
-        <li><strong>No bug bounty.</strong> There is no programme and no reward. We will credit you in the <a href="changelog.html">changelog</a> if you want that, on your terms including not at all.</li>
-      </ul>
-
-      <p class="note">
-        <strong>What &ldquo;local-first&rdquo; means.</strong> It means Olympus has no server, no account and no telemetry, and that by default your prompts and your code stay on the machine and go to a model server you chose. It does not mean opencode is local, it does not mean nothing ever touches a network, and it does not extend to any model provider you have configured yourself. <a href="privacy.html">The privacy policy</a> says the same thing without the marketing gloss.
-      </p>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="pager-h">
-    <div class="wrap">
-      <h2 id="pager-h" class="visually-hidden">Read next</h2>
-      <div class="pager">
-        <a href="how-it-works.html">
-          <small>Previous</small>
-          <strong>From nothing to a running project</strong>
-        </a>
-        <a class="is-next" href="requirements.html">
-          <small>Next</small>
-          <strong>What you need first</strong>
-        </a>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="foot">
-  <div class="wrap foot__row">
-    <div class="foot__brand">
-      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
-      </svg>
-      <span class="lockup__word">Olympus</span>
-    </div>
-
-    <nav class="foot__nav" aria-label="Footer">
-      <a href="features.html">Features</a>
-      <a href="how-it-works.html">How it works</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="security.html" aria-current="page">Security</a>
-      <a href="requirements.html">Requirements</a>
-      <a href="changelog.html">Changelog</a>
-    </nav>
-  </div>
-
-  <div class="wrap foot__cols">
-    <div class="foot__col">
-      <p class="foot__colh">Support</p>
-      <ul>
-        <li><a href="https://docs.example.com/olympus">Documentation</a></li>
-        <li><a href="mailto:support@example.com">support@example.com</a></li>
-        <li><a href="changelog.html">Changelog</a></li>
-        <li>Report a security problem: email <a href="mailto:security@example.com">security@example.com</a>. Please do not open a public issue for anything exploitable. A public issue is a disclosure.</li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">The small print</p>
-      <ul>
-        <li><a href="license.html">Licence</a></li>
-        <li><a href="terms.html">Terms of sale</a></li>
-        <li><a href="privacy.html">Privacy</a></li>
-        <li><a href="refunds.html">Refunds</a></li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">What this is</p>
-      <ul>
-        <li>A desktop app for the <code>opencode</code> agent. It runs on your machine, against models you already run.</li>
-        <li>opencode is a separate third-party project. Olympus is not affiliated with it and is not endorsed by it.</li>
-        <li>Nothing on this site collects anything about you. There is no tracker in the app and none in these pages.</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="wrap foot__legal">
-    <p>&copy; 2026 Olympus. A one-time-purchase desktop licence, sold by an individual. Placeholder legal entity and jurisdiction, see <a href="terms.html">terms</a>.</p>
-    <p>Olympus sends no telemetry and runs no server.</p>
-  </div>
-</footer>
-
-<script src="script.js"></script>
+<header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
+<nav class="nav" aria-label="Primary"><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html" aria-current="page">Security</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="index.html#downloads">Get Olympus <span aria-hidden="true">↓</span></a>
+<button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html" aria-current="page">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="index.html#faq">Questions</a></nav></div></header>
+<main id="main"><div class="pagehead"><div class="wrap"><p class="eyebrow">Security</p><h1>Your work. Your control.</h1><p class="lede">Choose where your work goes, review changes, and decide what happens next.</p><p class="pagehead__crumbs"><a href="index.html">Home</a><span>/</span><span>Security</span></p></div></div><section class="section" id="security" aria-labelledby="security-heading"><div class="wrap"><div class="sec__head"><h2 id="security-heading">You stay in charge.</h2></div><div class="cards cards--2"><article class="card"><h3>Review before accepting</h3><p>See proposed file edits before they are applied. Accept the changes you want and reject the rest.</p></article><article class="card"><h3>Commands ask separately</h3><p>Actions that run commands on your computer need their own approval. Check what they will do before continuing.</p></article><article class="card"><h3>Choose where your work goes</h3><p>Use a model on your computer to keep its processing local. If you choose a cloud provider, your requests go to that provider.</p></article><article class="card"><h3>No activity tracking</h3><p>Olympus does not collect usage analytics or automatically send crash reports. You do not need an Olympus account.</p></article></div></div></section><section class="section" id="limits" aria-labelledby="limits-heading"><div class="wrap"><div class="sec__head"><h2 id="limits-heading">A little care goes a long way.</h2></div><div class="prose"><p>AI can make mistakes. Review proposed changes and commands before approving them, and keep a backup of important work.</p><p>Your chosen AI tools and providers have their own privacy practices. Check those when deciding which model to use.</p><p><a href="privacy.html">Read the privacy policy</a></p></div></div></section><section class="section" id="reporting" aria-labelledby="reporting-heading"><div class="wrap"><div class="sec__head"><h2 id="reporting-heading">Need help?</h2></div><div class="prose"><p>For a security concern, email <a href="mailto:{{contact.securityEmail}}">{{contact.securityEmail}}</a> privately. Include what happened, your Olympus version, and your operating system.</p><p>For other problems, contact <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a>.</p></div></div></section></main>
+<footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="index.html#downloads">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<script src="site.js"></script>
+<script src="motion.js"></script>
 </body>
 </html>

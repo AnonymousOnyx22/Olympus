@@ -72,9 +72,12 @@ interface DaemonProviderResponse {
  * This is the source that surfaces anything configured through the opencode CLI
  * (e.g. an authenticated OpenCode Zen account), which local port-probing can't see.
  */
-export async function fetchDaemonProviders(baseUrl: string): Promise<LocalProvider[]> {
+export async function fetchDaemonProviders(baseUrl: string, authorization?: string): Promise<LocalProvider[]> {
   try {
-    const res = await fetch(baseUrl + '/config/providers', { signal: AbortSignal.timeout(6000) })
+    const res = await fetch(baseUrl + '/config/providers', {
+      headers: authorization ? { authorization } : undefined,
+      signal: AbortSignal.timeout(6000),
+    })
     if (!res.ok) return []
     const body = (await res.json()) as DaemonProviderResponse
     return (body.providers ?? []).map((p) => {

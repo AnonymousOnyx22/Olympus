@@ -30,7 +30,6 @@ interface Props extends AgentPaneShared {
   daemonError?: string
   onRetry: () => void
   sessions: Session[] | undefined
-  addNonce: number
   /** Which of this project's sessions have an open agent window — owned by the caller so a
    * cross-project view can show and close the same windows. */
   openIds: string[]
@@ -46,7 +45,6 @@ export default function AgentWorkspace(props: Props) {
   const [creating, setCreating] = useState(false)
   const [error, setError] = useState('')
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const lastAdd = useRef(0)
   const creatingRef = useRef(false)
   const restored = useRef(false)
 
@@ -81,11 +79,6 @@ export default function AgentWorkspace(props: Props) {
     } catch (reason) { setError(String(reason)) }
     finally { creatingRef.current = false; setCreating(false) }
   }
-  useEffect(() => {
-    if (props.addNonce <= lastAdd.current || !props.ready) return
-    lastAdd.current = props.addNonce
-    void addAgent()
-  }, [props.addNonce, props.ready])
 
   return <section aria-label={`${props.projectName} agent workspace`} className="flex h-full min-h-0 flex-col">
     <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-3 py-2">
@@ -183,14 +176,18 @@ export function AgentPane(props: AgentPaneProps) {
   // window could never be dismissed — a dead end with no way out. An approval the daemon is
   // no longer serving cannot block anything, so it does not block this.
   const effectivePermissions = props.ready ? permissions : []
-  const canClose = stream.loaded && !busy && !queue.length && !sending.current && !effectivePermissions.length
+  // Closing only removes the window (the chat is saved), so it never needs to wait for the
+  // stream to finish loading — only for nothing to be at risk of loss (work in flight, a
+  // queued message, or an approval waiting on you). A pane stuck on "Connecting" (e.g. no
+  // model available yet) must still be closable, or it becomes a dead end.
+  const canClose = !busy && !queue.length && !sending.current && !effectivePermissions.length
   const orbKind: OrbKind = !props.ready || !stream.loaded ? 'connecting' : effectivePermissions.length ? 'attention' : busy ? 'working' : 'ready'
   const statusLabel = !props.ready || !stream.loaded ? 'Connecting' : effectivePermissions.length ? 'Needs approval' : busy ? 'Working' : 'Ready'
-  return <article aria-label={`Agent chat: ${props.title}`} data-session-id={props.sessionID} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-aegean ring-1 ring-slate-200 transition focus-within:ring-sky-400">
+  return <article aria-label={`Agent chat: ${props.title}`} data-session-id={props.sessionID} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-aegean ring-1 ring-slate-200 transition focus-within:ring-aether-400">
     <header className="flex h-9 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3">
       <StatusOrb kind={orbKind} size={13} />
       <span className="min-w-0 flex-1 truncate text-xs font-medium text-slate-900" title={`${props.projectName} · ${props.title}`}>{props.projectName} · {props.title}</span>
-      <span role="status" className={`text-[10px] ${permissions.length ? 'text-amber-600' : busy ? 'text-sky-600' : 'text-slate-400'}`}>{statusLabel}</span>
+      <span role="status" className={`text-[10px] ${permissions.length ? 'text-amber-600' : busy ? 'text-aether-600' : 'text-slate-400'}`}>{statusLabel}</span>
       <button onClick={props.onDelete} disabled={!canClose || props.deleting} aria-label={`Delete ${props.title}`} title={canClose ? 'Permanently delete this chat' : 'Stop this agent and clear its queue or approvals before deleting'} className="grid h-6 w-6 place-items-center rounded text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-25">
         <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13" /></svg>
       </button>
@@ -202,7 +199,7 @@ export function AgentPane(props: AgentPaneProps) {
       model={model} variant={variant} providers={props.providers} onSelectModel={(next) => { setModel(next); setVariant(null) }} onSelectVariant={setVariant}
       onRescan={props.onRescan} rescanning={props.rescanning} onAddEndpoint={props.onAddEndpoint} onRemoveEndpoint={props.onRemoveEndpoint}
       ready={props.ready && stream.loaded} hasProject hasModels={props.providers.some((provider) => provider.online && provider.models.length > 0)}
-      onOpenProject={() => props.goToProject(props.spaceId)} onSend={send} onAbort={() => void stop()} queuedMessages={queue} onRemoveQueued={(id) => setQueue((items) => items.filter((item) => item.id !== id))} />
+      onChooseProject={() => props.goToProject(props.spaceId)} onSend={send} onAbort={() => void stop()} queuedMessages={queue} onRemoveQueued={(id) => setQueue((items) => items.filter((item) => item.id !== id))} />
     {queuePaused && queue.length > 0 && <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500"><span>Queue paused</span><button onClick={() => { setQueuePaused(false); setError('') }} className="rounded-lg px-2 py-1 text-slate-900 transition hover:bg-white">Resume queue</button></div>}
   </article>
 }

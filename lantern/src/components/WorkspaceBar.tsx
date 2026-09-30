@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PermissionMode } from '../types/opencode'
 
-export type WorkspaceView = 'agent' | 'code' | 'thread' | 'edits' | 'workspace'
+// 'chat' is the default landing view: one conversation in the focused space, whether that
+// is General or a project. 'agents' is the per-project grid of concurrently-running agent
+// windows, which is a deliberate step away from the single-chat view.
+export type WorkspaceView = 'chat' | 'agents' | 'code' | 'thread' | 'edits' | 'workspace'
 
 interface WorkspaceBarProps {
   projectId: string | null
@@ -38,21 +41,24 @@ export default function WorkspaceBar(props: WorkspaceBarProps) {
 
   const current = approvalModes.find((m) => m.id === props.permissionMode)
 
-  // "Full access" lets the agent edit files and run shell commands with no per-action
-  // review — the one option here that gives up the approval gate entirely, so a single
-  // misclick into it deserves a speed bump the other two (still reviewed, or reviewed
-  // only for risky-looking actions) don't need.
+  // Picking "Full access" from this menu is already the deliberate act — its own row already
+  // spells out "Unrestricted access to files and commands" — so choosing it is the acceptance.
+  // No extra confirm dialog on top of the menu the user just opened and read.
   const selectMode = (mode: PermissionMode) => {
-    if (mode === 'bypass' && !window.confirm('Full access lets the agent edit files and run commands without asking first. Continue?')) return
     props.onPermissionModeChange(mode)
     setApprovalsOpen(false)
   }
 
   return <header className="flex min-h-11 shrink-0 flex-wrap items-center gap-x-2 gap-y-1 pb-1">
     <div className="workspace-title min-w-0 flex-1 truncate pl-1 text-xs text-slate-500" title={props.title}>{props.title || 'General'}</div>
-    {(props.editCount > 0 || props.view === 'edits') && <button onClick={() => props.onChange(props.view === 'edits' ? 'agent' : 'edits')} className="flex h-7 shrink-0 items-center gap-1.5 rounded-xl bg-amber-400/10 px-2 text-[11px] font-medium text-amber-700 ring-1 ring-amber-400/30 transition hover:bg-amber-400/20">{props.view === 'edits' ? 'Back to agent' : `Pending edits ${props.editCount}`}</button>}
+    {(props.editCount > 0 || props.view === 'edits') && <button onClick={() => props.onChange(props.view === 'edits' ? 'chat' : 'edits')} className="flex h-7 shrink-0 items-center gap-1.5 rounded-xl bg-amber-400/10 px-2 text-[11px] font-medium text-amber-700 ring-1 ring-amber-400/30 transition hover:bg-amber-400/20">{props.view === 'edits' ? 'Back to chat' : `Pending edits ${props.editCount}`}</button>}
     <nav aria-label="Workspace mode" className="flex rounded-xl bg-slate-50 p-0.5 ring-1 ring-slate-200">
-      {(['agent', 'code', 'thread'] as const).map((view) => <button key={view} onClick={() => props.onChange(view)} aria-pressed={props.view === view} disabled={view === 'code' && !props.projectId} className={`rounded-lg px-4 py-1 text-xs capitalize transition disabled:opacity-40 ${props.view === view ? 'bg-white text-slate-900 shadow-aegean font-medium' : 'text-slate-500 hover:text-slate-800'}`}>{view}</button>)}
+      {([
+        ['chat', 'Chat', false],
+        ['agents', 'Agents', !props.projectId],
+        ['code', 'Code', !props.projectId],
+        ['thread', 'Thread', false],
+      ] as const).map(([view, label, unavailable]) => <button key={view} onClick={() => props.onChange(view)} aria-pressed={props.view === view} disabled={unavailable} title={view === 'agents' ? 'Every agent window open in this project, side by side' : undefined} className={`rounded-lg px-4 py-1 text-xs capitalize transition disabled:opacity-40 ${props.view === view ? 'bg-white text-slate-900 shadow-aegean font-medium' : 'text-slate-500 hover:text-slate-800'}`}>{label}</button>)}
     </nav>
     <div className="relative shrink-0" ref={approvalRef}>
       <button onClick={() => setApprovalsOpen((v) => !v)} disabled={props.permissionDisabled} aria-expanded={approvalsOpen} title="Agent approvals" className={`flex h-7 items-center gap-1 rounded-xl px-2.5 text-[11px] transition hover:bg-slate-100 disabled:opacity-40 ${props.permissionMode === 'bypass' ? 'text-amber-600' : 'text-slate-600 hover:text-slate-900'}`}>
@@ -65,13 +71,13 @@ export default function WorkspaceBar(props: WorkspaceBarProps) {
         {approvalModes.map((mode) => {
           const selected = props.permissionMode === mode.id
           return (
-            <button key={mode.id} onClick={() => selectMode(mode.id)} className={`flex w-full items-start gap-2.5 rounded-xl px-2 py-2 text-left transition hover:bg-slate-50 ${selected ? 'bg-sky-50 ring-1 ring-sky-200' : ''}`}>
+            <button key={mode.id} onClick={() => selectMode(mode.id)} className={`flex w-full items-start gap-2.5 rounded-xl px-2 py-2 text-left transition hover:bg-slate-50 ${selected ? 'bg-aether-50 ring-1 ring-aether-200' : ''}`}>
               <svg className={`mt-0.5 h-4 w-4 shrink-0 ${mode.tone}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={mode.icon} /></svg>
               <span className="min-w-0 flex-1">
                 <span className={`block text-xs font-medium ${selected ? 'text-slate-900' : mode.tone}`}>{mode.label}</span>
                 <span className="block text-[11px] leading-snug text-slate-500">{mode.description}</span>
               </span>
-              {selected && <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10" /></svg>}
+              {selected && <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-aether-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10" /></svg>}
             </button>
           )
         })}

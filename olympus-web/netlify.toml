@@ -1,0 +1,45 @@
+# Netlify deployment configuration for the Olympus site.
+#
+# The source is plain HTML, CSS and JavaScript with no bundler. The one build step# injects the entity, contact and download values from site.config.json, and FAILS# while any of them is still a TODO. A legal page that names no seller cannot ship.
+#
+# The site intentionally has no Node build. If someone later adds a bundler,
+# change `command` and `publish` here rather than relying on Netlify's defaults,
+# so the deploy settings live in the repository and not in a dashboard.
+
+[build]
+  command = "node ../lantern/tools/build-site.mjs"
+  publish = "dist"
+  fail_fast = true
+
+[build.environment]
+  # No build, so pin nothing. Listed for the record: if a bundler is ever added,
+  # NODE_VERSION and NPM_FLAGS should be set here so local and CI builds match.
+
+# Long-lived caching for the assets that are safe to cache forever. styles.css
+# and script.js are NOT in this list on purpose: they are unversioned, so a
+# browser that cached them would never see an update.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML is always revalidated, or a deploy would be invisible to anyone who
+# already has the page open.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# The site's own security posture. The CSP mirrors what the packaged Electron
+# renderer ships, minus the parts that only matter inside the app: there is no
+# model traffic to proxy here, so `connect-src` is 'self' plus the fonts and the
+# origins the site actually talks to.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'"

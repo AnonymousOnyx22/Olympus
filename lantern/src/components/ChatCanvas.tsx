@@ -8,7 +8,7 @@ import StatusOrb from './StatusOrb'
 import TodoPanel, { extractTodos } from './TodoPanel'
 import { api } from '../services/api'
 import type { MessageEntry } from '../services/streamHandler'
-import type { LocalProvider, ModelRef, Part, PermissionReply, PermissionRequest, ReasoningPart, ToolPart } from '../types/opencode'
+import type { LocalProvider, ModelRef, Part, PermissionReply, PermissionRequest, ReasoningPart, Session, ToolPart } from '../types/opencode'
 
 interface ChatCanvasProps {
   compact?: boolean
@@ -17,6 +17,13 @@ interface ChatCanvasProps {
   projectName: string
   projectPath?: string
   onNewSession: () => void
+  /**
+   * This space's chats, newest first. Omitted in compact (agent pane) mode — a pane owns a
+   * single session, so a switcher there would be a lie.
+   */
+  sessions?: Session[]
+  activeSessionId?: string | null
+  onSelectSession?: (sessionId: string) => void
   navigationLocked: boolean
   messages: MessageEntry[]
   busy: boolean
@@ -39,7 +46,8 @@ interface ChatCanvasProps {
   ready: boolean
   hasProject: boolean
   hasModels: boolean
-  onOpenProject: () => void
+  /** Opens the project/folder picker — either from the composer's folder chip or the empty state. */
+  onChooseProject: () => void
   onSend: (text: string, priority?: boolean) => Promise<void>
   onAbort: () => void
   queuedMessages: { id: string; text: string; priority: boolean }[]
@@ -71,13 +79,13 @@ const Reasoning = memo(function Reasoning({ part }: { part: ReasoningPart }) {
     <div className="group/reasoning relative py-0.5 pl-5">
       <span
         aria-hidden="true"
-        className={`absolute left-0 top-px select-none text-[13px] leading-5 transition-colors ${streaming ? 'text-sky-500' : 'text-slate-300'}`}
+        className={`absolute left-0 top-px select-none text-[13px] leading-5 transition-colors ${streaming ? 'text-aether-500' : 'text-slate-300'}`}
       >
         →
       </span>
       <p className="whitespace-pre-wrap break-words text-[12.5px] italic leading-relaxed text-slate-500">
         {part.text}
-        {streaming && <span className="ml-0.5 inline-block h-3 w-[2px] translate-y-[2px] animate-pulse bg-sky-400 align-middle" />}
+        {streaming && <span className="ml-0.5 inline-block h-3 w-[2px] translate-y-[2px] animate-pulse bg-aether-400 align-middle" />}
       </p>
       {secs !== null && (
         <span className="mt-0.5 block text-[10px] tabular-nums text-slate-300 opacity-0 transition-opacity group-hover/reasoning:opacity-100">
@@ -148,7 +156,7 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
         onClick={() => setOpen((v) => !v)}
         className="group flex w-full items-center gap-2 rounded-md px-2 py-1 text-left transition hover:bg-slate-50"
       >
-        <span className={`grid h-4 w-4 shrink-0 place-items-center ${running ? 'text-sky-500' : s.status === 'error' ? 'text-rose-500' : 'text-slate-400'}`}>
+        <span className={`grid h-4 w-4 shrink-0 place-items-center ${running ? 'text-aether-500' : s.status === 'error' ? 'text-rose-500' : 'text-slate-400'}`}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d={TOOL_ICON[part.tool] ?? 'M12 3v18M3 12h18'} />
           </svg>
@@ -163,7 +171,7 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
         {!subtitle && <span className="flex-1" />}
         {diag && Object.keys(diag).length > 0 && <span className="shrink-0 rounded bg-amber-400/10 px-1.5 text-[10px] text-amber-600">LSP</span>}
         {s.status === 'error' && <span className="shrink-0 text-[10px] text-rose-600">failed</span>}
-        {running && <span className="shrink-0 animate-pulse text-[10px] text-sky-600">running</span>}
+        {running && <span className="shrink-0 animate-pulse text-[10px] text-aether-600">running</span>}
         {!running && duration && <span className="shrink-0 text-[10px] tabular-nums text-slate-300">{duration}s</span>}
         {hasDetail && (
           <motion.svg
@@ -207,7 +215,7 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
         layout="position"
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden rounded-md bg-sky-50/40 ring-1 ring-sky-100"
+        className="overflow-hidden rounded-md bg-aether-50/40 ring-1 ring-aether-100"
       >
         {row}
       </motion.div>
@@ -287,7 +295,7 @@ const MessageView = memo(function MessageView({ entry, mode }: { entry: MessageE
     if (!text) return null
     return (
       <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="prompt-line flex justify-end">
-        <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-sky-50 px-4 py-2.5 text-[13.5px] leading-relaxed text-slate-900 ring-1 ring-sky-100">{text}</div>
+        <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-aether-50 px-4 py-2.5 text-[13.5px] leading-relaxed text-slate-900 ring-1 ring-aether-100">{text}</div>
       </motion.div>
     )
   }
@@ -303,7 +311,7 @@ const MessageView = memo(function MessageView({ entry, mode }: { entry: MessageE
   )
 })
 
-interface ComposerProps extends Pick<ChatCanvasProps, 'model' | 'variant' | 'providers' | 'onSelectModel' | 'onSelectVariant' | 'onRescan' | 'rescanning' | 'onAddEndpoint' | 'onRemoveEndpoint' | 'projectName' | 'hasProject' | 'hasModels' | 'ready' | 'busy' | 'onOpenProject' | 'onAbort'> {
+interface ComposerProps extends Pick<ChatCanvasProps, 'model' | 'variant' | 'providers' | 'onSelectModel' | 'onSelectVariant' | 'onRescan' | 'rescanning' | 'onAddEndpoint' | 'onRemoveEndpoint' | 'projectName' | 'hasProject' | 'hasModels' | 'ready' | 'busy' | 'onChooseProject' | 'onAbort'> {
   onSubmit: (text: string, priority?: boolean) => Promise<void>
   autoFocus?: boolean
 }
@@ -338,7 +346,7 @@ function Composer(props: ComposerProps) {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-2.5 ring-1 ring-slate-200 transition focus-within:ring-sky-400">
+    <div className="rounded-2xl bg-white p-2.5 ring-1 ring-slate-200 transition focus-within:ring-aether-400">
       <div className="flex items-end gap-2 pl-1.5">
         <textarea
           ref={inputRef}
@@ -362,7 +370,7 @@ function Composer(props: ComposerProps) {
             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="3" /></svg>
           </button>
         ) : (
-          <button onClick={() => void submit()} disabled={!canSend} title="Send (Enter)" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-sky-600 text-white transition hover:bg-sky-500 active:scale-90 disabled:bg-slate-100 disabled:text-slate-400 disabled:active:scale-100">
+          <button onClick={() => void submit()} disabled={!canSend} title="Send (Enter)" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-aether-600 text-white transition hover:bg-aether-500 active:scale-90 disabled:bg-slate-100 disabled:text-slate-400 disabled:active:scale-100">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
           </button>
         )}
@@ -375,7 +383,7 @@ function Composer(props: ComposerProps) {
 
       {/* controls row — project on the left, model picker on the right (like the reference GUI) */}
       <div className="mt-1 flex items-center justify-between gap-2">
-        <button onClick={props.onOpenProject} className="flex max-w-[45%] items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]" title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
+        <button onClick={props.onChooseProject} className="flex max-w-[45%] items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]" title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
           <svg className="h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
           <span className="truncate">{props.hasProject ? props.projectName : 'Choose project'}</span>
         </button>
@@ -399,6 +407,79 @@ function Composer(props: ComposerProps) {
 // ---------------------------------------------------------------------------
 // Canvas
 // ---------------------------------------------------------------------------
+
+/**
+ * Picks which chat in this space is on screen. A single-chat space otherwise strands you on
+ * whichever session happened to be last active with no way back to the rest, so the list is
+ * the difference between a transcript viewer and a usable chat.
+ */
+function ChatSwitcher({ spaceName, sessions, activeSessionId, onSelect, onNew }: {
+  spaceName: string
+  sessions: Session[]
+  activeSessionId: string | null
+  onSelect: (id: string) => void
+  onNew: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const close = (event: MouseEvent) => { if (!ref.current?.contains(event.target as Node)) setOpen(false) }
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false) }
+    window.addEventListener('mousedown', close)
+    window.addEventListener('keydown', escape)
+    return () => { window.removeEventListener('mousedown', close); window.removeEventListener('keydown', escape) }
+  }, [open])
+
+  const active = sessions.find((session) => session.id === activeSessionId)
+  return (
+    <div className="relative shrink-0" ref={ref}>
+      <button
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        title={`Chats in ${spaceName}`}
+        className="flex h-6 max-w-[190px] items-center gap-1.5 rounded-lg px-1.5 text-[11px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+      >
+        <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" />
+        </svg>
+        <span className="truncate">{active?.title ?? 'New chat'}</span>
+        <span aria-hidden="true" className="shrink-0 text-[9px] text-slate-300">▼</span>
+      </button>
+      {open && (
+        <div role="menu" className="absolute right-0 top-full z-50 mt-2 max-h-72 w-72 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-aegean-lg">
+          <button
+            role="menuitem"
+            onClick={() => { setOpen(false); onNew() }}
+            className="mb-1 flex w-full items-center gap-2 rounded-xl px-2 py-2 text-left text-[12px] font-medium text-aether-700 transition hover:bg-aether-50"
+          >
+            <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            New chat
+          </button>
+          {sessions.map((session) => {
+            const selected = session.id === activeSessionId
+            return (
+              <button
+                key={session.id}
+                role="menuitem"
+                onClick={() => { setOpen(false); onSelect(session.id) }}
+                className={`flex w-full items-start gap-2 rounded-xl px-2 py-1.5 text-left transition hover:bg-slate-50 ${selected ? 'bg-aether-50 ring-1 ring-aether-200' : ''}`}
+              >
+                <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${selected ? 'bg-aether-500' : 'bg-slate-200'}`} />
+                <span className="min-w-0 flex-1">
+                  <span className={`block truncate text-[12px] ${selected ? 'font-medium text-slate-900' : 'text-slate-700'}`}>{session.title}</span>
+                  <span className="block truncate font-mono text-[9.5px] text-slate-400">{new Date(session.time.updated).toLocaleString()}</span>
+                </span>
+              </button>
+            )
+          })}
+          {sessions.length === 0 && <p className="px-2 py-3 text-center text-[11.5px] text-slate-400">No chats here yet.</p>}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function ChatCanvas(props: ChatCanvasProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -435,7 +516,7 @@ export default function ChatCanvas(props: ChatCanvasProps) {
     hasModels: props.hasModels,
     ready: props.ready,
     busy: props.busy,
-    onOpenProject: props.onOpenProject,
+    onChooseProject: props.onChooseProject,
     onAbort: props.onAbort,
     onSubmit: send,
   }
@@ -447,9 +528,10 @@ export default function ChatCanvas(props: ChatCanvasProps) {
     <main className={`flex min-h-0 min-w-0 flex-1 flex-col bg-white ${props.mode === 'agent' ? 'agent-transcript' : ''}`}>
       {!props.compact && <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-200 px-3">
         <StatusOrb kind={props.busy ? 'working' : props.permissions.length ? 'attention' : props.ready ? 'ready' : 'connecting'} size={13} />
-        <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-slate-500">{props.projectName}</span>
-        <span role="status" className={`text-[10px] ${props.permissions.length ? 'text-amber-600' : props.busy ? 'text-sky-600' : 'text-slate-400'}`}>{props.permissions.length ? 'Needs approval' : props.busy ? 'Working' : props.ready ? 'Ready' : 'Connecting'}</span>
-        <button onClick={props.onNewSession} disabled={props.navigationLocked || !props.ready} aria-label="New session" title="New session" className="ml-1 grid h-6 w-6 place-items-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-30">+</button>
+        <span className="min-w-0 truncate font-mono text-[11px] text-slate-500" title={props.projectPath}>{props.projectName}</span>
+        <span role="status" className={`ml-auto shrink-0 text-[10px] ${props.permissions.length ? 'text-amber-600' : props.busy ? 'text-aether-600' : 'text-slate-400'}`}>{props.permissions.length ? 'Needs approval' : props.busy ? 'Working' : props.ready ? 'Ready' : 'Connecting'}</span>
+        {props.sessions && <ChatSwitcher spaceName={props.projectName} sessions={props.sessions} activeSessionId={props.activeSessionId ?? null} onSelect={props.onSelectSession ?? (() => {})} onNew={props.onNewSession} />}
+        <button onClick={props.onNewSession} disabled={props.navigationLocked || !props.ready} aria-label="New chat" title="New chat" className="grid h-6 w-6 shrink-0 place-items-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-30">+</button>
       </header>}
       <div ref={scrollRef} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto">
         <div className={`mx-auto space-y-4 p-4 ${props.mode === 'thread' ? 'max-w-3xl' : ''}`}>
@@ -461,7 +543,7 @@ export default function ChatCanvas(props: ChatCanvasProps) {
           {showWelcome && <div className="max-w-lg space-y-3 py-4">
             <h2 className="text-base font-medium text-slate-900">{props.compact ? 'Give this agent a task' : props.hasProject ? 'What are we working on?' : 'Your next project starts here.'}</h2>
             <p className="text-xs leading-relaxed text-slate-500">{props.hasProject ? 'Give the agent a task. Follow its commands, file edits, and results here while you work.' : 'Open a project to work with files, run commands, and preview your app. Or start a conversation in General.'}</p>
-            {!props.hasProject && <button onClick={props.onOpenProject} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 transition hover:bg-slate-50">Open a project</button>}
+            {!props.hasProject && <button onClick={props.onChooseProject} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 transition hover:bg-slate-50">Choose a project</button>}
             {!props.hasModels && <p className="border-l border-slate-200 pl-3 text-xs leading-relaxed text-slate-500">Start a local model server or connect a provider in OpenCode, then select a model below.</p>}
           </div>}
           {props.messages.map((entry) => <MessageView key={entry.info.id} entry={entry} mode={props.mode} />)}
@@ -494,7 +576,7 @@ export default function ChatCanvas(props: ChatCanvasProps) {
                         >
                           <span className="w-4 shrink-0 text-center font-mono text-[9px] text-slate-400">{index + 1}</span>
                           <span className="min-w-0 flex-1 truncate text-[11.5px] text-slate-700">{message.text}</span>
-                          {message.priority && <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[9px] font-medium text-sky-700">Next</span>}
+                          {message.priority && <span className="rounded bg-aether-100 px-1.5 py-0.5 text-[9px] font-medium text-aether-700">Next</span>}
                           <button
                             onClick={() => props.onRemoveQueued(message.id)}
                             className="grid h-5 w-5 place-items-center rounded text-slate-400 opacity-0 transition hover:bg-slate-200 hover:text-slate-700 group-hover:opacity-100"

@@ -1,0 +1,43 @@
+/* Fixed transcript with a tiny Greek temple activity glyph. */
+.demo #view-agent:not([hidden]),.demo #view-thread:not([hidden]){display:flex;flex-direction:column;min-height:600px}
+.demo .conversation{display:flex;flex:1;flex-direction:column;justify-content:flex-start;gap:8px}
+.demo .conversation>*{flex-shrink:0}
+.demo .conversation .greek-thinking{margin:12px 0 0;padding:0}
+.demo .conversation{height:auto;max-height:none;overflow:visible;padding:0;font-family:var(--mono);font-size:11px;line-height:1.5}
+.demo .preparation,.demo .demo-presets,.demo .demo__composer,.demo [data-replay],.demo [data-reset],.demo [data-pending]{display:none}
+.demo .run-controls{margin-bottom:18px}
+.terminal-request{background:#eaf3fa;padding:8px 10px;border-block:1px solid #cbdde9;margin:0;overflow-wrap:anywhere}
+.terminal-entry{margin:0;overflow-wrap:anywhere}
+.terminal-entry strong{font-size:inherit;font-weight:600}
+.terminal-entry p{margin:3px 0 0 20px;color:var(--muted)}
+.terminal-entry i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#64b98a;margin-right:8px}
+.terminal-reply i{background:var(--ink)}
+.demo .terminal-diff{font:inherit;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible;background:transparent;padding:0}
+.terminal-diff span{display:block;padding:2px 12px}.terminal-diff .removed{background:#fae6e2;color:#904d43}.terminal-diff .added{background:#e4f3e8;color:#2d6245}
+.greek-thinking{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:18px 0 8px;color:#a16c11;font:11px var(--mono)}
+.greek-thinking__mark{width:18px;height:18px;flex:none;display:block}
+.thinking-detail{color:var(--muted);font-size:10px}
+
+/* Full project walkthroughs: real content, compact rhythm, working previews. */
+.demo__body{grid-template-columns:175px minmax(0,1fr) 330px;align-items:stretch}
+.demo .demo__panel{padding:22px}
+.demo .conversation{font-size:11px;line-height:1.5}
+.demo .terminal-entry p{margin:2px 0 0 16px}
+.demo .terminal-response i{background:#203f58}
+.demo .terminal-request{padding:7px 10px}
+.project-checks{margin:7px 0 0 16px;padding-left:16px;color:var(--muted)}
+.project-checks li{margin:4px 0}
+.demo .project{align-items:flex-start;text-align:left;white-space:normal;padding:12px 8px;gap:9px;width:100%}
+.demo .project[aria-pressed=true]{background:#fff0bf;border:1px solid #203f58}
+.project small{display:block;font-size:9px;font-weight:400;line-height:1.5;color:var(--muted);margin-top:4px}
+.project-icon{display:grid;place-items:center;flex:none;width:24px;height:27px;border:1px solid #8daabd;border-radius:5px;background:#fffdf5;font:16px var(--display)}
+.demo__files button[aria-pressed=true]{background:#dcecf6}
+.demo .demo__preview{padding:12px;display:flex;flex-direction:column}
+.demo .live-projects{padding:0;min-height:800px;flex:1;display:flex;background:#fffdf5;overflow:hidden}
+.live-projects iframe{width:100%;height:100%;min-height:800px;flex:1;border:0;background:#fffdf5}
+.live-projects iframe[hidden]{display:none}
+.demo .code-editor{white-space:pre-wrap;overflow-wrap:anywhere;max-height:none;overflow:visible;font-size:11px;line-height:1.7}
+.demo .demo__heading a{margin-left:auto;font-size:10px}
+@media(max-width:1100px){.demo__body{grid-template-columns:145px minmax(0,1fr) 285px}.demo .demo__panel{padding:16px}.demo .project{font-size:9px}}
+@media(max-width:800px){.demo__body{grid-template-columns:145px minmax(0,1fr)}.demo .demo__preview{grid-column:1/-1}.demo .live-projects,.live-projects iframe{min-height:720px}.demo .conversation{font-size:11px}}
+@media(max-width:600px){.demo__body{grid-template-columns:minmax(0,1fr)}.demo .demo__sidebar{display:flex;flex-wrap:wrap;overflow:visible}.demo .project{flex:1;min-width:90px;width:auto;font-size:9px}.project-icon{display:none}.project small{font-size:8px}.demo .demo__files{display:flex;flex-basis:100%;gap:6px;border:0;margin:0;padding:4px 0}.demo .demo__files button{width:auto;font-size:9px}.demo #view-agent:not([hidden]),.demo #view-thread:not([hidden]){min-height:0}.demo .conversation{gap:8px}.demo .live-projects,.live-projects iframe{min-height:800px}}

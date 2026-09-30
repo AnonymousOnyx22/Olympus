@@ -80,7 +80,7 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M20 6v5h-5M4 18v-5h5" /><path d="M18.5 9A7 7 0 0 0 6 6.5L4 9m2 6a7 7 0 0 0 12 2.5L20 15" /></svg>
         </button>
         <form className="flex min-w-0 flex-1" onSubmit={(event) => { event.preventDefault(); openDraft() }}>
-          <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="localhost:5173" className="h-7 w-full rounded-xl bg-slate-50 px-3 font-mono text-[10.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-sky-400" />
+          <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="localhost:5173" className="h-7 w-full rounded-xl bg-slate-50 px-3 font-mono text-[10.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-aether-400" />
         </form>
         <button type="button" onClick={() => void discover()} disabled={checking} className="h-7 rounded-lg px-2.5 text-[10.5px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40">
           {checking ? 'Finding…' : 'Auto-find'}
@@ -91,7 +91,7 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
           <iframe key={`${url}:${refresh}`} src={url} title="Local project preview" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts" className="h-full w-full border-0 bg-white" />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-sky-50 text-sky-500 ring-1 ring-sky-100">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-aether-50 text-aether-500 ring-1 ring-aether-100">
               <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M3 5h18v14H3V5Z" /><path d="M3 9h18M7 7h.01M10 7h.01" /></svg>
             </div>
             <div>

@@ -315,6 +315,89 @@
     }
   }
 
+  /* ── Reveal on entry, and again on re-entry ─────────────────────────── */
+  /* A one-shot reveal feels broken the moment you scroll back up: the page
+     behind you is blank. These replay, so the entrance travels with the
+     reader in both directions.
+
+     The reset is deliberately hysteretic. An element is only cleared once it
+     is well clear of the viewport, so a section parked near the edge cannot
+     flicker in and out, and no text is ever hidden while any part of it is
+     on screen.
+
+     `.motion-ready` is set first: the CSS uses it to switch reveals OFF, so
+     with no script nothing is ever hidden. The failure mode is a plain,
+     complete page. */
+  if ('IntersectionObserver' in window) {
+    document.documentElement.classList.add('motion-ready');
+
+    var revealIO = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i += 1) {
+        var entry = entries[i];
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+        } else if (Math.abs(entry.boundingClientRect.top) > window.innerHeight * 0.25) {
+          entry.target.classList.remove('is-in');
+        }
+      }
+    }, { threshold: 0, rootMargin: '0px 0px 48px 0px' });
+
+    var revealables = [].slice.call(document.querySelectorAll('.rv'));
+    for (var r = 0; r < revealables.length; r += 1) {
+      var node = revealables[r];
+      /* Hero text is readable immediately — a reader who lands on the page
+         should never wait for a heading to arrive. */
+      if (isOff() || node.closest('header, .chamber, .pagehead')) node.classList.add('is-in');
+      else revealIO.observe(node);
+    }
+
+    if (reduced.addEventListener) {
+      reduced.addEventListener('change', function () {
+        if (isOff()) {
+          for (var m = 0; m < revealables.length; m += 1) revealables[m].classList.add('is-in');
+          revealIO.disconnect();
+        } else {
+          for (var n = 0; n < revealables.length; n += 1) revealIO.observe(revealables[n]);
+        }
+      });
+    }
+  }
+
+  /* ── Numbers that settle once ─────────────────────────────────────────── */
+  /* `<span data-count="49" data-prefix="$">` counts up on arrival. Each
+     figure runs once and keeps its result, so scrolling past and back never
+     restarts a number that is already correct. Under reduced motion the
+     value is simply written. */
+  var counted = [].slice.call(document.querySelectorAll('[data-count]'));
+  if (counted.length && 'IntersectionObserver' in window) {
+    var countIO = new IntersectionObserver(function (entries) {
+      for (var e = 0; e < entries.length; e += 1) {
+        var el = entries[e].target;
+        if (!entries[e].isIntersecting || el.dataset.run) continue;
+        el.dataset.run = '1';
+        countIO.unobserve(el);
+        var target = parseFloat(el.getAttribute('data-count'));
+        var prefix = el.getAttribute('data-prefix') || '';
+        var suffix = el.getAttribute('data-suffix') || '';
+        if (isOff() || !isFinite(target)) {
+          el.textContent = prefix + target + suffix;
+          continue;
+        }
+        var t0 = performance.now();
+        var dur = 720;
+        var frame = function (t) {
+          if (el.dataset.run !== '1') return;
+          var k = Math.min(1, (t - t0) / dur);
+          var eased = 1 - Math.pow(1 - k, 3);
+          el.textContent = prefix + Math.round(target * eased) + suffix;
+          if (k < 1) requestAnimationFrame(frame);
+        };
+        requestAnimationFrame(frame);
+      }
+    }, { threshold: 0.5 });
+    for (var c = 0; c < counted.length; c += 1) countIO.observe(counted[c]);
+  }
+
   /* ── The transcript replay ───────────────────────────────────────────── */
   /* The one piece of motion on this site that runs on a clock rather than on
      scroll. The page's whole argument is that you can watch an agent work, so

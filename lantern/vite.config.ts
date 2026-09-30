@@ -47,8 +47,6 @@ const productionCsp = (): Plugin => ({
 const electronOutput = {
   build: {
     outDir: 'dist-electron',
-    // TEMP DIAGNOSTIC: minification off so a startup stack trace points at real source.
-    minify: process.env.OLYMPUS_DEBUG_BUILD === '1' ? false : undefined,
     rolldownOptions: {
       external: ['electron'],
       output: { format: 'cjs' as const, entryFileNames: '[name].js' },

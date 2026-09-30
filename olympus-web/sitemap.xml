@@ -1,69 +1,69 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- TODO before launch: replace every https://olympus.example.com/ with the
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- TODO before launch: replace every {{urls.site}}/ with the
      real origin, and the lastmod dates with real release dates. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://olympus.example.com/</loc>
+    <loc>{{urls.site}}/</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/features.html</loc>
+    <loc>{{urls.site}}/features.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/how-it-works.html</loc>
+    <loc>{{urls.site}}/how-it-works.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/pricing.html</loc>
+    <loc>{{urls.site}}/pricing.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/security.html</loc>
+    <loc>{{urls.site}}/security.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/requirements.html</loc>
+    <loc>{{urls.site}}/requirements.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/changelog.html</loc>
+    <loc>{{urls.site}}/changelog.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/license.html</loc>
+    <loc>{{urls.site}}/license.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/terms.html</loc>
+    <loc>{{urls.site}}/terms.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/privacy.html</loc>
+    <loc>{{urls.site}}/privacy.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://olympus.example.com/refunds.html</loc>
+    <loc>{{urls.site}}/refunds.html</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

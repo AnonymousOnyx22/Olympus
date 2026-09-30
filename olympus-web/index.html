@@ -3,58 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Olympus, a local-first desktop harness for local coding agents</title>
-<meta name="description" content="Olympus is a local-first desktop harness for local coding agents, running opencode today. Run the models already on your machine, keep one agent per project, and review every edit before it reaches disk. $49 one-time, free to try.">
+<title>Olympus, a workspace for AI coding agents</title>
+<meta name="description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. Free to try, with a $49 one-time licence.">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#0a2f60">
+<meta name="theme-color" content="#eaf2f6">
 <meta name="robots" content="index, follow">
 
-<!-- ══ SITE CONSTANTS: every value here is a placeholder ═════════════════
-     These are the only values that need changing before launch, and they
-     are repeated in each page's <head>. Every one is listed in README.md
-     under "TODO before launch".
+<!-- Every entity, contact, URL and artifact value on this page is injected at
+     build time from site.config.json. tools/build-site.mjs refuses to build while
+     any required value is still a TODO, so a page like this cannot ship unnamed. -->
 
-     Canonical origin    https://olympus.example.com/
-     Support             support@example.com
-     Security reports    security@example.com
-     Documentation       https://docs.example.com/olympus
-     Checkout            https://buy.example.com/olympus
-     macOS (Apple Silicon)  .../0.1.0/Olympus-0.1.0-arm64.dmg
-     macOS (Intel)          .../0.1.0/Olympus-0.1.0-x64.dmg
-     Windows                .../0.1.0/Olympus-0.1.0-setup.exe
-     Linux x64              .../0.1.0/olympus_0.1.0_amd64.AppImage
-     Price                 $49 one-time per seat
-     Trial                 free, no card, no account
-     Refund window         14 days
-     ═══════════════════════════════════════════════════════════════════════ -->
-
-<link rel="canonical" href="https://olympus.example.com/">
+<link rel="canonical" href="{{urls.site}}/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Olympus, a local-first desktop harness for local coding agents">
-<meta property="og:description" content="A local-first desktop harness for local coding agents, running opencode today. Local model discovery, one agent per project, three views on one session, and reviewable edits. $49 one-time, free to try.">
-<meta property="og:url" content="https://olympus.example.com/">
+<meta property="og:title" content="Olympus, a workspace for AI coding agents">
+<meta property="og:description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. Free to try, with a $49 one-time licence.">
+<meta property="og:url" content="{{urls.site}}/">
 <meta property="og:site_name" content="Olympus">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on a plinth banded with a Greek key pattern, with snow-capped mountain ranges behind it. This is the artwork the whole Olympus site is taken from.">
+<meta property="og:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@olympusapp">
-<meta name="twitter:title" content="Olympus, a local-first desktop harness for local coding agents">
-<meta name="twitter:description" content="A local-first desktop harness for local coding agents. $49 one-time, free to try, no account, no telemetry.">
-<meta name="twitter:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta name="twitter:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on an inscribed plinth. This is the artwork the whole Olympus site is taken from.">
+<meta name="twitter:title" content="Olympus, a workspace for AI coding agents">
+<meta name="twitter:description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. Free to try, with a $49 one-time licence.">
+<meta name="twitter:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta name="twitter:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23ffc72c'%3E%3Cpath d='M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05'/%3E%3Ccircle cx='16' cy='13.5' r='9.8' fill='none' stroke='%23ffc72c' stroke-width='0.55'/%3E%3Cellipse cx='12.55' cy='7' rx='1' ry='0.4' transform='rotate(-30 12.55 7)'/%3E%3Cellipse cx='11.3' cy='7.9' rx='1' ry='0.4' transform='rotate(-6 11.3 7.9)'/%3E%3Cellipse cx='10.65' cy='9.05' rx='1' ry='0.4' transform='rotate(22 10.65 9.05)'/%3E%3Cellipse cx='19.45' cy='7' rx='1' ry='0.4' transform='rotate(30 19.45 7)'/%3E%3Cellipse cx='20.7' cy='7.9' rx='1' ry='0.4' transform='rotate(6 20.7 7.9)'/%3E%3Cellipse cx='21.35' cy='9.05' rx='1' ry='0.4' transform='rotate(-22 21.35 9.05)'/%3E%3C/g%3E%3Cg fill='%23fffdf6'%3E%3Ccircle cx='16' cy='13.5' r='9.55'/%3E%3C/g%3E%3Cg fill='%230a2f60'%3E%3Cpath d='M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z'/%3E%3Cpath d='M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z'/%3E%3Cellipse cx='16' cy='8.6' rx='2.75' ry='3.05'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="assets/olympus-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="styles.css">
-<script>document.documentElement.className += ' js';</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
+    <link rel="stylesheet" href="olympus.css" />
 
 <script type="application/ld+json">
 {
@@ -65,14 +46,14 @@
   "applicationSubCategory": "AI coding agent GUI",
   "operatingSystem": "macOS (Apple Silicon, Intel), Windows 10, Windows 11, Linux x64",
   "softwareVersion": "0.1.0",
-  "description": "A local-first desktop GUI and execution harness for the opencode coding agent. Runs one supervised opencode serve daemon per project against model servers already running on the user's own machine, holds every edit in a diff viewer until it is accepted, and embeds a live preview of the user's own localhost dev server.",
-  "url": "https://olympus.example.com/",
-  "downloadUrl": "https://downloads.example.com/olympus/0.1.0/",
-  "image": "https://olympus.example.com/assets/olympus-og.jpg",
+  "description": "A workspace for AI coding that brings projects, conversations, change review, and previews together.",
+  "url": "{{urls.site}}/",
+  "downloadUrl": "{{urls.downloadBase}}/",
+  "image": "{{urls.site}}/assets/olympus-cartoon-hero.webp",
   "inLanguage": "en",
   "isAccessibleForFree": true,
-  "license": "https://olympus.example.com/license.html",
-  "softwareRequirements": "Node.js 18 or newer; opencode on PATH; a local or loopback OpenAI-compatible model server",
+  "license": "{{urls.site}}/license.html",
+  "softwareRequirements": "A compatible coding agent and configured model provider",
   "offers": [
     {
       "@type": "Offer",
@@ -93,841 +74,145 @@
 }
 </script>
 </head>
-<body>
-
+<body class="page-home">
 <a class="skip" href="#main">Skip to content</a>
-
-<!-- ── The column ────────────────────────────────────────────────────
-     A single fluted shaft pinned to the edge of the page, taken straight
-     from the temple in the artwork: a capital, a fluted shaft, a base.
-     The gold fill and the gold marker climb it with page progress, so they
-     run back down when you scroll back up. This is one of only two things
-     on the site that listen to scroll. -->
-<div class="colonnade" data-colonnade aria-hidden="true">
-  <span class="colonnade__capital"></span>
-  <span class="colonnade__shaft">
-    <span class="colonnade__flutes"></span>
-    <span class="colonnade__gold"></span>
-    <span class="colonnade__marker"></span>
-  </span>
-  <span class="colonnade__base"></span>
-</div>
-
-<header class="site" id="site-bar">
-  <div class="site__bar">
-    <div class="wrap site__row">
-      <a class="lockup" href="index.html" aria-label="Olympus, home">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="lockup__mark">
-          <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
-        </svg>
-        <span class="lockup__word">Olympus</span>
-      </a>
-
-      <nav class="nav" aria-label="Primary">
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html">Security</a>
-        <a href="requirements.html">Requirements</a>
-      </nav>
-
-      <div class="site__actions">
-        <!-- The primary action is the download, and it is always all three
-             platforms. Scripting moves the reader's own platform to the
-             front and marks it; without scripting the three stay in the
-             order they are written in. -->
-        <div class="dlset dlset--bar" data-dlset>
-          <a class="dlbtn dlbtn--sm" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg" aria-label="Download Olympus for macOS, Apple Silicon build"><span class="dlbtn__tag">Yours</span>macOS</a>
-          <a class="dlbtn dlbtn--sm" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe" aria-label="Download Olympus for Windows, 10 and 11"><span class="dlbtn__tag">Yours</span>Windows</a>
-          <a class="dlbtn dlbtn--sm" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage" aria-label="Download Olympus for Linux, 64-bit"><span class="dlbtn__tag">Yours</span>Linux</a>
-        </div>
-        <a class="btn btn--primary btn--sm dlbar__one" data-track="cta" href="#pricing">Download</a>
-        <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
-          <svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          <svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- The blue zigzag bar that closes every block on every page. -->
-    <div class="site__rule">
-      <span class="zigbar" aria-hidden="true"></span>
-      <span class="site__progress" aria-hidden="true"></span>
-    </div>
-
-    <div class="mobilenav" id="mobile-nav" data-open="false">
-      <nav aria-label="Primary, mobile">
-        <a href="index.html" aria-current="page">Home</a>
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html">Security</a>
-        <a href="requirements.html">Requirements</a>
-        <a href="#faq">Questions</a>
-        <a href="changelog.html">Changelog</a>
-        <a class="btn btn--primary" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
-      </nav>
-    </div>
-  </div>
-</header>
-
+<header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
+<nav class="nav" aria-label="Primary"><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="index.html#downloads">Get Olympus <span aria-hidden="true">↓</span></a>
+<button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html" aria-current="page">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="index.html#faq">Questions</a></nav></div></header>
 <main id="main">
-
-  <!-- ── Hero ──────────────────────────────────────────────────────────
-       The first room, and the only one that owns a whole viewport. Dark
-       ground, because the window illustration is the brightest thing the
-       site has and it should be the thing that is lit. The window is cut
-       by the right edge on purpose: a thing that continues off screen is a
-       better invitation to keep going than an arrow pointing down. -->
-  <section class="chamber chamber--dark chamber--full hero" id="overview" data-hero>
-    <div class="hero__key" aria-hidden="true"></div>
-
-    <div class="wrap hero2__grid">
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="wrap hero__grid">
       <div class="hero__copy">
-        <div class="hero__brand rise" style="--i:0">
-          <svg class="hero__mark" width="58" height="58" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
-          </svg>
-          <span class="boot" aria-hidden="true"><span class="boot__seg"></span></span>
-        </div>
-        <p class="eyebrow rise" style="--i:1">A desktop harness for local coding agents</p>
-        <h1 class="mega rise" style="--i:2">Olympus</h1>
-        <p class="mega__lede rise" style="--i:3">Your agent already works. This is the window that shows you it working, on your machine, against your models.</p>
-
-        <div class="hero2__cta rise" style="--i:4">
-          <a class="cta-bar" data-track="download" href="https://downloads.example.com/olympus/0.1.0/">
-            Download Olympus, free
-          </a>
-          <p class="cta-bar__note"><b>$49</b> once, per seat, when you want the updates. Free to try with no card, no account and no time limit.</p>
-        </div>
-
-        <p class="hero2__meta rise" style="--i:5">Runs <code>opencode</code> today, Kilo next. You need <code>Node 18+</code>, the agent on your PATH, and a model already running locally. <a href="requirements.html">All four prerequisites</a>.</p>
+        <a class="release-link" href="changelog.html"><span>Olympus 0.1.0</span> A new home for your local agents <span aria-hidden="true">↗</span></a>
+        <h1 id="hero-heading">A higher place<br>to build.</h1>
+        <p class="hero__lede">Your models. Your machine. Your own Olympus.<br>An independent agent harness, with every project, conversation, and change in view.</p>
+        <div class="hero__actions"><a class="btn btn--primary" href="#downloads">Get Olympus, free <span aria-hidden="true">↓</span></a><a class="btn" href="#watch"><span aria-hidden="true">▷</span> Explore the workspace</a></div>
+        <p class="hero__meta">macOS, Windows &amp; Linux &nbsp; · &nbsp; No account required</p>
       </div>
+    </div>
+    <div class="wrap hero__foot"><span>An independent harness for your agents, models, and projects.</span><span>Built on your own terms.</span></div>
+  </section>
+  <div class="greek-rule" aria-hidden="true"></div>
+  <section class="providers" aria-label="Agent, model, and development ecosystem"><div class="wrap"><p>Your tools. Your choice. Your Olympus.</p><div class="providers__row"><div class="providers__track"><div class="providers__set">
+<div class="brand-mark"><img src="assets/brands/ollama.svg" width="36" height="36" alt="Ollama logo" loading="lazy"><span>Ollama</span></div><div class="brand-mark"><img src="assets/brands/lmstudio.svg" width="36" height="36" alt="LM Studio logo" loading="lazy"><span>LM Studio</span></div><div class="brand-mark"><img src="assets/brands/anthropic.svg" width="36" height="36" alt="Anthropic logo" loading="lazy"><span>Anthropic</span></div><div class="brand-mark"><img src="assets/brands/claude.svg" width="36" height="36" alt="Claude logo" loading="lazy"><span>Claude</span></div><div class="brand-mark"><img src="assets/brands/googlegemini.svg" width="36" height="36" alt="Google Gemini logo" loading="lazy"><span>Google Gemini</span></div><div class="brand-mark"><img src="assets/brands/mistralai.svg" width="36" height="36" alt="Mistral AI logo" loading="lazy"><span>Mistral AI</span></div><div class="brand-mark"><img src="assets/brands/huggingface.svg" width="36" height="36" alt="Hugging Face logo" loading="lazy"><span>Hugging Face</span></div><div class="brand-mark"><img src="assets/brands/github.svg" width="36" height="36" alt="GitHub logo" loading="lazy"><span>GitHub</span></div><div class="brand-mark"><img src="assets/brands/nvidia.svg" width="36" height="36" alt="NVIDIA logo" loading="lazy"><span>NVIDIA</span></div><div class="brand-mark"><img src="assets/brands/react.svg" width="36" height="36" alt="React logo" loading="lazy"><span>React</span></div><div class="brand-mark"><img src="assets/brands/typescript.svg" width="36" height="36" alt="TypeScript logo" loading="lazy"><span>TypeScript</span></div><div class="brand-mark"><img src="assets/brands/python.svg" width="36" height="36" alt="Python logo" loading="lazy"><span>Python</span></div>
+</div><div class="providers__set" aria-hidden="true">
+<div class="brand-mark"><img src="assets/brands/ollama.svg" width="36" height="36" alt="" loading="lazy"><span>Ollama</span></div><div class="brand-mark"><img src="assets/brands/lmstudio.svg" width="36" height="36" alt="" loading="lazy"><span>LM Studio</span></div><div class="brand-mark"><img src="assets/brands/anthropic.svg" width="36" height="36" alt="" loading="lazy"><span>Anthropic</span></div><div class="brand-mark"><img src="assets/brands/claude.svg" width="36" height="36" alt="" loading="lazy"><span>Claude</span></div><div class="brand-mark"><img src="assets/brands/googlegemini.svg" width="36" height="36" alt="" loading="lazy"><span>Google Gemini</span></div><div class="brand-mark"><img src="assets/brands/mistralai.svg" width="36" height="36" alt="" loading="lazy"><span>Mistral AI</span></div><div class="brand-mark"><img src="assets/brands/huggingface.svg" width="36" height="36" alt="" loading="lazy"><span>Hugging Face</span></div><div class="brand-mark"><img src="assets/brands/github.svg" width="36" height="36" alt="" loading="lazy"><span>GitHub</span></div><div class="brand-mark"><img src="assets/brands/nvidia.svg" width="36" height="36" alt="" loading="lazy"><span>NVIDIA</span></div><div class="brand-mark"><img src="assets/brands/react.svg" width="36" height="36" alt="" loading="lazy"><span>React</span></div><div class="brand-mark"><img src="assets/brands/typescript.svg" width="36" height="36" alt="" loading="lazy"><span>TypeScript</span></div><div class="brand-mark"><img src="assets/brands/python.svg" width="36" height="36" alt="" loading="lazy"><span>Python</span></div>
+</div></div></div><p class="brand-note">From the wider AI and development ecosystem. Compatibility depends on your chosen setup.</p></div></section>
 
-      <figure class="shot hero2__shot rise" style="--i:5" data-tilt>
-        <div class="shot__win" role="img" data-shot data-state="idle" aria-label="Stylised illustration of the Olympus window: a project tree on the left, an agent transcript in the middle with an edit waiting for your approval, and an embedded preview of a local dev server on the right. The illustration replays an approval on a loop.">
-
-          <div class="shot__boot"></div>
-
-          <div class="shot__head">
-            <div class="shot__id">
-              <svg width="14" height="14" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="mk">
-                <g class="mk__temple">
-                  <path d="M16 13.8 30.2 20.4H1.8Z"/>
-                  <path d="M1.8 20.4h28.4v3.4H1.8z"/>
-                  <path d="M7.4 24.4h3.6v5.2H7.4zM14.2 24.4h3.6v5.2h-3.6zM21 24.4h3.6v5.2H21z"/>
-                </g>
-                <path class="mk__step" d="M1.8 30.1h28.4v1.9H1.8z"/>
-              </svg>
-              <span class="shot__title">olympus-web</span>
+  <section class="section" id="watch" aria-labelledby="workspace-heading">
+    <div class="wrap">
+      <div class="sec__head center-head"><p class="eyebrow">The Olympus workspace</p><h2 id="workspace-heading">Everything in view.<br>Room to think.</h2><p class="lede">Follow the agent, get into the code, or read the conversation. Three perspectives on the same work, in one place.</p></div>
+      <div class="demo" aria-label="Interactive Olympus workspace illustration with sample data">
+        <div class="demo__bar">
+          <div class="demo__brand"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><img src="assets/olympus-mark.svg" width="23" height="23" alt="">Olympus</div>
+          <div class="demo__tabs" role="tablist" aria-label="Workspace view">
+            <button type="button" id="tab-agent" role="tab" aria-selected="true" aria-controls="view-agent" data-demo-tab>Agent</button>
+            <button type="button" id="tab-code" role="tab" aria-selected="false" aria-controls="view-code" tabindex="-1" data-demo-tab>Code</button>
+            <button type="button" id="tab-thread" role="tab" aria-selected="false" aria-controls="view-thread" tabindex="-1" data-demo-tab>Thread</button>
+          </div>
+        </div>
+        <div class="demo__body">
+          <aside class="demo__sidebar" aria-label="Sample projects">
+            <p class="demo__label">Your projects</p>
+            <div class="project is-active"><span aria-hidden="true">▱</span> studio-site <span class="status-dot" aria-hidden="true"></span></div><p class="project__sub">Building the home page</p>
+            <div class="project"><span aria-hidden="true">▱</span> notes-app</div><div class="project"><span aria-hidden="true">▱</span> weekend-project</div>
+            <div class="demo__local"><strong><span class="status-dot" aria-hidden="true"></span> Model connected</strong>Local model · connected<br>qwen2.5-coder:14b</div>
+          </aside>
+          <div class="demo__center">
+            <div class="demo__panel" id="view-agent" role="tabpanel" aria-labelledby="tab-agent" tabindex="0">
+              <div class="demo__heading">studio-site <span data-demo-count>main · 1 proposed edit</span></div>
+              <div class="demo__prompt">Give the home page a clear, welcoming headline.</div>
+              <div class="agent-message"><span class="agent-avatar" aria-hidden="true">O</span><div><strong>Olympus</strong><p>I’ll update the heading and supporting copy. You can review the change before it’s applied.</p></div></div>
+              <div class="tool-line"><span aria-hidden="true">✓</span> Read <code>src/app/page.tsx</code></div>
+              <div class="diff-card"><div class="diff-card__head"><code>src/app/page.tsx</code><span>+2 lines</span></div><pre>+ &lt;h1&gt;Good things start here.&lt;/h1&gt;
++ &lt;p&gt;A little space for your next big idea.&lt;/p&gt;</pre><div class="diff-card__action"><span data-demo-result aria-live="polite">Waiting for your review</span><button class="demo-approve" type="button" data-demo-approve>Accept edit</button></div></div>
             </div>
-            <div class="shot__modes">
-              <span class="on">Agent</span><span>Code</span><span>Thread</span>
+            <div class="demo__panel" id="view-code" role="tabpanel" aria-labelledby="tab-code" tabindex="0" hidden>
+              <div class="demo__heading">src / app / page.tsx <span data-code-state>Proposed edit · not written</span></div>
+              <pre class="code-editor">  1  export default function Home() {
+  2    return (
+  3      &lt;main&gt;
+<span class="added">+ 4        &lt;h1&gt;Good things start here.&lt;/h1&gt;
++ 5        &lt;p&gt;A little space for your next big idea.&lt;/p&gt;</span>  6      &lt;/main&gt;
+  7    );
+  8  }</pre><div class="tool-line">One file changed · review the edit in Agent view</div>
             </div>
-            <div class="shot__tags">
-              <span class="chip">main &middot; 2 ahead</span>
-              <span class="chip chip--ask">Ask</span>
-              <span class="chip chip--gold"><span data-t="pending">Pending edits 1</span><span data-t="approved">Pending edits 0</span></span>
+            <div class="demo__panel" id="view-thread" role="tabpanel" aria-labelledby="tab-thread" tabindex="0" hidden>
+              <div class="demo__heading">A more welcoming home page <span>studio-site</span></div>
+              <div class="demo__prompt">Give the home page a clear, welcoming headline.</div>
+              <div class="agent-message"><span class="agent-avatar" aria-hidden="true">O</span><div><strong>Olympus</strong><p>I’ve kept it simple: “Good things start here.” The supporting line gives visitors a sense of what the studio is for.</p></div></div>
+              <div class="thread-message"><strong>One edit. Same conversation.</strong><p data-thread-state>The edit is ready for your review in Agent view.</p></div>
             </div>
+            <div class="demo__composer" aria-hidden="true">Describe what you’d like to build…<div><span>+ &nbsp; qwen2.5-coder:14b</span><b>↑</b></div></div>
           </div>
-
-          <div class="shot__body">
-
-            <section class="pane pane--tree">
-              <p class="pane__label">Projects</p>
-              <div class="field"><span class="field__ico" aria-hidden="true"></span>Find project</div>
-              <ul class="tree">
-                <li class="tree__row"><span class="dot dot--busy" aria-hidden="true"></span>notes-site</li>
-                <li class="tree__row is-on"><span class="dot" aria-hidden="true"></span>olympus-web</li>
-                <li class="tree__row"><span class="dot" aria-hidden="true"></span>scratch</li>
-                <li class="tree__row is-off">archive <span class="tree__note">(missing)</span></li>
-              </ul>
-            </section>
-
-            <section class="pane pane--agent">
-              <p class="line line--you">Pause edits until I approve them.</p>
-              <div class="mc">
-                <div class="mc__bar"><span class="mc__name">read</span><code>apply.ts</code><span class="chev" aria-hidden="true"></span></div>
-                <div class="mc__body">
-                  <span class="bar" style="--w:92%"></span>
-                  <span class="bar" style="--w:64%"></span>
-                </div>
-              </div>
-              <div class="mc mc--edit">
-                <div class="mc__bar">
-                  <span class="mc__name">edit</span><code>edit.ts</code>
-                  <span class="pill pill--gold"><span data-t="pending">Awaiting approval</span><span data-t="approved">Applied</span></span>
-                </div>
-                <div class="diff">
-                  <div class="diff__row" data-seq><span class="diff__s">&nbsp;</span><code>export async function apply(pending) {</code></div>
-                  <div class="diff__row diff__row--add" data-seq><span class="diff__s">+</span><code>await requireApproval(pending)</code></div>
-                  <div class="diff__row" data-seq><span class="diff__s">&nbsp;</span><code>for (const file of pending) {</code></div>
-                  <div class="diff__row diff__row--add" data-seq><span class="diff__s">+</span><code>await writeIfAccepted(file)</code></div>
-                </div>
-                <div class="approve">
-                  <span class="approve__txt">Held until you accept</span>
-                  <span class="approve__btns"><span class="mini">Reject</span><span class="mini mini--gold">Accept</span></span>
-                  <span class="approve__done" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.6l4.6 4.6L19 7.4"/></svg>
-                    Written to disk
-                  </span>
-                </div>
-              </div>
-              <div class="composer"><span>Message the agent&hellip;</span><span class="send" aria-hidden="true"></span></div>
-            </section>
-
-            <section class="pane pane--preview">
-              <div class="pane__label pane__label--row">Preview <span class="chip chip--sm">localhost:5173</span></div>
-              <div class="wire">
-                <span class="wire__nav"></span>
-                <span class="wire__nav wire__nav--short"></span>
-                <span class="wire__hero"></span>
-                <span class="wire__col"></span>
-                <span class="wire__col"></span>
-                <span class="wire__row"></span>
-              </div>
-              <p class="wire__cap">Schematic, not a real app.</p>
-            </section>
-
-          </div>
+          <aside class="demo__preview" aria-label="Illustrated preview of the sample project"><div class="preview-page"><div class="preview-page__nav">studio.<span>Work &nbsp; About</span></div><h3>Good things<br>start here.</h3><p>A little space for your next big idea.</p><span class="preview-button">Explore our work</span></div></aside>
         </div>
-        <figcaption>Stylised illustration of the three-pane layout. Not a screenshot.</figcaption>
-      </figure>
-
-    </div>
-  </section>
-
-  <!-- ── The frieze ──────────────────────────────────────────────────────
-       Drawn from the artwork rather than photographed from it: pale sky,
-       a radiant gold sun, three mountain ranges in flat blues, a warm
-       stone ridge, a marble temple, cypresses, dark foreground.
-
-       It sits between the first room and the second rather than inside
-       either, so it reads as the ground the hero stands on and the horizon
-       the next room opens onto. The rays turn, the ranges drift at three
-       different rates and the band slides as you scroll, and all of it runs
-       backwards when you scroll back up. -->
-    <figure class="hero__band" data-scrub="hold">
-      <svg class="frieze" viewBox="0 0 1400 428" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="frieze-cap">
-        <title id="frieze-cap">A radiant sun rising behind a marble temple on a warm stone ridge, with three mountain ranges behind it and cypresses in front.</title>
-        <defs>
-          <pattern id="olympusCol" x="176" y="190" width="56" height="112" patternUnits="userSpaceOnUse">
-            <rect x="0" y="0" width="32" height="112" fill="#f7f0e0"/>
-            <rect x="0" y="0" width="32" height="7" fill="#fffcf2"/>
-            <rect x="0" y="105" width="32" height="7" fill="#efe5cd"/>
-            <path d="M9 7v98M23 7v98" stroke="#ddd0b2" stroke-width="3"/>
-            <rect x="29" y="0" width="4" height="112" fill="#c8b998"/>
-          </pattern>
-        </defs>
-
-        <rect class="fr__sky" x="0" y="0" width="1400" height="428"/>
-        <rect class="fr__sky-hi" x="0" y="0" width="1400" height="150"/>
-
-        <g class="fr__sun">
-          <path class="fr__rays" d="M422.9 90.4L430.0 48.0L437.1 90.4ZL454.6 95.1L482.0 61.9L467.0 102.2ZL479.8 115.0L520.1 100.0L486.9 127.4ZL491.6 144.9L534.0 152.0L491.6 159.1ZL486.9 176.6L520.1 204.0L479.8 189.0ZL467.0 201.8L482.0 242.1L454.6 208.9ZL437.1 213.6L430.0 256.0L422.9 213.6ZL405.4 208.9L378.0 242.1L393.0 201.8L380.2 189.0L339.9 204.0L373.1 176.6ZL368.4 159.1L326.0 152.0L368.4 144.9L373.1 127.4L339.9 100.0L380.2 115.0L393.0 102.2L378.0 61.9L405.4 95.1Z"/>
-          <circle class="fr__disc" cx="430" cy="152" r="58"/>
-        </g>
-
-        <path class="fr__range fr__range--aether" d="M0 428L0 252L100 243L200 278L300 254L400 259L500 282L600 274L700 280L800 264L900 250L1000 284L1100 250L1200 259L1300 300L1400 305L1400 428Z"/>
-        <path class="fr__range fr__range--kyanos" d="M0 428L0 293L117 319L233 271L350 282L467 315L583 294L700 295L817 306L933 316L1050 279L1167 283L1283 294L1400 315L1400 428Z"/>
-        <path class="fr__range fr__range--nave" d="M0 428L0 323L140 328L280 325L420 316L560 333L700 346L840 327L980 305L1120 339L1260 322L1400 310L1400 428Z"/>
-
-        <g class="fr__cloud fr__cloud--a">
-          <ellipse cx="35" cy="278" rx="32" ry="18"/>
-          <ellipse cx="72" cy="266" rx="46" ry="25"/>
-          <ellipse cx="105" cy="280" rx="30" ry="16"/>
-          <ellipse cx="12" cy="288" rx="24" ry="14"/>
-        </g>
-        <g class="fr__cloud fr__cloud--b">
-          <ellipse cx="815" cy="262" rx="34" ry="18"/>
-          <ellipse cx="863" cy="250" rx="48" ry="26"/>
-          <ellipse cx="905" cy="264" rx="32" ry="17"/>
-          <ellipse cx="780" cy="272" rx="26" ry="15"/>
-        </g>
-        <g class="fr__cloud fr__cloud--c">
-          <ellipse cx="1190" cy="258" rx="28" ry="15"/>
-          <ellipse cx="1228" cy="246" rx="40" ry="20"/>
-          <ellipse cx="1260" cy="260" rx="26" ry="14"/>
-        </g>
-
-        <path class="fr__ridge" d="M0 342L180 322L660 320L980 300L1400 288L1400 384L0 384Z"/>
-        <path class="fr__ridge-hi" d="M0 342L180 322L660 320L980 300L1400 288"/>
-
-        <g class="fr__cypress">
-          <path d="M672 252c10 22 15 40 15 54a15 15 0 0 1-30 0c0-14 5-32 15-54Z"/>
-          <path d="M726 244c10 22 15 40 15 54a15 15 0 0 1-30 0c0-14 5-32 15-54Z"/>
-          <path d="M1122 232c10 22 15 40 15 54a15 15 0 0 1-30 0c0-14 5-32 15-54Z"/>
-        </g>
-
-        <g class="fr__temple">
-          <path class="fr__pediment" d="M160 168 L384 84 L608 168 Z"/>
-          <path class="fr__pediment-in" d="M186 163 L384 104 L582 163 Z"/>
-          <rect class="fr__arch" x="168" y="168" width="440" height="22"/>
-          <rect class="fr__fillet" x="168" y="186" width="440" height="5"/>
-          <rect class="fr__cols-shade" x="188" y="196" width="424" height="112"/>
-          <rect class="fr__cols" x="176" y="190" width="424" height="112" fill="url(#olympusCol)"/>
-          <rect class="fr__step" x="160" y="302" width="448" height="14"/>
-          <rect class="fr__step" x="150" y="316" width="468" height="15"/>
-        </g>
-
-        <path class="fr__fore" d="M0 366L340 358L700 372L1040 352L1400 344L1400 428L0 428Z"/>
-        <path class="fr__fore-hi" d="M0 366L340 358L700 372L1040 352L1400 344"/>
-      </svg>
-      <figcaption class="visually-hidden">The frieze the whole site is drawn from.</figcaption>
-    </figure>
-
-  <!-- ── Provider marquee ───────────────────────────────────────────────
-       The threshold strip between two rooms. A static running frieze: it
-       used to answer scroll velocity, which made it lurch every time the
-       page moved. -->
-  <div class="marquee">
-    <p class="visually-hidden">Runs against local model servers you are already running: Ollama, LM Studio, vLLM, llama.cpp, any loopback OpenAI-compatible server.</p>
-    <div class="marquee__track" aria-hidden="true">
-      <div class="marquee__half">
-        <span>Ollama</span><span>LM Studio</span><span>vLLM</span><span>llama.cpp</span><span>any loopback OpenAI&#8209;compatible server</span><span>opencode serve</span><span>Node 18+</span>
+        <div class="demo__foot"><span>◇ &nbsp; studio-site &nbsp; / &nbsp; main</span></div>
       </div>
-      <div class="marquee__half">
-        <span>Ollama</span><span>LM Studio</span><span>vLLM</span><span>llama.cpp</span><span>any loopback OpenAI&#8209;compatible server</span><span>opencode serve</span><span>Node 18+</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Three questions ────────────────────────────────────────────── -->
-  <section class="section section--tint" id="questions" data-scrub aria-labelledby="questions-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">What it is for</p>
-        <h2 id="questions-h">Three questions it answers</h2>
-        <p class="lede">A coding agent is only useful if you can tell what it is doing. Every part of Olympus exists to answer one of three questions.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <div class="cards cards--3" data-reveal>
-        <article class="card-lg">
-          <p class="card-lg__q">Which project am I in?</p>
-          <p>Each project gets its own agent process. Switching projects never interrupts what another project's agent is doing, and busy state stays visible in the project tree.</p>
-        </article>
-        <article class="card-lg">
-          <p class="card-lg__q">What is the agent doing?</p>
-          <p>Streamed reasoning, tool-call cards with expandable output, an agent-output console, and a real interactive shell. The work is visible while it happens.</p>
-        </article>
-        <article class="card-lg">
-          <p class="card-lg__q">What changed?</p>
-          <p>Edits made through the edit tool pause in a diff viewer. Nothing is written to disk until you accept. Shell commands need a separate approval, because they can change files.</p>
-        </article>
+      <p class="demo-caption">Explore the workspace and switch between projects. Scripted example; no model is connected.</p>
+      <noscript><p class="note">The Agent illustration is shown above. Enable JavaScript to switch views and try the sample approval.</p></noscript>
+      <div class="workflow-grid">
+        <article class="workflow-card"><h3><span class="mode-symbol" aria-hidden="true">◈</span> Agent</h3><p>Follow the reasoning, tools, and proposed changes as the work happens. Review the next step in context.</p></article>
+        <article class="workflow-card"><h3><span class="mode-symbol" aria-hidden="true">⌘</span> Code</h3><p>Your files, editor, and run controls together. Get closer to the details without losing your conversation.</p></article>
+        <article class="workflow-card"><h3><span class="mode-symbol" aria-hidden="true">≋</span> Thread</h3><p>A quieter view of the same session. Read the conversation and pick up right where you left off.</p></article>
       </div>
     </div>
   </section>
 
-  <!-- ── Watch it work ───────────────────────────────────────────────────
-       A working transcript, not a picture of one. It runs the real sequence
-       the app shows: a prompt, streamed reasoning, tool rows you can click
-       open, an edit held behind an approval, and a test run, then loops.
+  <section class="section section--tint" aria-labelledby="review-heading"><div class="wrap split">
+    <div><p class="eyebrow">Stay close to the work</p><h2 id="review-heading">Let the agent build.<br>Keep the final say.</h2><p class="lede">An edit should be something you understand. Olympus puts the proposed change in front of you, so you can decide what reaches your files.</p><ul class="feature-list"><li>Read the diff before accepting an edit.</li><li>Approve shell commands separately.</li><li>Keep the project and its preview side by side.</li></ul><a class="text-link" href="features.html">Explore the features <span aria-hidden="true">↗</span></a></div>
+    <div class="review-visual" role="img" aria-label="Illustration of a two-line heading change waiting for approval"><div class="diff-card"><div class="diff-card__head"><code>src/app/page.tsx</code><span>Proposed change</span></div><pre>  &lt;main className="studio"&gt;
++   &lt;h1&gt;Good things start here.&lt;/h1&gt;
++   &lt;p&gt;A space for your next idea.&lt;/p&gt;
+  &lt;/main&gt;</pre><div class="diff-card__action"><span>Review before writing</span><span class="demo-approve">Accept edit</span></div></div><div class="approval-note"><span aria-hidden="true">✓</span> Your approval is part of the process.</div></div>
+  </div></section>
 
-       It is honest about what it is: the caption says this is a replay of
-       the interface, not a video of a real run, because that is exactly
-       what it is. With scripting off, or under prefers-reduced-motion, every
-       step is simply present from the start and nothing hides. -->
-  <section class="section section--tint" id="watch" data-scrub="hold" aria-labelledby="watch-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">The second question</p>
-        <h2 id="watch-h">What is the agent doing?</h2>
-        <p class="lede">This is the part that decides whether an agent is useful. Not its final answer. The work in between. Reasoning as it is produced, every tool call as a row you can open, and nothing written to your disk until you say so.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
+  <section class="section ownership" aria-labelledby="local-heading"><div class="wrap split">
+    <div class="ownership__copy"><p class="eyebrow">Your own Olympus</p><h2 id="local-heading">Power that stays<br>on your mountain.</h2><p class="lede">Connect the models running on your computer. Give each project its own agent. Move between ideas while the work keeps going.</p><p class="lede">No Olympus account or activity tracking. Use a model on your computer, or choose a cloud provider when you want one.</p><p style="margin-top:25px"><a class="text-link" href="security.html">How Olympus stays local <span aria-hidden="true">↗</span></a></p></div>
+    <img class="ownership__art" src="assets/olympus-cartoon-sanctuary.webp" width="1254" height="1254" loading="lazy" alt="A cartoon Greek sanctuary with a golden olive tree and cloud-covered steps.">
+  </div></section>
 
-      <figure class="tr" data-transcript>
-        <figcaption class="tr__cap">
-          <strong>A replay of the interface, not a video of a real run.</strong> The sequence is
-          the one the app produces for an ordinary request: search, read, edit, approval, test.
-          Click any tool row to open its output.
-        </figcaption>
-
-        <div class="tr__bar">
-          <span class="tr__dot" aria-hidden="true"></span>
-          <span class="tr__title">general &middot; add a version check</span>
-          <span class="tr__state" data-transcript-state>idle</span>
-        </div>
-
-        <div class="tr__body" role="log" aria-live="off" aria-label="Example agent transcript">
-          <p class="tr__prompt" data-at="0">
-            <span class="tr__you">you</span> add a startup check for the opencode version, and tell the user clearly when it is missing
-          </p>
-
-          <div class="tr__think" data-at="1">
-            <span class="tr__arrow" aria-hidden="true">&rarr;</span>
-            <p>
-              <span>There is no version check in main.ts, and the daemon just fails with a</span>
-              <span>port error if opencode is not on PATH. That is a bad first-run experience,</span>
-              <span>so the fix belongs at startup rather than in the daemon.</span>
-            </p>
-          </div>
-
-          <div class="tr__row" data-at="2">
-            <button class="tr__trigger" type="button" aria-expanded="false">
-              <span class="tr__ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Zm9 3-4.3-4.3"/></svg>
-              </span>
-              <span class="tr__name">Grep</span>
-              <span class="tr__sep" aria-hidden="true">&middot;</span>
-              <span class="tr__arg">detectOpencodeVersion</span>
-              <span class="tr__time">0.2s</span>
-              <span class="tr__chev" aria-hidden="true"></span>
-            </button>
-            <pre class="tr__out" data-out><code>electron/daemonManager.ts:58
-electron/main.ts:121
-2 matches</code></pre>
-          </div>
-
-          <div class="tr__row" data-at="3">
-            <button class="tr__trigger" type="button" aria-expanded="false">
-              <span class="tr__ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg>
-              </span>
-              <span class="tr__name">Read</span>
-              <span class="tr__sep" aria-hidden="true">&middot;</span>
-              <span class="tr__arg">electron/main.ts</span>
-              <span class="tr__time">0.1s</span>
-              <span class="tr__chev" aria-hidden="true"></span>
-            </button>
-            <pre class="tr__out" data-out><code>318  app.whenReady().then(() =&gt; {
-319    migrateLegacyUserData()
-320    startWatchers()
-321    registerIpc()
-322    createWindow()</code></pre>
-          </div>
-
-          <div class="tr__row" data-at="4">
-            <button class="tr__trigger" type="button" aria-expanded="false">
-              <span class="tr__ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></svg>
-              </span>
-              <span class="tr__name">Edit</span>
-              <span class="tr__sep" aria-hidden="true">&middot;</span>
-              <span class="tr__arg">electron/main.ts</span>
-              <span class="tr__wait" data-at="5">waiting for you</span>
-              <span class="tr__chev" aria-hidden="true"></span>
-            </button>
-            <pre class="tr__diff" data-out><code><span class="d-add">+  const { version, available } = detectOpencodeVersion()</span>
-<span class="d-add">+  if (!available) showBanner('opencode was not found')</span>
-<span class="d-dele">-  const state = await startForProject(id, cwd)</span></code></pre>
-          </div>
-
-          <div class="tr__gate" data-at="6">
-            <p class="tr__gatetxt"><strong>1 edit is waiting for you.</strong> Nothing has been written to disk.</p>
-            <p class="tr__acts">
-              <span class="tr__btn tr__btn--go" data-transcript-allow>Allow</span>
-              <span class="tr__btn" data-transcript-deny>Deny</span>
-            </p>
-          </div>
-
-          <div class="tr__row" data-at="7">
-            <button class="tr__trigger" type="button" aria-expanded="false">
-              <span class="tr__ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-5-6-5M12 19h8"/></svg>
-              </span>
-              <span class="tr__name">Shell</span>
-              <span class="tr__sep" aria-hidden="true">&middot;</span>
-              <span class="tr__arg">npm test</span>
-              <span class="tr__ok" data-at="8">passed</span>
-              <span class="tr__chev" aria-hidden="true"></span>
-            </button>
-            <pre class="tr__out" data-out><code>94 passed, 1 skipped
-7 files, 5.4s</code></pre>
-          </div>
-        </div>
-
-        <div class="tr__foot">
-          <button class="tr__replay" type="button" data-transcript-replay>
-            <span class="tr__replayico" aria-hidden="true"></span> Replay
-          </button>
-          <p class="tr__hint">Runs on its own while it is on screen. Hover it, or use the button, to take over.</p>
-        </div>
-      </figure>
+  <section class="section" id="pricing" aria-labelledby="pricing-heading"><div class="wrap">
+    <div class="section-intro"><div class="sec__head"><p class="eyebrow">Simple by design</p><h2 id="pricing-heading">A workspace to keep.</h2><p class="lede">Start free. Buy a licence when you want ongoing 0.x updates.<br>One payment, with room to make it your own.</p></div><a class="text-link" href="pricing.html">All pricing details <span aria-hidden="true">↗</span></a></div>
+    <div class="cards cards--2">
+      <article class="card-lg downloads" id="downloads"><h3>Make yourself at home</h3><p class="price__fig">Free</p><p class="price__terms">The full application. No card, no account, and no trial clock.</p><ul class="ticks price__list"><li>All workspace features</li><li>Local models and per-project agents</li><li>Keep using the current release</li></ul><div class="dlset" data-dlset><a class="dlbtn" data-download="macos" href="{{urls.downloadBase}}/{{artifacts.macArm64}}"><span class="dlbtn__tag">Your OS</span>macOS · Apple Silicon</a><a class="dlbtn" data-download="windows" href="{{urls.downloadBase}}/{{artifacts.windows}}"><span class="dlbtn__tag">Your OS</span>Windows</a><a class="dlbtn" data-download="linux" href="{{urls.downloadBase}}/{{artifacts.linux}}"><span class="dlbtn__tag">Your OS</span>Linux</a></div><a class="intel-link" href="{{urls.downloadBase}}/{{artifacts.macIntel}}">Download for an Intel Mac</a></article>
+      <article class="card-lg card-lg--gold"><h3>Yours for the long run</h3><p class="price__fig"><sup>$</sup>49 <small>USD · once, per person</small></p><p class="price__terms">A perpetual licence for the 0.x line, with every 0.y release included.</p><ul class="ticks price__list"><li>Everything in the free release</li><li>All 0.x updates and email support</li><li>Commercial use, on two computers</li><li>A 14-day refund window</li></ul><p class="price__cta"><a class="btn btn--primary" href="{{urls.checkout}}">Get a licence <span aria-hidden="true">↗</span></a></p></article>
     </div>
-  </section>
+    <p class="note">Make sure your computer and AI model are ready. <a href="requirements.html">Check the requirements</a> before downloading. Model services are separate from the Olympus licence.</p>
+  </div></section>
 
-  <!-- ── Price & download ───────────────────────────────────────────────
-       The commercial centre of the page. The price, the refund window, the
-       three builds, and a plain list of what the money buys and what it
-       does not. -->
-  <section class="section" id="pricing" data-scrub aria-labelledby="pricing-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">Price</p>
-        <h2 id="pricing-h">Forty-nine dollars, once</h2>
-        <p class="lede">A licence per person. Not a subscription, not a seat rental, not a tier. You pay once and the version you bought keeps working.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <div class="get__grid">
-        <div>
-          <p class="get__fig">$49 <span class="get__unit">one-time, per seat</span></p>
-          <p class="get__terms"><strong>Free to try before you pay.</strong> The whole application, with no card, no account and no time limit. <strong>Fourteen days to change your mind</strong> after you pay, no questions asked.</p>
-
-          <div class="get__buy">
-            <div class="dlset" data-dlset>
-              <a class="dlbtn dlbtn--go" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg"><span class="dlbtn__tag">Yours</span>macOS</a>
-              <a class="dlbtn dlbtn--go" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe"><span class="dlbtn__tag">Yours</span>Windows</a>
-              <a class="dlbtn dlbtn--go" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage"><span class="dlbtn__tag">Yours</span>Linux</a>
-            </div>
-            <p class="note">
-              <strong>Two macOS builds, not one.</strong> Apple Silicon and Intel are separate downloads, so pick the button matching your Mac. The <a href="requirements.html">requirements page</a> says which is which, and the <a href="changelog.html">changelog</a> names the current build.
-            </p>
-          </div>
-        </div>
-
-        <div class="panel panel--blue">
-          <p class="panel__label">What the licence covers</p>
-          <ul class="ticks ticks--light">
-            <li><strong>Every build listed above</strong>, for macOS, Windows 10 and 11, and Linux x64.</li>
-            <li><strong>Every update to the 0.x line</strong>, and every future 0.y release, at no further cost.</li>
-            <li><strong>Commercial use.</strong> Use it at work, on client projects, on paid work. The licence is per person and follows the person, not the machine.</li>
-            <li><strong>Two computers per person</strong>, a desktop and a laptop, or Intel and Apple Silicon.</li>
-            <li><strong>Bug reports answered</strong> at <a href="mailto:support@example.com">support@example.com</a>.</li>
-          </ul>
-          <p class="panel__label" style="margin-top:26px">What it does not cover</p>
-          <ul class="ticks ticks--light ticks--off">
-            <li>Redistributing the binary, in a template, a bundle or a public mirror.</li>
-            <li>Your model server. Whatever Ollama, LM Studio, vLLM or llama.cpp costs to run is between you and them.</li>
-            <li>opencode itself, which is a separate project with its own licence.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="cards cards--3" style="margin-top:clamp(34px,4vw,52px)" data-reveal>
-        <article class="card-lg">
-          <h3>Free</h3>
-          <p class="price__fig">$0</p>
-          <p class="price__terms">The complete application, for as long as you want to keep it. No card, no account, no trial clock. The only thing you give up is updates after the current release.</p>
-          <ul class="ticks ticks--off price__list">
-            <li>All features, no time limit</li>
-            <li>No support commitment</li>
-            <li>Updates to 0.1.0 only</li>
-          </ul>
-          <p class="price__cta"><a class="btn btn--ghost btn--sm" data-track="download" href="https://downloads.example.com/olympus/0.1.0/">Download the trial</a></p>
-        </article>
-
-        <article class="card-lg card-lg--gold">
-          <h3>Perpetual, per seat</h3>
-          <p class="price__fig"><sup>$</sup>49</p>
-          <p class="price__terms">One payment. The licence is yours for that version line, and you may keep using it whether or not you buy anything else from us again.</p>
-          <ul class="ticks price__list">
-            <li>Everything in the trial</li>
-            <li>Every 0.y update, for free</li>
-            <li>Commercial use permitted</li>
-            <li>Support by email</li>
-            <li>14-day refund window</li>
-          </ul>
-          <p class="price__cta"><a class="btn btn--primary" data-track="cta" href="https://buy.example.com/olympus">Buy a licence</a></p>
-        </article>
-
-        <article class="card-lg">
-          <h3>A future major version</h3>
-          <p class="price__fig">TBD</p>
-          <p class="price__terms">We have not built 1.0 yet, so there is no number to quote. When there is, it will be a one-off upgrade, it will be less than the original price, and every 0.x build will keep running against the opencode versions it worked with.</p>
-          <ul class="ticks ticks--off price__list">
-            <li>Priced when it exists, not before</li>
-            <li>Upgrade, not a second subscription</li>
-            <li>0.x builds keep working</li>
-          </ul>
-          <p class="price__cta"><a class="btn btn--ghost btn--sm" data-track="cta" href="changelog.html">See where 0.1.0 stands</a></p>
-        </article>
-      </div>
-
-      <p class="note">
-        <strong>Why a licence and not a subscription.</strong> The app has no server, so there is nothing for a subscription to pay for. What it does have is a build to sign, a set of platforms to keep working, and a dependency on somebody else&rsquo;s project that we will have to keep up with. A one-off price covers that. If we ever need to keep charging, say for hosted builds, it will be a separate product you choose to buy, not a tier this one gets moved into.
-      </p>
+  <section class="section section--tint" id="compare" aria-labelledby="compare-heading"><div class="wrap">
+    <div class="sec__head"><p class="eyebrow">Your tools. One workspace.</p><h2 id="compare-heading">The harness around your workflow.</h2><p class="lede">Olympus brings your agents, models, and projects together. Choose a compatible setup that suits your work, with Olympus as the place to manage it.</p></div>
+    <div class="cards cards--3">
+      <article class="card"><h3>Your choice of tools</h3><p>Use the agents and model providers that fit your workflow. Olympus is an independent workspace, built around your choices.</p></article>
+      <article class="card"><h3>Your work in view</h3><p>Keep projects, conversations, and proposed changes together so you can follow the work without losing your place.</p></article>
+      <article class="card"><h3>Your decisions</h3><p>Review changes and decide what happens next. Keep the focus on what you want to build.</p></article>
     </div>
-  </section>
+  </div></section>
 
-  <!-- ── Compare ────────────────────────────────────────────────────────
-       Both columns are true. opencode's CLI is good and this page says so;
-       the argument is about what a window adds, not about what a terminal
-       cannot do. -->
-  <section class="section section--tint" id="compare" data-scrub aria-labelledby="compare-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">Compared</p>
-        <h2 id="compare-h">The CLI is good. Here is what the window adds.</h2>
-        <p class="lede">Olympus is not a replacement for <code>opencode</code>. It is the same agent with a project tree, a diff you have to click through, and a preview pane bolted on.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <figure class="cmp__fig" data-reveal>
-        <div class="cmp__scroll" tabindex="0" role="region" aria-labelledby="compare-h">
-          <table class="cmp">
-            <caption class="visually-hidden">opencode on the command line compared with Olympus, across seven areas.</caption>
-            <thead>
-              <tr>
-                <th scope="col"><small class="cmp__corner">Area</small></th>
-                <th scope="col">The <code>opencode</code> CLI<small>what you already have</small></th>
-                <th scope="col" class="is-ours">Olympus<small>the same agent, in a window</small></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">Working on more than one project</th>
-                <td>One agent per terminal. Run several, and you are keeping several in your head, or in a tab bar you have to read.</td>
-                <td class="is-ours">One supervised <code>opencode serve</code> per project, all live at once. Switch projects and the other one keeps going, with its state still shown in the tree.</td>
-              </tr>
-              <tr>
-                <th scope="row">Seeing an edit before it lands</th>
-                <td>Whatever the agent and the terminal give you. Solid, and entirely dependent on the tool and the flags you passed.</td>
-                <td class="is-ours">Edits made through the edit tool stop in a diff viewer and stay there. Nothing reaches disk until you accept. Shell commands ask separately.</td>
-              </tr>
-              <tr>
-                <th scope="row">Seeing what the agent is doing</th>
-                <td>Streamed output in the terminal. Excellent if you read fast and know what the tools are called.</td>
-                <td class="is-ours">Reasoning, tool cards with expandable output, a diff per tool call, an agent-output console and a real interactive shell, grouped instead of interleaved.</td>
-              </tr>
-              <tr>
-                <th scope="row">Finding out which models you have</th>
-                <td>Ask opencode, or query each server yourself.</td>
-                <td class="is-ours">Ollama, LM Studio, vLLM, llama.cpp and any loopback OpenAI-compatible server are discovered and listed with what each has loaded, alongside providers you configured in opencode.</td>
-              </tr>
-              <tr>
-                <th scope="row">Looking at your own running site</th>
-                <td>Open a browser. Fine, but it is a different window and a different focus.</td>
-                <td class="is-ours">An embedded preview of your real localhost dev server, next to the agent that is changing it, reloading as it changes.</td>
-              </tr>
-              <tr>
-                <th scope="row">What it costs</th>
-                <td>Free and open source.</td>
-                <td class="is-ours">$49 once, or free to try and keep. You still need opencode and a model server either way, and that cost is the same in both columns.</td>
-              </tr>
-              <tr>
-                <th scope="row">Setting it up</th>
-                <td>Install opencode. You already know how to use it.</td>
-                <td class="is-ours">Download a build, and point it at the <code>opencode</code> already on your PATH. There is no account, no key and no server to configure.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <figcaption class="cmp__cap">Both columns describe software that exists today. Where a row is close, it is close.</figcaption>
-      </figure>
-
-      <p class="note">
-        <strong>If you like the terminal, use the terminal.</strong> If you want the CLI&rsquo;s agent and a window that shows you its work, that is what this is. <a href="requirements.html">Read what it needs first</a>, including the <a href="requirements.html#opencode">opencode compatibility note</a>, which is the most important caveat on this page.
-      </p>
+  <section class="section" id="faq" aria-labelledby="faq-heading"><div class="wrap faq-layout">
+    <div class="sec__head"><p class="eyebrow">Before you settle in</p><h2 id="faq-heading">A few good questions.</h2><p class="lede">The practical details, so you know what to expect.</p><p style="margin-top:25px"><a class="text-link" href="how-it-works.html">Read the setup guide <span aria-hidden="true">↗</span></a></p></div>
+    <div class="faq">
+      <details class="faq__item"><summary>What do I need to get started?</summary><p>A supported computer, a project folder, and a compatible agent and model ready to use. The <a href="requirements.html">setup checklist</a> covers the software you need.</p></details>
+      <details class="faq__item"><summary>Does everything run on my computer?</summary><p>With a model running on your computer, your AI work stays there. If you choose a cloud provider, your requests go to that provider. Olympus does not track your activity or require an account.</p></details>
+      <details class="faq__item"><summary>Can I really keep using it for free?</summary><p>Yes. The current release has all features and no time limit. The $49 licence adds ongoing updates throughout the 0.x line and email support. See the <a href="pricing.html">complete pricing terms</a>.</p></details>
+      <details class="faq__item"><summary>What can the agent change without asking?</summary><p>Proposed file edits wait for your approval. Commands ask separately because they can also change files. Review both before accepting. <a href="security.html">Learn about your controls</a>.</p></details>
+      <details class="faq__item"><summary>Which models work with Olympus?</summary><p>Olympus is independent of any one provider. Use a model supported by your chosen agent and setup, whether it runs locally or through a connected cloud provider.</p></details>
+      <details class="faq__item"><summary>What if it isn’t the right fit?</summary><p>Try the free release first. If you buy a licence, the refund window is 14 days. The <a href="refunds.html">refund policy</a> explains the process.</p></details>
     </div>
-  </section>
-
-  <!-- ── Questions ───────────────────────────────────────────────────────
-       Plain <details>. No script opens these, no script needs to, and they
-       are all expanded-or-not correctly with scripting off. -->
-  <section class="section" id="faq" data-scrub aria-labelledby="faq-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">Questions</p>
-        <h2 id="faq-h">The ones worth asking first</h2>
-        <p class="lede">If your question is not here, <a href="mailto:support@example.com">support@example.com</a> is a real address and a person reads it.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <div class="faq">
-        <details class="faq__item" data-faq="offline">
-          <summary>Does it work offline?</summary>
-          <div class="faq__a">
-            <p>Yes, with one condition: you need a model server running on the machine. If Ollama, LM Studio, vLLM or llama.cpp is up with a model loaded, Olympus never needs the network at all. It spawns its own local <code>opencode serve</code>, talks to it over loopback, and stops when you exit.</p>
-            <p>What it will not do is fetch anything for you. There is no model download, no account to create, and no telemetry endpoint to reach. If the model server is not running, Olympus says so and stops there rather than silently falling back to a cloud provider.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="cost">
-          <summary>What does it cost?</summary>
-          <div class="faq__a">
-            <p>$49 once, per person. Not per month, not per project, not per machine. <a href="pricing.html">The full breakdown is here</a>, including what a future major version would cost.</p>
-            <p>You also need <code>opencode</code> and a model server. Those are separate costs, and they are the same whether you use Olympus or not.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="subscription">
-          <summary>Is there a subscription?</summary>
-          <div class="faq__a">
-            <p>No, and there is not going to be one. The app has no server, so there is nothing a recurring payment would buy. The version you buy keeps running.</p>
-            <p>Updates inside the 0.x line are free and automatic. A future 1.0 would be a one-off upgrade at a price we will publish before it exists, and every 0.x build will keep working.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="data">
-          <summary>Is my code sent anywhere?</summary>
-          <div class="faq__a">
-            <p>Not by Olympus. It has no server, no account system and no telemetry. Your prompts and your repository go to whatever model server you configured, which, for the setup this app is built around, is one running on your own machine.</p>
-            <p>Two honest caveats. If you configure a cloud provider inside <code>opencode</code>, then your prompts go to that provider, because that is what you asked for. And opencode is a separate project: what it does with your data is its business, not ours. <a href="privacy.html">The privacy policy</a> says the same thing in more words.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="requirements">
-          <summary>What do I need installed?</summary>
-          <div class="faq__a">
-            <p>Node 18 or newer, and <code>opencode</code> on your <code>PATH</code>. A model already running locally, and a project folder to point at. That is the whole list, and most people running local models already have all four.</p>
-            <p><a href="requirements.html">The requirements page</a> goes into it, along with the supported platforms.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="servers">
-          <summary>Which model servers work?</summary>
-          <div class="faq__a">
-            <p>Anything speaking the OpenAI API on loopback. In practice that is Ollama, LM Studio, vLLM and llama.cpp, all discovered automatically, plus any other local server you add by hand.</p>
-            <p>Providers already configured inside <code>opencode</code> appear in the model picker too, so an existing setup carries over without being re-entered.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="cloud">
-          <summary>Can I use a cloud provider?</summary>
-          <div class="faq__a">
-            <p>Yes, if you have already configured one in <code>opencode</code>. Olympus will show it and let you pick it. It will not add one for you, and it will not ask you for a key. That stays entirely inside opencode&rsquo;s own configuration.</p>
-            <p>Olympus is built for the local case and the preview pane, the model discovery and the loopback-only endpoints all assume it. Cloud models work, but they are not what this app is for.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="uninstall">
-          <summary>What happens to my data if I uninstall?</summary>
-          <div class="faq__a">
-            <p>Nothing, because there is nothing of ours to remove. The app keeps its project list, preferences and licence in your operating system&rsquo;s normal application-data directory: <code>~/Library/Application Support/Olympus</code> on macOS, <code>%APPDATA%\Olympus</code> on Windows, <code>~/.config/olympus</code> on Linux. <a href="privacy.html">The privacy policy</a> names the paths and the files.</p>
-            <p>Your projects, your code and your git history are yours and are never copied. If you want the app&rsquo;s own settings gone, delete that one directory. Uninstalling the binary does not delete it, deliberately.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="licensing">
-          <summary>How does licensing work?</summary>
-          <div class="faq__a">
-            <p>One purchase, one person. No activation server, because there is no server to activate against. The licence is validated offline against the key in your receipt, so the app works on a plane.</p>
-            <p>Commercial use is fine. Two machines per person. You may not redistribute the binary or resell it. <a href="license.html">The licence</a> is the authoritative version and it is short.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="refund">
-          <summary>What is the refund policy?</summary>
-          <div class="faq__a">
-            <p>Fourteen days from purchase, no questions asked, no form. Email <a href="mailto:support@example.com">support@example.com</a> and the money goes back. <a href="refunds.html">The full terms are here</a>.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="opencode">
-          <summary>What happens if opencode changes underneath you?</summary>
-          <div class="faq__a">
-            <p>This is the real risk, and we would rather name it than bury it. Olympus depends on a working <code>opencode</code> on your PATH, and opencode is evolving. <strong>Known to work with 1.18.x.</strong> Other versions may not.</p>
-            <p>When something does not line up, Olympus says so on screen and names the version it found, rather than failing quietly or pretending to work. <a href="requirements.html#opencode">The compatibility note</a> has the detail, and <a href="changelog.html">the changelog</a> records which versions each release was tested against.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="apple-silicon">
-          <summary>Does it run on Apple Silicon?</summary>
-          <div class="faq__a">
-            <p>Yes. Apple Silicon is a first-class target, not an emulation, and there is a separate build from the Intel one. Both are $49, one licence, two builds, and you can move between them.</p>
-          </div>
-        </details>
-
-        <details class="faq__item" data-faq="support">
-          <summary>How do I get help, and how do I report a security problem?</summary>
-          <div class="faq__a">
-            <p>Ordinary bugs: <a href="mailto:support@example.com">support@example.com</a>, or a public issue if you would rather have the fix in the open.</p>
-            <p>Security problems: email <a href="mailto:security@example.com">security@example.com</a> instead. Please do not open a public issue for anything exploitable. A public issue is a disclosure. You will get an acknowledgement.</p>
-          </div>
-        </details>
-      </div>
-
-      <p class="note">
-        <strong>Still unsure?</strong> <a href="how-it-works.html">How it works</a> walks through the four steps from an empty folder to a running project, and <a href="security.html">the security page</a> is specific about what the app does and does not protect you from.
-      </p>
-    </div>
-  </section>
-
-  <!-- ── Decide ────────────────────────────────────────────────────────
-       The closing band. No zigzag bar of its own: the footer's bar comes
-       immediately after it, and two stacked would read as a mistake. -->
-  <section class="decide" aria-labelledby="decide-h">
-    <div class="wrap decide__grid">
-      <div>
-        <h2 id="decide-h" class="decide__pitch">Your agent already works. This is the window that shows you it working.</h2>
-        <p class="decide__sub">Try the whole application first, with no card and no account. Buy a licence only if you want the updates.</p>
-      </div>
-      <div class="decide__side">
-        <div>
-          <p class="decide__fig"><sup>$</sup>49</p>
-          <p class="decide__terms">once, per seat &middot; 14-day refund</p>
-        </div>
-        <div class="decide__acts">
-          <a class="btn btn--primary" data-track="cta" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe">Download the trial</a>
-          <a class="btn btn--ghost" data-track="cta" href="pricing.html">What a licence includes</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Onward ───────────────────────────────────────────────────── -->
-  <section class="section section--plain" aria-labelledby="onward-h">
-    <div class="wrap">
-      <h2 id="onward-h" class="visually-hidden">Read next</h2>
-      <div class="pager">
-        <a class="is-empty" aria-hidden="true"></a>
-        <a class="is-next" href="features.html">
-          <small>Next</small>
-          <strong>What is in the window</strong>
-        </a>
-      </div>
-    </div>
-  </section>
-
+  </div></section>
+  <section class="closing" aria-labelledby="closing-heading"><p class="eyebrow">Your next idea starts here</p><h2 id="closing-heading">Find your higher ground.</h2><p>A little more clarity. A lot more room to build.</p><a class="btn btn--primary" href="#downloads">Get Olympus, free <span aria-hidden="true">↓</span></a></section>
 </main>
 
-<footer class="foot">
-  <div class="wrap foot__row">
-    <div class="foot__brand">
-      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
-      </svg>
-      <span class="lockup__word">Olympus</span>
-    </div>
-
-    <nav class="foot__nav" aria-label="Footer">
-      <a href="features.html">Features</a>
-      <a href="how-it-works.html">How it works</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="security.html">Security</a>
-      <a href="requirements.html">Requirements</a>
-      <a href="changelog.html">Changelog</a>
-    </nav>
-  </div>
-
-  <div class="wrap foot__cols">
-    <div class="foot__col">
-      <p class="foot__colh">Support</p>
-      <ul>
-        <li><a href="https://docs.example.com/olympus">Documentation</a></li>
-        <li><a href="mailto:support@example.com">support@example.com</a></li>
-        <li><a href="changelog.html">Changelog</a></li>
-        <li>Report a security problem: email <a href="mailto:security@example.com">security@example.com</a>. Please do not open a public issue for anything exploitable. A public issue is a disclosure.</li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">The small print</p>
-      <ul>
-        <li><a href="license.html">Licence</a></li>
-        <li><a href="terms.html">Terms of sale</a></li>
-        <li><a href="privacy.html">Privacy</a></li>
-        <li><a href="refunds.html">Refunds</a></li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">What this is</p>
-      <ul>
-        <li>A desktop app for the <code>opencode</code> agent. It runs on your machine, against models you already run.</li>
-        <li>opencode is a separate third-party project. Olympus is not affiliated with it and is not endorsed by it.</li>
-        <li>Nothing on this site collects anything about you. There is no tracker in the app and none in these pages.</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="wrap foot__legal">
-    <p>&copy; 2026 Olympus. A one-time-purchase desktop licence, sold by an individual. Placeholder legal entity and jurisdiction, see <a href="terms.html">terms</a>.</p>
-    <p>Olympus sends no telemetry and runs no server.</p>
-  </div>
-</footer>
-
-<script src="script.js"></script>
+<footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="index.html#downloads">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<script src="site.js"></script>
+<script src="demo-live.js"></script>
+<script src="motion.js"></script>
 </body>
 </html>

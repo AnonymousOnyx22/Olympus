@@ -6,133 +6,70 @@
 <title>Terms of sale | Olympus</title>
 <meta name="description" content="The terms on which Olympus is sold: $49 once per person, payment and delivery, the refund promise, and what happens if the software stops working.">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#0a2f60">
+<meta name="theme-color" content="#eaf2f6">
 <meta name="robots" content="index, follow">
 
-<!-- ══ SITE CONSTANTS: every value here is a placeholder ═════════════════
-     The full block is in index.html. Every [SQUARE BRACKETED] value in the
-     body of this page is a placeholder and is listed in README.md.
-     ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Every entity, contact, URL and artifact value on this page is injected at
+     build time from site.config.json. tools/build-site.mjs refuses to build while
+     any required value is still a TODO, so a page like this cannot ship unnamed. -->
 
-<link rel="canonical" href="https://olympus.example.com/terms.html">
+<link rel="canonical" href="{{urls.site}}/terms.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Terms of sale | Olympus">
 <meta property="og:description" content="The terms on which Olympus is sold: $49 once per person, payment and delivery, the refund promise, and what happens if the software stops working.">
-<meta property="og:url" content="https://olympus.example.com/terms.html">
+<meta property="og:url" content="{{urls.site}}/terms.html">
 <meta property="og:site_name" content="Olympus">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on a plinth banded with a Greek key pattern, with snow-capped mountain ranges behind it. This is the artwork the whole Olympus site is taken from.">
+<meta property="og:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@olympusapp">
-<meta name="twitter:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta name="twitter:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on an inscribed plinth. This is the artwork the whole Olympus site is taken from.">
+<meta name="twitter:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta name="twitter:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23ffc72c'%3E%3Cpath d='M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05'/%3E%3Ccircle cx='16' cy='13.5' r='9.8' fill='none' stroke='%23ffc72c' stroke-width='0.55'/%3E%3Cellipse cx='12.55' cy='7' rx='1' ry='0.4' transform='rotate(-30 12.55 7)'/%3E%3Cellipse cx='11.3' cy='7.9' rx='1' ry='0.4' transform='rotate(-6 11.3 7.9)'/%3E%3Cellipse cx='10.65' cy='9.05' rx='1' ry='0.4' transform='rotate(22 10.65 9.05)'/%3E%3Cellipse cx='19.45' cy='7' rx='1' ry='0.4' transform='rotate(30 19.45 7)'/%3E%3Cellipse cx='20.7' cy='7.9' rx='1' ry='0.4' transform='rotate(6 20.7 7.9)'/%3E%3Cellipse cx='21.35' cy='9.05' rx='1' ry='0.4' transform='rotate(-22 21.35 9.05)'/%3E%3C/g%3E%3Cg fill='%23fffdf6'%3E%3Ccircle cx='16' cy='13.5' r='9.55'/%3E%3C/g%3E%3Cg fill='%230a2f60'%3E%3Cpath d='M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z'/%3E%3Cpath d='M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z'/%3E%3Cellipse cx='16' cy='8.6' rx='2.75' ry='3.05'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="assets/olympus-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="styles.css">
-<script>document.documentElement.className += ' js';</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
+    <link rel="stylesheet" href="olympus.css" />
+
 </head>
-<body>
-
+<body class="page-document">
 <a class="skip" href="#main">Skip to content</a>
-
-<div class="colonnade" data-colonnade aria-hidden="true">
-  <span class="colonnade__capital"></span>
-  <span class="colonnade__shaft">
-    <span class="colonnade__flutes"></span>
-    <span class="colonnade__gold"></span>
-    <span class="colonnade__marker"></span>
-  </span>
-  <span class="colonnade__base"></span>
-</div>
-
-<header class="site" id="site-bar">
-  <div class="site__bar">
-    <div class="wrap site__row">
-      <a class="lockup" href="index.html" aria-label="Olympus, home">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="lockup__mark"><g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g></svg>
-        <span class="lockup__word">Olympus</span>
-      </a>
-
-      <nav class="nav" aria-label="Primary">
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html">Security</a>
-        <a href="requirements.html">Requirements</a>
-      </nav>
-
-      <div class="site__actions">
-        <div class="dlset dlset--bar" data-dlset>
-          <a class="dlbtn dlbtn--sm" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg" aria-label="Download Olympus for macOS, Apple Silicon build"><span class="dlbtn__tag">Yours</span>macOS</a>
-          <a class="dlbtn dlbtn--sm" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe" aria-label="Download Olympus for Windows, 10 and 11"><span class="dlbtn__tag">Yours</span>Windows</a>
-          <a class="dlbtn dlbtn--sm" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage" aria-label="Download Olympus for Linux, 64-bit"><span class="dlbtn__tag">Yours</span>Linux</a>
-        </div>
-        <a class="btn btn--primary btn--sm dlbar__one" data-track="cta" href="pricing.html#buy">Download</a>
-        <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
-          <svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          <svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="site__rule">
-      <span class="zigbar" aria-hidden="true"></span>
-      <span class="site__progress" aria-hidden="true"></span>
-    </div>
-
-    <div class="mobilenav" id="mobile-nav" data-open="false">
-      <nav aria-label="Primary, mobile">
-        <a href="index.html">Home</a>
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html">Security</a>
-        <a href="requirements.html">Requirements</a>
-        <a href="index.html#faq">Questions</a>
-        <a href="changelog.html">Changelog</a>
-        <a class="btn btn--primary" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
-      </nav>
-    </div>
-  </div>
-</header>
-
+<header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
+<nav class="nav" aria-label="Primary"><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="index.html#downloads">Get Olympus <span aria-hidden="true">↓</span></a>
+<button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="index.html#faq">Questions</a></nav></div></header>
 <main id="main">
 
   <div class="pagehead">
     <div class="wrap">
       <p class="eyebrow">The small print</p>
       <h1>Terms of sale</h1>
-      <p class="lede">What you are buying, how you pay, what you get, and what happens if it stops working. The <a href="refunds.html">refund promise</a> in here is unconditional, and it is the first thing to read.</p>
+      <p class="lede" style="--d:.12s">What you are buying, how you pay, what you get, and what happens if it stops working. The <a href="refunds.html">refund promise</a> in here is unconditional, and it is the first thing to read.</p>
       <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Terms of sale</span></p>
     </div>
   </div>
 
-  <section class="section section--tint" id="terms" data-scrub aria-labelledby="terms-h">
+  <section class="section section--tint" id="terms" aria-labelledby="terms-h">
     <div class="wrap">
       <div class="sec__head sec__head--fill">
         <p class="eyebrow">The contract</p>
         <h2 id="terms-h">The terms, in order of how much they matter</h2>
-        <p class="lede">The <a href="#refunds">refund section</a> is short and absolute. The liability section is the one to read carefully, because it is the one that will not help you.</p>
-        <span class="fillet" aria-hidden="true"></span>
+        <p class="lede" style="--d:.12s">The <a href="#refunds">refund section</a> is short and absolute. The liability section is the one to read carefully, because it is the one that will not help you.</p>
       </div>
 
       <div class="prose">
-        <p class="prose__meta">Terms of sale &middot; version 0.1 &middot; effective <time datetime="2026-09-28">28 September 2026</time> &middot; all values marked [PLACEHOLDER] must be replaced before launch</p>
+        <p class="prose__meta">Terms of sale &middot; version 0.1 &middot; effective <time datetime="2026-09-28">28 September 2026</time> &middot; all values marked {{entity.legalName}} must be replaced before launch</p>
 
         <h2>1. Parties</h2>
-        <p>These terms are between you and <strong>[LEGAL NAME]</strong>, of <strong>[REGISTERED ADDRESS]</strong>, who distributes Olympus (&ldquo;<strong>[THE SELLER]</strong>&rdquo;). [PLACEHOLDER: insert the real legal entity, address, and registration or tax number where one is required.]</p>
+        <p>These terms are between you and <strong>{{entity.legalName}}</strong>, of <strong>{{entity.registeredAddress}}</strong>, who distributes Olympus (&ldquo;<strong>{{entity.legalName}}</strong>&rdquo;). [PLACEHOLDER: insert the real legal entity, address, and registration or tax number where one is required.]</p>
 
         <h2>2. What you are buying</h2>
-        <p>A perpetual licence to one named person, at <strong>$49 USD</strong> for the 0.x line, subject to the <a href="license.html">licence</a>. The price covers the software only. It does not cover <code>opencode</code>, which is a separate third-party project you obtain yourself, and it does not cover a model server, hosted inference, or any usage cost from a provider.</p>
+        <p>A perpetual licence to one named person, at <strong>$49 USD</strong> for the 0.x line, subject to the <a href="license.html">Licence</a>. The price covers Olympus only. Third-party agents, models, subscriptions, and provider usage charges are separate.</p>
         <p>The price is exclusive of any sales tax, VAT or GST that must be added by law. Where the law requires us to collect it, it is added at checkout.</p>
 
         <h2>3. Payment and delivery</h2>
@@ -140,7 +77,7 @@
           <li><strong>Payment is one-off and non-recurring.</strong> There is no subscription, no recurring charge, no auto-renewal and no card on file after the purchase completes. If your bank statement shows a repeating entry, that is not from us and you should tell us immediately.</li>
           <li><strong>Delivery is immediate and digital.</strong> The download is available as soon as payment completes. Nothing is shipped.</li>
           <li><strong>Volume purchases</strong> of two or more licences are invoiced rather than card-charged, on the same terms and the same price per licence.</li>
-          <li><strong>No activation server.</strong> The licence is validated offline. You do not need an account, and the software works with no network at all.</li>
+          <li>You do not need an Olympus account to use your licence. Offline use is available when your chosen model and project support it.</li>
         </ul>
 
         <h2>4. The free build</h2>
@@ -148,10 +85,10 @@
 
         <h2>5. Updates, and what happens at 1.0</h2>
         <p>Updates within a version line you have paid for are included at no further cost. A future 1.0 release would be sold as a one-off upgrade, priced and published before it ships, at a price lower than the original purchase. It would not be a subscription, a repurchase, or a condition of keeping what you already have.</p>
-        <p>Every 0.x build you hold will continue to run, indefinitely, against the <code>opencode</code> versions it was tested with. We will record those versions in the <a href="changelog.html">changelog</a> and will not remove old versions from the download archive.</p>
+        <p>You may continue using the 0.x releases covered by your licence. Compatibility with connected third-party tools depends on the versions you use. Release information is available in the <a href="changelog.html">changelog</a>.</p>
 
         <h2 id="refunds">6. Refunds</h2>
-        <p><strong>You can ask for a full refund within 14 days of the purchase date, for any reason or none.</strong> There is no form, no question, no justification and no exit interview. Email <a href="mailto:support@example.com">support@example.com</a> and the money goes back to the original payment method. This is unconditional and it is not affected by any other clause in these terms, including the warranty disclaimer and the liability limitation.</p>
+        <p><strong>You can ask for a full refund within 14 days of the purchase date, for any reason or none.</strong> There is no form, no question, no justification and no exit interview. Email <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> and the money goes back to the original payment method. This is unconditional and it is not affected by any other clause in these terms, including the warranty disclaimer and the liability limitation.</p>
         <p>Full detail, including what happens after 14 days, is on the <a href="refunds.html">refunds page</a>.</p>
 
         <h2>7. No warranty</h2>
@@ -159,16 +96,16 @@
         <p>We are telling you plainly that the software drives an AI coding agent against your own files. It will sometimes be wrong. Reviewing what it proposes is your responsibility, and it is the reason the diff viewer exists.</p>
 
         <h2>8. Limitation of liability</h2>
-        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, [THE SELLER] IS NOT LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY OR PUNITIVE DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, DATA OR SOURCE CODE, ARISING OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THESE TERMS.</p>
-        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, [THE SELLER]&rsquo;s TOTAL AGGREGATE LIABILITY IS LIMITED TO THE AMOUNT YOU PAID, WHICH FOR A SINGLE $49 PURCHASE IS $49.</p>
+        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, {{entity.legalName}} IS NOT LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY OR PUNITIVE DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, DATA OR SOURCE CODE, ARISING OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THESE TERMS.</p>
+        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, {{entity.legalName}}&rsquo;s TOTAL AGGREGATE LIABILITY IS LIMITED TO THE AMOUNT YOU PAID, WHICH FOR A SINGLE $49 PURCHASE IS $49.</p>
         <p>Nothing here excludes liability for death or personal injury caused by negligence, for fraud or fraudulent misrepresentation, or for anything else that cannot lawfully be excluded. [PLACEHOLDER: check carve-outs against the selling jurisdiction.]</p>
 
-        <h2>9. The opencode dependency, stated as a risk</h2>
-        <p>Olympus depends on a working <code>opencode</code> on your <code>PATH</code>, and it is coupled to that project&rsquo;s HTTP interface. <strong>0.1.0 is tested against <code>opencode 1.18.x</code>.</strong> Other versions may not work, including versions released after this build.</p>
-        <p>We do not control opencode, do not audit it, and make no claim that it is secure. If an opencode release breaks your working setup before we have shipped a fix, that is a real cost to you. The <a href="refunds.html">14-day refund window</a> exists largely so you find this out while it is still cheap to walk away from. The <a href="requirements.html#opencode">compatibility note</a> gives the longer version.</p>
+        <h2>9. Third-party tools and compatibility</h2>
+        <p>Olympus is an independent workspace for compatible coding agents and model providers. Connected tools may have their own installation, account, or version requirements.</p>
+        <p>We do not control third-party agents or providers. Changes to those tools can affect compatibility. Check the <a href="requirements.html#compatibility">setup requirements</a> and try the free release with your chosen tools before purchasing. The <a href="refunds.html">14-day refund window</a> applies.</p>
 
         <h2>10. Acceptable use</h2>
-        <p>You may not use the software to break the law, to infringe anyone else&rsquo;s rights, or in a way that harms a third party. You may not redistribute or resell the binary. See section 3 of the <a href="license.html">licence</a>.</p>
+        <p>You may not use the software to break the law, to infringe anyone else&rsquo;s rights, or in a way that harms a third party. You may not redistribute or resell the app. See section 3 of the <a href="license.html">Licence</a>.</p>
 
         <h2>11. Availability and changes</h2>
         <p>The download host, the documentation site and the email addresses in these terms may move. We will keep the addresses in this document working for at least as long as the 0.x line exists, and will publish a redirect or a notice on this site if one has to change.</p>
@@ -178,7 +115,7 @@
         <p>We hold only what is needed to deliver and support a purchase: the email address used, the transaction reference from our payment processor, and the date of purchase. Nothing else. <a href="privacy.html">The privacy policy</a> sets out where that lives and how long it is kept, and it applies to this purchase as well as to your use of the app.</p>
 
         <h2>13. Contact</h2>
-        <p><a href="mailto:support@example.com">support@example.com</a> for anything in this document. Formal notices: [REGISTERED ADDRESS FOR SERVICE OF PROCESS: PLACEHOLDER].</p>
+        <p><a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> for anything in this document. Formal notices: [REGISTERED ADDRESS FOR SERVICE OF PROCESS: PLACEHOLDER].</p>
       </div>
     </div>
   </section>
@@ -200,60 +137,12 @@
   </section>
 
 </main>
-<footer class="foot">
-  <div class="wrap foot__row">
-    <div class="foot__brand">
-      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
-      </svg>
-      <span class="lockup__word">Olympus</span>
-    </div>
-
-    <nav class="foot__nav" aria-label="Footer">
-      <a href="features.html">Features</a>
-      <a href="how-it-works.html">How it works</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="security.html">Security</a>
-      <a href="requirements.html">Requirements</a>
-      <a href="changelog.html">Changelog</a>
-    </nav>
-  </div>
-
-  <div class="wrap foot__cols">
-    <div class="foot__col">
-      <p class="foot__colh">Support</p>
-      <ul>
-        <li><a href="https://docs.example.com/olympus">Documentation</a></li>
-        <li><a href="mailto:support@example.com">support@example.com</a></li>
-        <li><a href="changelog.html">Changelog</a></li>
-        <li>Report a security problem: email <a href="mailto:security@example.com">security@example.com</a>. Please do not open a public issue for anything exploitable. A public issue is a disclosure.</li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">The small print</p>
-      <ul>
-        <li><a href="license.html" aria-current="page">Licence</a></li>
-        <li><a href="terms.html">Terms of sale</a></li>
-        <li><a href="privacy.html">Privacy</a></li>
-        <li><a href="refunds.html">Refunds</a></li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">What this is</p>
-      <ul>
-        <li>A desktop app for the <code>opencode</code> agent. It runs on your machine, against models you already run.</li>
-        <li>opencode is a separate third-party project. Olympus is not affiliated with it and is not endorsed by it.</li>
-        <li>Nothing on this site collects anything about you. There is no tracker in the app and none in these pages.</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="wrap foot__legal">
-    <p>&copy; 2026 Olympus. A one-time-purchase desktop licence, sold by an individual. Placeholder legal entity and jurisdiction, see <a href="terms.html">terms</a>.</p>
-    <p>Olympus sends no telemetry and runs no server.</p>
-  </div>
-</footer>
-
-<script src="script.js"></script>
+<footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="index.html#downloads">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<script src="site.js"></script>
+<script src="motion.js"></script>
 </body>
 </html>

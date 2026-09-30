@@ -153,6 +153,10 @@ export function baseUrl(spaceId: string): string | null {
   return pool.get(spaceId)?.daemon.baseUrl ?? null
 }
 
+export function credentials(spaceId: string) {
+  return pool.get(spaceId)?.daemon.getCredentials() ?? null
+}
+
 export function bridge(spaceId: string): OpencodeBridge | null {
   return pool.get(spaceId)?.bridge ?? null
 }

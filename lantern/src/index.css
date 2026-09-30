@@ -4,6 +4,24 @@
 
 :root {
   color-scheme: light;
+
+  /*
+   * Aether Blue — the app's one accent, and the single place it is defined.
+   *
+   * These are bare RGB channel triplets (not hex) precisely so the two consumers can
+   * compose an alpha: tailwind.config.js wraps them as `rgb(var(--accent-N) / <alpha-value>)`
+   * for the `aether-*` utilities, and the raw CSS below uses them directly. Anything that
+   * renders to a canvas or a plain string instead of a stylesheet (xterm, Monaco, the app
+   * icon) cannot read custom properties and repeats the hex deliberately.
+   */
+  --accent-50: 239 246 255;
+  --accent-100: 219 234 254;
+  --accent-200: 191 219 254;
+  --accent-300: 147 197 253;
+  --accent-400: 59 130 246;
+  --accent-500: 37 99 235;
+  --accent-600: 29 78 216;
+  --accent-700: 30 64 175;
 }
 
 html,
@@ -28,7 +46,7 @@ code,
 }
 
 ::selection {
-  background: rgba(14, 165, 233, 0.18);
+  background: rgb(var(--accent-500) / 0.18);
 }
 
 ::-webkit-scrollbar {
@@ -73,7 +91,7 @@ code,
   @apply text-[14px];
 }
 .md a {
-  @apply text-sky-600 underline decoration-sky-600/30 underline-offset-2 hover:decoration-sky-600;
+  @apply text-aether-600 underline decoration-aether-600/30 underline-offset-2 hover:decoration-aether-600;
 }
 .md strong {
   @apply font-semibold text-slate-900;
@@ -88,7 +106,7 @@ code,
   @apply m-0;
 }
 .md blockquote {
-  @apply border-l-2 border-sky-300 pl-3 text-slate-500;
+  @apply border-l-2 border-aether-300 pl-3 text-slate-500;
 }
 .md :not(pre) > code {
   @apply rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[12px] text-slate-700;
@@ -147,12 +165,12 @@ code,
 
 /* The workspace uses one neutral surface hierarchy; status colors carry meaning. */
 button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus-visible {
-  outline: 2px solid #0ea5e9;
+  outline: 2px solid rgb(var(--accent-500));
   outline-offset: 2px;
 }
 .workspace-body { display: flex; min-height: 0; flex: 1; gap: 10px; position: relative; }
-.workspace-center { border: 1px solid #e0f2fe; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgb(14 165 233 / 0.06); }
-.context-panel { width: 350px; min-width: 280px; max-width: 42%; flex-shrink: 0; border: 1px solid #e0f2fe; border-radius: 16px; overflow: hidden; background: #f8fafc; box-shadow: 0 8px 30px rgb(14 165 233 / 0.06); }
+.workspace-center { border: 1px solid rgb(var(--accent-100)); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgb(var(--accent-500) / 0.06); }
+.context-panel { width: 350px; min-width: 280px; max-width: 42%; flex-shrink: 0; border: 1px solid rgb(var(--accent-100)); border-radius: 16px; overflow: hidden; background: #f8fafc; box-shadow: 0 8px 30px rgb(var(--accent-500) / 0.06); }
 .agent-transcript .md { font-size: 13px; line-height: 1.7; }
 .agent-transcript .md > * + * { margin-top: 8px; }
 .agent-transcript .tool-row { border-radius: 0; background: transparent; box-shadow: none; }
@@ -183,7 +201,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus
 }
 
 /* The plan's in-progress todo gets a slow, lit-up glow. */
-@keyframes olympus-todo-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,0); } 50% { box-shadow: 0 0 14px 1px rgba(14,165,233,0.35); } }
+@keyframes olympus-todo-glow { 0%, 100% { box-shadow: 0 0 0 0 rgb(var(--accent-500) / 0); } 50% { box-shadow: 0 0 14px 1px rgb(var(--accent-500) / 0.35); } }
 .todo-active { animation: olympus-todo-glow 2.2s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   .todo-active { animation: none; }

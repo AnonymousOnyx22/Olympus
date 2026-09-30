@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
-import { buildOpencodeConfig, detectOpencodeVersion, probeInstalledProviders } from './daemonManager'
+import { buildOpencodeConfig, basicAuthHeader, detectOpencodeVersion, probeInstalledProviders } from './daemonManager'
 import * as pool from './spacePool'
 import { discoverProviders, fetchDaemonProviders, mergeProviders, isChatModel, modelAccess, slugifyProviderId, BUILTIN_ENDPOINTS } from './modelDiscovery'
 import { getSettings, updateSettings } from './settings'
@@ -41,11 +41,18 @@ function assertTrustedSender(event: Electron.IpcMainInvokeEvent) {
   if (event.senderFrame && event.senderFrame.parent !== null) throw new Error('IPC rejected: untrusted frame')
 }
 
-/** Wraps an IPC handler so it can only ever run for a trusted top-level frame. */
-function handle(channel: string, fn: (...args: never[]) => unknown) {
-  ipcMain.handle(channel, async (event, ...args) => {
+/**
+ * Wraps an IPC handler so it can only ever run for a trusted top-level frame.
+ *
+ * The event is passed straight through as the first argument, exactly as `ipcMain.handle`
+ * would have supplied it. Every handler below was written with a leading event parameter
+ * (`(_e, id) => ...`), so stripping it here would shift every handler's arguments by one
+ * and silently pass `undefined` where a path or an id was expected.
+ */
+function handle<T extends unknown[]>(channel: string, fn: (event: Electron.IpcMainInvokeEvent, ...args: T) => unknown) {
+  ipcMain.handle(channel, async (event, ...args: unknown[]) => {
     assertTrustedSender(event)
-    return fn(...(args as never[]))
+    return fn(event, ...(args as T))
   })
 }
 
@@ -66,7 +73,8 @@ async function listAllProviders(spaceId: string): Promise<LocalProvider[]> {
   const local = await discoverProviders(getSettings().customEndpoints)
   const base = pool.baseUrl(spaceId)
   if (base) {
-    const fromDaemon = await fetchDaemonProviders(base)
+    const creds = pool.credentials(spaceId)
+    const fromDaemon = await fetchDaemonProviders(base, creds ? basicAuthHeader(creds) : undefined)
     return mergeProviders(fromDaemon, local)
   }
   // No project daemon yet — spin up a throwaway one so models configured via the
@@ -384,7 +392,7 @@ function registerIpc() {
   })
   ipcMain.on('pty:write', (event, id: unknown, data: unknown) => {
     try {
-      assertTrustedSender(event as unknown as Electron.IpcMainInvokeEvent)
+      assertTrustedSender(event)
     } catch {
       return
     }
@@ -400,7 +408,7 @@ function registerIpc() {
   })
   ipcMain.on('app:closeReady', (event, ok: unknown) => {
     try {
-      assertTrustedSender(event as unknown as Electron.IpcMainInvokeEvent)
+      assertTrustedSender(event)
     } catch {
       return
     }
@@ -431,7 +439,7 @@ function registerIpc() {
   })
 
   /** Logs a renderer-side crash or unhandled rejection next to the daemon output. */
-  handle('app:reportError', (error: { message?: unknown; stack?: unknown; componentStack?: unknown }) => {
+  handle('app:reportError', (_event, error: { message?: unknown; stack?: unknown; componentStack?: unknown }) => {
     const message = String(error?.message ?? 'unknown renderer error').slice(0, 2000)
     const stack = typeof error?.stack === 'string' ? error.stack.slice(0, 4000) : ''
     const componentStack = typeof error?.componentStack === 'string' ? error.componentStack.slice(0, 2000) : ''

@@ -2,32 +2,36 @@
 // Olympus — "Aegean Greek High-Tech": a pristine, elevated, airy light system.
 //
 // The palette is deliberately built from Tailwind's stock `slate` (surfaces + type),
-// `sky` (Aether Blue, the single accent) and `amber` (Helios Gold, reserved for the
-// review/approval state and critical warnings). There is no `gray` ramp and no legacy
-// `ink`/`glow` alias — the surface and accent roles are expressed directly, so every
-// utility in the app names the intent (slate-50 panel, sky-600 link) rather than a
-// numbered surface token.
+// Aether Blue (the single accent, exposed as the `aether-*` utilities) and `amber`
+// (Helios Gold, reserved for the review/approval state and critical warnings). There is
+// no `gray` ramp and no legacy `ink`/`glow` alias — the surface and accent roles are
+// expressed directly, so every utility in the app names the intent (slate-50 panel,
+// aether-600 link) rather than a numbered surface token.
 module.exports = {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       boxShadow: {
         // Elevated float: panes, popovers, and the boot bar.
-        aegean: '0 8px 30px rgb(14 165 233 / 0.08)',
-        'aegean-lg': '0 20px 50px -12px rgb(14 165 233 / 0.22)',
+        aegean: '0 8px 30px rgb(var(--accent-500) / 0.08)',
+        'aegean-lg': '0 20px 50px -12px rgb(var(--accent-500) / 0.22)',
       },
       fontFamily: {
         sans: ['Times New Roman', 'Times', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'Cascadia Code', 'Consolas', 'monospace'],
       },
       colors: {
-        // Aether Blue — the one accent. Aliased so the intent reads in markup.
+        // Aether Blue — the one accent, defined once in index.css as --accent-* channel
+        // triplets so these utilities (and the shadows above) can carry an alpha value.
         aether: {
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
+          50: 'rgb(var(--accent-50) / <alpha-value>)',
+          100: 'rgb(var(--accent-100) / <alpha-value>)',
+          200: 'rgb(var(--accent-200) / <alpha-value>)',
+          300: 'rgb(var(--accent-300) / <alpha-value>)',
+          400: 'rgb(var(--accent-400) / <alpha-value>)',
+          500: 'rgb(var(--accent-500) / <alpha-value>)',
+          600: 'rgb(var(--accent-600) / <alpha-value>)',
+          700: 'rgb(var(--accent-700) / <alpha-value>)',
         },
         // Helios Gold — review/approval + critical warnings only.
         helios: {

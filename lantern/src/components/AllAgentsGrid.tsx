@@ -10,27 +10,20 @@ export interface AgentGridEntry {
   ready: boolean
 }
 
-export interface AgentGridProject {
-  id: string
-  name: string
-}
-
 interface Props extends AgentPaneShared {
   entries: AgentGridEntry[]
-  projects: AgentGridProject[]
-  /** The currently-focused project, if any — preselected so "+ Add agent" works in one click. */
-  focusedProjectId: string | null
+  hasProjects: boolean
   onClose: (spaceId: string, sessionId: string) => void
   onDelete: (spaceId: string, sessionId: string) => Promise<void>
-  onAddAgent: (spaceId: string) => Promise<void>
+  /** Always opens the project picker — never guesses which project you meant. */
+  onRequestAddAgent: () => void
   onOpenProjects: () => void
 }
 
 const buttonClass = 'rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 transition hover:bg-slate-50 disabled:opacity-40'
 
 /** Every open agent window from every open project, side by side in one grid. */
-export default function AllAgentsGrid({ entries, projects, focusedProjectId, onClose, onDelete, onAddAgent, ...shared }: Props) {
-  const [adding, setAdding] = useState(false)
+export default function AllAgentsGrid({ entries, hasProjects, onClose, onDelete, onRequestAddAgent, ...shared }: Props) {
   const [error, setError] = useState('')
   const [deletingKey, setDeletingKey] = useState<string | null>(null)
 
@@ -45,26 +38,11 @@ export default function AllAgentsGrid({ entries, projects, focusedProjectId, onC
     finally { setDeletingKey(null) }
   }
 
-  // Always add to whichever project is focused; fall back to the first known
-  // project if none is (e.g. you're on General). No picker needed for the common case.
-  const target = (focusedProjectId && projects.some((p) => p.id === focusedProjectId) ? focusedProjectId : projects[0]?.id) ?? ''
-  const targetName = projects.find((p) => p.id === target)?.name
-
-  const addAgent = async () => {
-    if (!target || adding) return
-    setAdding(true)
-    setError('')
-    try {
-      await onAddAgent(target)
-    } catch (reason) { setError(String(reason)) }
-    finally { setAdding(false) }
-  }
-
   const header = (
     <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-3 py-2">
       <span className="mr-auto text-xs text-slate-500">{entries.length} agent window{entries.length === 1 ? '' : 's'}</span>
-      <button disabled={!target || adding} onClick={() => void addAgent()} title={targetName ? `Add an agent to ${targetName}` : 'Add a project first'} className={`${buttonClass} bg-slate-50`}>
-        {adding ? 'Opening...' : '+ Add agent'}
+      <button disabled={!hasProjects} onClick={onRequestAddAgent} title="Choose which project to add an agent to" className={`${buttonClass} bg-slate-50`}>
+        + Add agent
       </button>
     </header>
   )
@@ -79,7 +57,7 @@ export default function AllAgentsGrid({ entries, projects, focusedProjectId, onC
           <p className="max-w-sm text-xs leading-relaxed text-slate-500">
             Pick a project above and add an agent. Every project's agents show up here together.
           </p>
-          {!projects.length && (
+          {!hasProjects && (
             <button onClick={shared.onOpenProjects} className="mt-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 transition hover:bg-slate-50">
               Browse projects
             </button>

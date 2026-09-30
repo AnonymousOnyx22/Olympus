@@ -1,7 +1,9 @@
 # olympus-web
 
-The marketing and documentation site for **Olympus**, a local-first desktop GUI
-and execution harness for the `opencode` coding agent.
+The marketing and documentation site for **Olympus**, an independent agent
+harness for coding workflows. Position the product around agents, models,
+projects, and user choice, rather than any single provider or agent backend.
+Only describe specific integrations as supported when verified in the current build.
 
 Vanilla HTML, CSS and JavaScript. No framework, no build step, no package
 manager, no dependencies. Open `index.html` in a browser and the whole site
@@ -20,7 +22,7 @@ all, then re-check the anchors listed at the bottom of this file.
 
 | What | Placeholder in use | Appears in |
 | --- | --- | --- |
-| Canonical origin | `https://olympus.example.com/` | every `<link rel="canonical">`, every `og:url`, every absolute `og:image` / `twitter:image`, `robots.txt`, `sitemap.xml`, the JSON-LD `url` |
+| Canonical origin | `https://projectclipforge.netlify.app/` | every `<link rel="canonical">`, every `og:url`, every absolute `og:image` / `twitter:image`, `robots.txt`, `sitemap.xml`, the JSON-LD `url` |
 | Twitter / X handle | `@olympusapp` | every `<meta name="twitter:site">` |
 | Documentation | `https://docs.example.com/olympus` | every footer, plus `index.html`, `requirements.html` |
 
@@ -42,7 +44,7 @@ issue, so a dead address makes that instruction a trap.
 | Checkout | `https://buy.example.com/olympus` | `index.html` (twice), `pricing.html` (twice), `how-it-works.html` |
 | Download root | `https://downloads.example.com/olympus/0.1.0/` | `index.html`, `pricing.html`, `how-it-works.html`, `changelog.html`, every header |
 
-The four real build files, behind the three download buttons:
+The expected four build files, linked from the download sections:
 
 | Platform | Expected filename | Download button |
 | --- | --- | --- |
@@ -51,11 +53,8 @@ The four real build files, behind the three download buttons:
 | Windows 10 / 11, 64-bit | `Olympus-0.1.0-setup.exe` | `data-download="windows"` |
 | Linux x64 | `olympus_0.1.0_amd64.AppImage` | `data-download="linux"` |
 
-Note the shape of the problem: the macOS button is one link and the Intel
-build is a second file. `script.js` marks exactly one button per platform as
-`is-pick`, so the Intel file needs its own link somewhere on `pricing.html`
-or in the documentation, or it is unreachable. Decide whether to add a fourth
-button or point the macOS link at a small platform-chooser page.
+The main macOS button targets Apple Silicon. A separate Intel Mac link is
+available in every download section.
 
 ### Legal entity
 
@@ -75,143 +74,137 @@ sold:
 
 ### Version facts to confirm
 
-- `1.18.x` is stated as the known-good `opencode` line in `index.html`, `requirements.html`, `changelog.html` and `refunds.html`. Check it against the shipped build before publishing.
+- Confirm current agent and model compatibility against the shipped build before publishing.
 - `0.1.0` and the dates `2026-09-28` / `2026-09-29` in `changelog.html`, `sitemap.xml` and the four legal pages. The changelog has exactly one entry and no invented history, which is deliberate.
 - The "known rough edges" list in `changelog.html`: that has to be true.
 
-### Favicons
+### Brand assets
 
-`assets/favicon-32.png`, `assets/favicon-512.png` and
-`assets/apple-touch-icon.png` are generated from the same mark as the inline
-SVG favicon, using only colours already in the token set
-(`--aegean-deep`, `--helios`, and the marble of `--temple`). The generator
-that produced them is not kept in this directory; the SVGs in
-`index.html:…` (`<link rel="icon" href="data:image/svg+xml,…">`) are the
-source of truth for the mark and are hand-written. If the mark changes, both
-need regenerating.
+The browser favicons are existing assets. The refreshed navigation mark lives in
+`assets/olympus-mark.svg`. Original Gemini JPEGs are preserved as references only. The site uses newly
+generated artwork; see `assets/ARTWORK.md` for exact prompts and provenance.
 
 ---
 
 ## Structure
 
-```
-index.html            Landing page. Hero + mock window, three questions,
-                      #pricing (price, refund, three downloads, three cards),
-                      #compare (table against the raw opencode CLI),
-                      #faq (thirteen <details>).
-features.html         What is in the window
-how-it-works.html     The four steps, plus the free-vs-paid block
-pricing.html          Full commercial detail: what is in the box, what is
-                      not, what a major version would cost, volume seats
-security.html         The four real mechanisms, then the six things it does
-                      NOT protect you from
-requirements.html     Four prerequisites, three platforms, and the opencode
-                      compatibility note (#opencode)
-changelog.html        0.1.0, first public build
-license.html          End-user licence
-terms.html            Terms of sale
-privacy.html          Privacy policy
-refunds.html          Refunds
-robots.txt
-sitemap.xml
-styles.css            One file. Tokens in section 01, layout in 02–13,
-                      new commerce components in 14–18, scrub in 19,
-                      motion in 20, responsive in 21.
-script.js             Scroll pass, mobile nav, entrance, pointer tilt,
-                      mock approval loop, analytics hook, OS ordering.
-assets/               Two JPEGs and three generated PNGs.
-```
+The site has 11 HTML pages. All share `design.css`, `cartoon.css`, `motion.css`, `demo-live.css`,
+`site.js` and `motion.js`. The homepage also loads `demo-live.js`.
 
-## The design system
+- `index.html`: artwork hero, interactive workspace, three views, edit review,
+  local models, free downloads, licence, comparison, FAQ, final call to action.
+- `features.html`, `how-it-works.html`, `pricing.html`: product and setup.
+- `security.html`, `requirements.html`, `changelog.html`: technical details.
+- `license.html`, `terms.html`, `privacy.html`, `refunds.html`: legal content.
+- `design.css`: shared visual tokens, typography, components and responsive layouts.
+- `site.js`: mobile navigation, accessible demo tabs, sample edit approval and OS hints.
+- `assets/olympus-athena.png`: original generated Athena sculpture, hero and social preview.
+- `assets/olympus-sanctuary.png`: original generated sanctuary, local-first section and page headers.
+- `assets/olympus-mark.svg`: small vector temple mark for navigation and the demo.
 
-Everything on the site comes from one drawing: a marble temple on a warm
-stone ridge under a radiant gold sun, in an Attic frieze. The rules that keep
-it coherent, so that future edits do not break it:
+The previous `styles.css` and `script.js` are retained as legacy design references;
+they are no longer loaded by any page.
 
-1. **No new colours.** Every colour is a custom property in `styles.css`
-   section 01, lifted from that drawing. No hex literals outside section 01
-   and the frieze SVG, no gradients anywhere, and no red, the palette has no
-   red in it, so a "not included" mark is a struck stone rule, not a cross.
-2. **Carved stone, not moulded plastic.** `--r: 3px` and nothing softer.
-3. **Flat fields only.** Solid fills and cut outlines. The only shadow in the
-   stylesheet is the hard 7px offset block under a hovered card.
-4. **The zigzag bar closes every block.** `.section::before` draws it
-   automatically; `.card-lg` carries its own across the top edge. Reuse it
-   rather than inventing a new rule ornament.
-5. **Three typefaces only.** `Fraunces` for headings, `Archivo` for body,
-   `JetBrains Mono` for code. Loaded from Google Fonts, which is the single
-   third-party request the site makes.
-6. **Scroll is the only clock.** Animation is a pure function of scroll
-   position, `--p` per element, `--pg` for page progress, so scrolling up
-   plays the page backwards. `script.js` sets those two properties and
-   nothing else; every visual is CSS. New sections are annotated
-   `data-scrub` and the gold run on their heading fillet is the one thing that
-   consumes it. Do not add a third scroll-driven effect: an earlier draft
-   scrubbed all 38 blocks on the page and the result was a page that twitched
-   at you.
-7. **Reduced motion is real, not decorative.** `@media (prefers-reduced-motion: reduce)`
-   in `styles.css` kills every animation and transition, pins
-   `scroll-behavior` back to `auto`, and forces the scroll-linked ornament
-   and every gated entrance to its finished state. Anything added later needs
-   a line in that block.
+## Visual direction
 
-## Analytics hook
+The supplied Gemini artwork inspired the visual direction only: sculpted marble,
+clouds, open sky, and restrained gold. The displayed illustrations are original
+images generated with the built-in image-generation tool; both final prompts are
+documented in `assets/ARTWORK.md`. Marcellus supplies classical display type; Manrope keeps
+navigation and body text readable. Google Fonts is the only third-party asset
+request. CSS tokens in `design.css` define marble white, cloud grey, sky blue,
+deep blue ink and muted gold. A single Greek-key band separates the hero.
 
-`script.js` defines a `track(name, props)` function that does exactly two
-things: it dispatches
+The homepage leads with the statue, then gives the product illustration a full
+width section. Inner pages use a consistent, softly illustrated page header,
+readable content widths, shared navigation and a shared footer. Legal copy and
+commercial terms remain in the corresponding pages.
 
-```js
-document.dispatchEvent(new CustomEvent('olympus:analytics', { detail }))
-// detail = { name, props, page }
+## Local preview
+
+From this directory:
+
+```sh
+python -m http.server 4173 --bind 127.0.0.1
 ```
 
-on `document`, and it calls `console.debug`. It has no listener and no
-destination, so it is a no-op as shipped.
+Visit http://127.0.0.1:4173/. No build or dependency installation is required.
+The pages also work when opened directly from disk.
 
-Events currently emitted: `download` (with `props.os`), `cta`, `nav` (with
-`props.to` and `props.label`), and `faq_open` (with `props.question` and
-`props.label`) when an FAQ `<details>` is opened.
+## Interactions and accessibility
 
-To wire a tool in later, add one listener in `script.js`, do not edit the
-call sites:
+- The workspace is explicitly labelled as an illustration using sample data.
+  Agent, Code and Thread tabs support arrow keys, Home and End. Accepting the
+  sample edit updates all three views; Reset demo restores the original state.
+- The demo does not launch a model, open a terminal, edit files or send requests.
+- The mobile menu supports Escape, click outside and closing on navigation.
+- FAQs use native details/summary. Comparison tables scroll within a labelled,
+  keyboard-focusable region at narrow widths.
+- Skip links, one main landmark, one h1 per page and visible focus styles are shared.
+- Motion is limited to smooth anchor scrolling and short interaction transitions;
+  reduced-motion settings disable both. Content never depends on scroll reveals.
+- Downloads retain all OS choices, including a separate Intel Mac link. Desktop
+  OS hints do not identify Android, iOS or ChromeOS as supported desktop systems.
+- No analytics, cookies or storage are added. The existing download, checkout,
+  contact and legal placeholders above still need real values before launch.
 
-```js
-document.addEventListener('olympus:analytics', function (e) {
-  // e.detail.name, e.detail.props, e.detail.page
-});
-```
+## Verification
 
-**If you ever do wire something up, it must be self-hosted or otherwise
-privacy-respecting.** Shipping a third-party tracker with a product whose
-entire pitch is that nothing leaves your machine would make the pitch false.
-A self-hosted, cookieless, aggregate-only counter is defensible. Google
-Analytics is not, and the copy on the site would then need changing.
+Browser-checked across all 11 pages at 1440, 768, 390 and 320 pixels wide, with
+no page-level horizontal overflow or missing images. Demo switching, keyboard
+navigation, shared approval state, reset, FAQ disclosure and mobile menu dismissal
+were exercised in Chromium. Recheck local links and fragment IDs after content edits.
 
-## Accessibility notes
 
-- Skip link, `<main id="main">`, labelled `<nav>` landmarks and a `<footer>`
-  on every page.
-- The mobile menu is a real `<button>` with `aria-expanded` and `aria-controls`;
-  Escape closes it and returns focus.
-- The mock window is a `role="img"` with a full `aria-label`, and its
-  `figcaption` says plainly that it is an illustration, not a screenshot.
-- The compare table is a real `<table>` with `scope` on every header, in a
-  labelled, focusable scroll region so it is keyboard-reachable on a phone.
-- The FAQ is `<details>`/`<summary>` and needs no script to work.
-- Download buttons carry a text `<span class="dlbtn__tag">Yours</span>` that
-  is `display: none` until `script.js` adds `is-pick`, so the "yours" marker
-  never appears without a matched platform and the bar links keep their
-  explicit `aria-label` either way.
-- Visual order and tab order agree everywhere. `script.js` reorders the
-  download buttons in the DOM rather than with the CSS `order` property,
-  specifically to keep them the same.
+## Current interactive design
 
-## Adding a page
+- Original artwork is cartoonized in `assets/olympus-cartoon-hero.png` and
+  `assets/olympus-cartoon-sanctuary.png`. Exact built-in image tool prompts are in
+  `assets/CARTOON-ARTWORK.md`. The hero is a full background with centred copy.
+- `cartoon.css` sets outlined buttons, warm gold accents and illustrated panels.
+- `motion.js` / `motion.css` provide moving clouds, hero discovery, reading
+  progress, scroll animations that replay in both directions, view transitions,
+  preview themes and acceptance feedback. Reduced motion disables animation.
+- The thicker Greek divider has a blue ground and yellow linework.
+- `assets/brands/` contains solid-white Simple Icons SVGs on a blue section.
+  Sources and provenance are recorded in `assets/brands/sources.json`. Brand
+  presence describes the wider ecosystem, not guaranteed integrations.
+- `demo-live.js` is the current homepage demo; `demo.js` is an earlier unused
+  version. Each project retains its own conversation, draft, accepted changes,
+  model selection, and pending review for the lifetime of the page.
+- Preparation, review, planning and streamed replies are scripted. No model is
+  connected, no model weights are loaded, and no private model reasoning is shown.
+- Visitors can pause/replay, change projects, inspect files, request headlines,
+  cards or contact forms, accept/reject/undo, and use the generated preview.
+  Contact forms validate locally and never send or save an email address.
+- Runs pause outside the viewport and in hidden tabs. Reduced-motion mode skips
+  streaming. User text is escaped before display. New requests replace only the
+  pending run in their own project. Reset affects only that project.
 
-Copy the head of an existing page, keep the `SITE CONSTANTS` comment block at
-the top of `<head>`, and keep the header and footer byte-identical apart from
-`aria-current="page"`. New prose goes in `.prose`; new commercial blocks go
-in `.panel` or `.card-lg`; new long-form listings go in `.ticks` or `.reqs`.
-Sections get `data-scrub` and a `.sec__head sec__head--fill` with a
-`<span class="fillet">` inside it. Then re-run the anchor check: every `href`
-ending in `#` must resolve to an `id` in the same file.
+
+### Continuous demo playback
+
+The visible project cycles through headline, cards, form and colour changes,
+streams replies, reviews its scripted edits, and updates the preview. History
+is capped at 60 messages per project. Pause stops both writing and idle stages.
+Typing, focused form controls and recent interaction hold automatic activity;
+a visitor's own proposal always waits for an explicit accept or reject.
+Offscreen/hidden pages suspend the clock. Reduced motion disables automatic
+continuation and immediately completes manually requested replies. Reset pauses
+that project until Resume. The model activity remains explicitly scripted.
+
+
+### Greek thinking animation
+
+The demo now holds each scripted request in a quiet 14-second thinking state.
+A CSS-animated SVG temple, glowing columns and orbiting laurel replace typing
+and streamed code. Replies and proposed changes appear complete after thinking.
+The thinking DOM remains mounted between ticks, so the animation is smooth;
+Pause, hidden/offscreen handling, visitor interaction holds and reduced motion
+still apply. Styling lives in `thinking.css`.
+
+### Compact static thinking example
+The Agent and Thread views now show a fixed subscription-guard transcript. Only a 16px Greek temple glyph animates beside Testing. No transcript scrolling, typing, timed replies, or automatic edits. Pause/Resume controls the animation; the "esc to interrupt" hint is display text only. Reduced motion is respected. The transcript is a scripted example, not model output.
+
+### Working project previews
+The workspace now loads three standalone apps from `assets/demo-projects/`. Studio North has category filters and case-study dialogs. Little Notes supports creating, editing, searching, pinning and deleting notes. Weekend Club supports per-day plans, chronological ordering, completion and removal. Notes and plans use separate localStorage keys with a session-only fallback if storage is unavailable. Each project has a distinct, static scripted walkthrough; only the small Greek activity glyph animates. Code view fetches the actual HTML, CSS and JavaScript used by each preview. No model calls or external services are used.

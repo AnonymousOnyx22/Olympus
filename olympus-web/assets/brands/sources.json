@@ -1,0 +1,65 @@
+{
+  "source": "Simple Icons 16.32.0 (CC0)",
+  "icons": [
+    {
+      "title": "Ollama",
+      "slug": "ollama",
+      "source": "https://github.com/ollama/ollama/issues/2152#issuecomment-1905286922"
+    },
+    {
+      "title": "LM Studio",
+      "slug": "lmstudio",
+      "source": "https://files.lmstudio.ai/lmstudio_icon2.svg"
+    },
+    {
+      "title": "Anthropic",
+      "slug": "anthropic",
+      "source": "https://www.anthropic.com"
+    },
+    {
+      "title": "Claude",
+      "slug": "claude",
+      "source": "https://claude.ai"
+    },
+    {
+      "title": "Google Gemini",
+      "slug": "googlegemini",
+      "source": "https://gemini.google.com"
+    },
+    {
+      "title": "Mistral AI",
+      "slug": "mistralai",
+      "source": "https://chat.mistral.ai"
+    },
+    {
+      "title": "Hugging Face",
+      "slug": "huggingface",
+      "source": "https://huggingface.co/brand"
+    },
+    {
+      "title": "GitHub",
+      "slug": "github",
+      "source": "https://github.com/logos"
+    },
+    {
+      "title": "NVIDIA",
+      "slug": "nvidia",
+      "source": "https://www.nvidia.com/en-us"
+    },
+    {
+      "title": "React",
+      "slug": "react",
+      "source": "https://github.com/facebook/create-react-app/blob/282c03f9525fdf8061ffa1ec50dce89296d916bd/test/fixtures/relative-paths/src/logo.svg"
+    },
+    {
+      "title": "TypeScript",
+      "slug": "typescript",
+      "source": "https://www.typescriptlang.org/branding"
+    },
+    {
+      "title": "Python",
+      "slug": "python",
+      "source": "https://www.python.org/community/logos/"
+    }
+  ]
+}

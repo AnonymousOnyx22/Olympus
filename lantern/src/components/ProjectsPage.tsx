@@ -5,6 +5,12 @@ interface ProjectsPageProps {
   projects: ProjectInfo[]
   /** The project currently open in the workspace, if any. */
   activeId: string | null
+  /**
+   * Titles of the agent windows open in each project, keyed by project id. A
+   * project is "open" in the only sense a reader cares about once it has an
+   * agent actually running, so the list names them.
+   */
+  openAgentsByProject: Record<string, string[]>
   onProjectsChange: (projects: ProjectInfo[]) => void
   onOpen: (id: string) => void
   onAdd: () => void
@@ -61,7 +67,7 @@ function Svg({ children, className = 'h-3.5 w-3.5', width = 1.9 }: { children: R
   return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={width} aria-hidden="true">{children}</svg>
 }
 
-export default function ProjectsPage({ projects, activeId, onProjectsChange, onOpen, onAdd, onRemove }: ProjectsPageProps) {
+export default function ProjectsPage({ projects, activeId, openAgentsByProject, onProjectsChange, onOpen, onAdd, onRemove }: ProjectsPageProps) {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<Filter>('all')
   const [location, setLocation] = useState<string>('all') // 'all' | 'manual' | a root path
@@ -166,7 +172,7 @@ export default function ProjectsPage({ projects, activeId, onProjectsChange, onO
           <button
             type="button"
             onClick={() => (roots.length ? setCreating(true) : void watchFolder())}
-            className="flex h-8 items-center gap-1.5 rounded-xl bg-sky-50 px-3 text-[11.5px] font-medium text-sky-700 ring-1 ring-sky-200 transition hover:bg-sky-100 active:scale-[0.98]"
+            className="flex h-8 items-center gap-1.5 rounded-xl bg-aether-50 px-3 text-[11.5px] font-medium text-aether-700 ring-1 ring-aether-200 transition hover:bg-aether-100 active:scale-[0.98]"
             title={roots.length ? 'Create a new folder inside a watched projects folder' : 'Watch a projects folder first'}
           >
             <Svg>{Icon.plus}</Svg>
@@ -177,7 +183,7 @@ export default function ProjectsPage({ projects, activeId, onProjectsChange, onO
         {/* watched folders */}
         <section className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-3">
           <div className="flex items-center gap-2 px-1">
-            <span className="text-sky-600"><Svg>{Icon.radar}</Svg></span>
+            <span className="text-aether-600"><Svg>{Icon.radar}</Svg></span>
             <h2 className="text-[11.5px] font-medium text-slate-700">Watched folders</h2>
             <span className="text-[11px] text-slate-400">Every folder inside becomes a project. New ones appear automatically.</span>
           </div>
@@ -192,7 +198,7 @@ export default function ProjectsPage({ projects, activeId, onProjectsChange, onO
                 </button>
               </div>
             ))}
-            <button type="button" onClick={() => void watchFolder()} className="flex h-8 items-center gap-1.5 rounded-xl border border-dashed border-slate-200 px-3 text-[11.5px] text-slate-500 transition hover:border-sky-300 hover:text-sky-600">
+            <button type="button" onClick={() => void watchFolder()} className="flex h-8 items-center gap-1.5 rounded-xl border border-dashed border-slate-200 px-3 text-[11.5px] text-slate-500 transition hover:border-aether-300 hover:text-aether-600">
               <Svg>{Icon.plus}</Svg>
               {roots.length ? 'Watch another folder' : 'Watch your projects folder'}
             </button>
@@ -208,7 +214,7 @@ export default function ProjectsPage({ projects, activeId, onProjectsChange, onO
 
         {/* toolbar */}
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl bg-white px-3 py-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-sky-400 sm:max-w-sm">
+          <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl bg-white px-3 py-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-aether-400 sm:max-w-sm">
             <span className="text-slate-400"><Svg>{Icon.search}</Svg></span>
             <input
               type="search"
@@ -292,8 +298,9 @@ export default function ProjectsPage({ projects, activeId, onProjectsChange, onO
                 key={project.id}
                 project={project}
                 layout={layout}
-                active={project.id === activeId}
-                onOpen={() => onOpen(project.id)}
+        active={project.id === activeId}
+        openAgents={openAgentsByProject[project.id] ?? []}
+        onOpen={() => onOpen(project.id)}
                 onPin={() => void togglePin(project)}
                 onReveal={() => void reveal(project)}
                 onRemove={() => onRemove(project.id)}
@@ -303,7 +310,7 @@ export default function ProjectsPage({ projects, activeId, onProjectsChange, onO
           </div>
         ) : (
           <div className="mt-16 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-sky-50 text-sky-500 ring-1 ring-sky-100">
+            <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-aether-50 text-aether-500 ring-1 ring-aether-100">
               <Svg className="h-5 w-5" width={1.6}>{Icon.folder}</Svg>
             </div>
             <p className="mt-3 text-[12.5px] text-slate-500">
@@ -311,9 +318,9 @@ export default function ProjectsPage({ projects, activeId, onProjectsChange, onO
             </p>
             {projects.length === 0 && (
               <p className="mt-1 text-[11.5px] text-slate-400">
-                <button type="button" onClick={() => void watchFolder()} className="text-sky-600 hover:underline">Watch your projects folder</button>
+                <button type="button" onClick={() => void watchFolder()} className="text-aether-600 hover:underline">Watch your projects folder</button>
                 {' '}or{' '}
-                <button type="button" onClick={onAdd} className="text-sky-600 hover:underline">add a single folder</button>.
+                <button type="button" onClick={onAdd} className="text-aether-600 hover:underline">add a single folder</button>.
               </p>
             )}
           </div>
@@ -341,6 +348,8 @@ interface ProjectItemProps {
   project: ProjectInfo
   layout: Layout
   active: boolean
+  /** Titles of the agent windows currently open in this project, in open order. */
+  openAgents: string[]
   onOpen: () => void
   onPin: () => void
   onReveal: () => void
@@ -348,20 +357,49 @@ interface ProjectItemProps {
   onUnhide: () => void
 }
 
-function ProjectItem({ project, layout, active, onOpen, onPin, onReveal, onRemove, onUnhide }: ProjectItemProps) {
+const MAX_AGENT_CHIPS = 3
+
+function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onReveal, onRemove, onUnhide }: ProjectItemProps) {
   const removeLabel = project.source === 'watched' ? 'Hide from projects (folder is kept)' : 'Remove from projects (folder is kept)'
+
+  const shown = openAgents.slice(0, MAX_AGENT_CHIPS)
+  const overflow = openAgents.length - shown.length
 
   const badge = (
     <>
-      {active && <span className="rounded-md bg-emerald-50 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-200">Open</span>}
-      {project.firstSeen && <span className="rounded-md bg-sky-50 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-sky-700 ring-1 ring-inset ring-sky-200">New</span>}
+      {openAgents.length > 0 ? (
+        // "Open" on its own told you nothing: the question this page actually
+        // answers is what is running, so the agents are named outright.
+        <span
+          className="flex min-w-0 flex-wrap items-center gap-1"
+          title={openAgents.length === 1 ? '1 agent open' : `${openAgents.length} agents open`}
+        >
+          {shown.map((title) => (
+            <span
+              key={title}
+              className="flex min-w-0 max-w-[190px] items-center gap-1.5 rounded-md bg-emerald-50 px-1.5 py-px text-[9.5px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200"
+            >
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
+              <span className="truncate">{title}</span>
+            </span>
+          ))}
+          {overflow > 0 && (
+            <span className="rounded-md bg-emerald-50 px-1.5 py-px text-[9.5px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">
+              +{overflow}
+            </span>
+          )}
+        </span>
+      ) : active ? (
+        <span className="rounded-md bg-emerald-50 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-200">Open</span>
+      ) : null}
+      {project.firstSeen && <span className="rounded-md bg-aether-50 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-aether-700 ring-1 ring-inset ring-aether-200">New</span>}
       {!project.exists && <span className="rounded-md bg-amber-50 px-1.5 py-px text-[9.5px] font-medium text-amber-600 ring-1 ring-inset ring-amber-400/20">Folder missing</span>}
     </>
   )
 
   const avatar = (
     <span
-      className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-sky-50 text-[12px] font-semibold text-sky-700 ring-1 ring-sky-100"
+      className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-aether-50 text-[12px] font-semibold text-aether-700 ring-1 ring-aether-100"
     >
       {project.name.slice(0, 1).toUpperCase()}
     </span>
@@ -400,7 +438,7 @@ function ProjectItem({ project, layout, active, onOpen, onPin, onReveal, onRemov
 
   if (layout === 'list') {
     return (
-      <div className={`group flex min-w-0 items-center gap-3 px-3 py-2.5 transition ${project.exists ? '' : 'opacity-60'} ${active ? 'bg-sky-50' : 'hover:bg-slate-50'}`}>
+      <div className={`group flex min-w-0 items-center gap-3 px-3 py-2.5 transition ${project.exists ? '' : 'opacity-60'} ${active ? 'bg-aether-50' : 'hover:bg-slate-50'}`}>
         <button type="button" onClick={onOpen} disabled={!openable} className="flex min-w-0 flex-1 items-center gap-3 text-left focus-visible:outline-none disabled:cursor-default">
           {avatar}
           <div className="min-w-0 flex-1">
@@ -423,7 +461,7 @@ function ProjectItem({ project, layout, active, onOpen, onPin, onReveal, onRemov
         type="button"
         onClick={onOpen}
         disabled={!openable}
-        className={`flex h-[132px] w-full min-w-0 flex-col justify-between rounded-2xl bg-white px-4 py-3.5 text-left shadow-aegean ring-1 transition hover:bg-slate-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 disabled:cursor-default disabled:active:scale-100 ${active ? 'bg-sky-50 ring-sky-200' : 'ring-slate-200'}`}
+        className={`flex h-[132px] w-full min-w-0 flex-col justify-between rounded-2xl bg-white px-4 py-3.5 text-left shadow-aegean ring-1 transition hover:bg-slate-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-400 disabled:cursor-default disabled:active:scale-100 ${active ? 'bg-aether-50 ring-aether-200' : 'ring-slate-200'}`}
       >
         <div className="flex w-full min-w-0 items-start gap-2.5 pr-20">
           {avatar}
@@ -455,7 +493,7 @@ function IconButton({ label, onClick, children, on, danger, disabled }: { label:
       aria-pressed={on}
       disabled={disabled}
       className={`grid h-6 w-6 place-items-center rounded-lg transition disabled:opacity-30 ${
-        on ? 'text-sky-600 hover:bg-sky-50' : danger ? 'text-slate-400 hover:bg-rose-50 hover:text-rose-600' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+        on ? 'text-aether-600 hover:bg-aether-50' : danger ? 'text-slate-400 hover:bg-rose-50 hover:text-rose-600' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
       }`}
     >
       <Svg className="h-3.5 w-3.5" width={on ? 2.2 : 1.9}>{children}</Svg>
@@ -511,7 +549,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="my-new-app"
-          className="mt-1 w-full rounded-xl bg-slate-50 px-3 py-2 text-[12.5px] text-slate-900 placeholder:text-slate-400 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-sky-400"
+          className="mt-1 w-full rounded-xl bg-slate-50 px-3 py-2 text-[12.5px] text-slate-900 placeholder:text-slate-400 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-aether-400"
         />
 
         {roots.length > 1 && (
@@ -533,7 +571,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
         </p>
 
         <label className="mt-3 flex items-center gap-2 text-[11.5px] text-slate-500">
-          <input type="checkbox" checked={openAfter} onChange={(event) => setOpenAfter(event.target.checked)} className="accent-sky-600" />
+          <input type="checkbox" checked={openAfter} onChange={(event) => setOpenAfter(event.target.checked)} className="accent-aether-600" />
           Open it after creating
         </label>
 
@@ -541,7 +579,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
 
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={onCancel} className="h-8 rounded-xl bg-slate-100 px-3 text-[11.5px] font-medium text-slate-700 transition hover:bg-slate-200">Cancel</button>
-          <button type="submit" disabled={!name.trim() || busy} className="h-8 rounded-xl bg-sky-600 px-3 text-[11.5px] font-medium text-white transition hover:bg-sky-500 disabled:opacity-40">
+          <button type="submit" disabled={!name.trim() || busy} className="h-8 rounded-xl bg-aether-600 px-3 text-[11.5px] font-medium text-white transition hover:bg-aether-500 disabled:opacity-40">
             {busy ? 'Creating…' : 'Create'}
           </button>
         </div>

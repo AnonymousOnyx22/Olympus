@@ -32,10 +32,12 @@ describe('projectKey', () => {
   })
 
   it('lowercases on Windows only, because NTFS is case-insensitive there', () => {
-    const base = path.resolve('Users', 'Nick', 'Project')
+    // A neutral fixture path: nothing in a shipped repository should carry the
+    // name or home directory of whoever happened to write the test.
+    const base = path.resolve('Users', 'SomeUser', 'Project')
     const key = projectKey(base)
     if (IS_WIN) {
-      // On Windows "C:\Users\Nick" and "C:\users\nick" are the same directory.
+      // On Windows "C:\Users\SomeUser" and "C:\users\someuser" are the same directory.
       // Comparing them case-sensitively would register the project twice.
       expect(key).toBe(projectKey(base.toLowerCase()))
       expect(key).toBe(projectKey(base.toUpperCase()))

@@ -4,266 +4,52 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Requirements | Olympus</title>
-<meta name="description" content="What you need before Olympus will run: Node 18 or newer, opencode 1.18.x on your PATH, a model already running locally, and a project folder. Plus which platforms are supported.">
+<meta name="description" content="Check supported computers, setup essentials, and version compatibility before getting started with Olympus.">
 <meta name="color-scheme" content="light">
-<meta name="theme-color" content="#0a2f60">
+<meta name="theme-color" content="#eaf2f6">
 <meta name="robots" content="index, follow">
 
-<!-- ══ SITE CONSTANTS: every value here is a placeholder ═════════════════
-     The full block is in index.html. Support: support@example.com
-     Known-good opencode line: 1.18.x
-     ═══════════════════════════════════════════════════════════════════════ -->
+<!-- Every entity, contact, URL and artifact value on this page is injected at
+     build time from site.config.json. tools/build-site.mjs refuses to build while
+     any required value is still a TODO, so a page like this cannot ship unnamed. -->
 
-<link rel="canonical" href="https://olympus.example.com/requirements.html">
+<link rel="canonical" href="{{urls.site}}/requirements.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Requirements | Olympus">
-<meta property="og:description" content="Node 18+, opencode 1.18.x on your PATH, a model already running locally, and a project folder. Plus the opencode compatibility caveat, stated plainly.">
-<meta property="og:url" content="https://olympus.example.com/requirements.html">
+<meta property="og:description" content="Check supported computers, setup essentials, and version compatibility before getting started with Olympus.">
+<meta property="og:url" content="{{urls.site}}/requirements.html">
 <meta property="og:site_name" content="Olympus">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on a plinth banded with a Greek key pattern, with snow-capped mountain ranges behind it. This is the artwork the whole Olympus site is taken from.">
+<meta property="og:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@olympusapp">
-<meta name="twitter:image" content="https://olympus.example.com/assets/olympus-og.jpg">
-<meta name="twitter:image:alt" content="A marble bust of a bearded god crowned with gold laurel, rising above the clouds on an inscribed plinth. This is the artwork the whole Olympus site is taken from.">
+<meta name="twitter:image" content="{{urls.site}}/assets/olympus-og.jpg">
+<meta name="twitter:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cg fill='%23ffc72c'%3E%3Cpath d='M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05'/%3E%3Ccircle cx='16' cy='13.5' r='9.8' fill='none' stroke='%23ffc72c' stroke-width='0.55'/%3E%3Cellipse cx='12.55' cy='7' rx='1' ry='0.4' transform='rotate(-30 12.55 7)'/%3E%3Cellipse cx='11.3' cy='7.9' rx='1' ry='0.4' transform='rotate(-6 11.3 7.9)'/%3E%3Cellipse cx='10.65' cy='9.05' rx='1' ry='0.4' transform='rotate(22 10.65 9.05)'/%3E%3Cellipse cx='19.45' cy='7' rx='1' ry='0.4' transform='rotate(30 19.45 7)'/%3E%3Cellipse cx='20.7' cy='7.9' rx='1' ry='0.4' transform='rotate(6 20.7 7.9)'/%3E%3Cellipse cx='21.35' cy='9.05' rx='1' ry='0.4' transform='rotate(-22 21.35 9.05)'/%3E%3C/g%3E%3Cg fill='%23fffdf6'%3E%3Ccircle cx='16' cy='13.5' r='9.55'/%3E%3C/g%3E%3Cg fill='%230a2f60'%3E%3Cpath d='M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z'/%3E%3Cpath d='M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z'/%3E%3Cellipse cx='16' cy='8.6' rx='2.75' ry='3.05'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="512x512" href="assets/favicon-512.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="assets/olympus-mark.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="styles.css">
-<script>document.documentElement.className += ' js';</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
+    <link rel="stylesheet" href="olympus.css" />
+
 </head>
-<body>
-
+<body class="page-document">
 <a class="skip" href="#main">Skip to content</a>
-
-<div class="colonnade" data-colonnade aria-hidden="true">
-  <span class="colonnade__capital"></span>
-  <span class="colonnade__shaft">
-    <span class="colonnade__flutes"></span>
-    <span class="colonnade__gold"></span>
-    <span class="colonnade__marker"></span>
-  </span>
-  <span class="colonnade__base"></span>
-</div>
-
-<header class="site" id="site-bar">
-  <div class="site__bar">
-    <div class="wrap site__row">
-      <a class="lockup" href="index.html" aria-label="Olympus, home">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="lockup__mark"><g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g></svg>
-        <span class="lockup__word">Olympus</span>
-      </a>
-
-      <nav class="nav" aria-label="Primary">
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html">Security</a>
-        <a href="requirements.html" aria-current="page">Requirements</a>
-      </nav>
-
-      <div class="site__actions">
-        <div class="dlset dlset--bar" data-dlset>
-          <a class="dlbtn dlbtn--sm" data-download="macos" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg" aria-label="Download Olympus for macOS, Apple Silicon build"><span class="dlbtn__tag">Yours</span>macOS</a>
-          <a class="dlbtn dlbtn--sm" data-download="windows" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-setup.exe" aria-label="Download Olympus for Windows, 10 and 11"><span class="dlbtn__tag">Yours</span>Windows</a>
-          <a class="dlbtn dlbtn--sm" data-download="linux" data-track="download" href="https://downloads.example.com/olympus/0.1.0/olympus_0.1.0_amd64.AppImage" aria-label="Download Olympus for Linux, 64-bit"><span class="dlbtn__tag">Yours</span>Linux</a>
-        </div>
-        <a class="btn btn--primary btn--sm dlbar__one" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
-        <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
-          <svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-          <svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="site__rule">
-      <span class="zigbar" aria-hidden="true"></span>
-      <span class="site__progress" aria-hidden="true"></span>
-    </div>
-
-    <div class="mobilenav" id="mobile-nav" data-open="false">
-      <nav aria-label="Primary, mobile">
-        <a href="index.html">Home</a>
-        <a href="features.html">Features</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="pricing.html">Pricing</a>
-        <a href="security.html">Security</a>
-        <a href="requirements.html" aria-current="page">Requirements</a>
-        <a href="index.html#faq">Questions</a>
-        <a href="changelog.html">Changelog</a>
-        <a class="btn btn--primary" data-track="download" href="https://downloads.example.com/olympus/0.1.0/Olympus-0.1.0-arm64.dmg">Download</a>
-      </nav>
-    </div>
-  </div>
-</header>
-
-<main id="main">
-
-  <div class="pagehead">
-    <div class="wrap">
-      <p class="eyebrow">Requirements</p>
-      <h1>What you need first</h1>
-      <p class="lede">Four things, and all of them are probably already on your machine. Then the caveat, which matters more than the four.</p>
-      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Requirements</span></p>
-    </div>
-  </div>
-
-  <section class="section section--tint" id="requirements" data-scrub aria-labelledby="req-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">The list</p>
-        <h2 id="req-h">Four prerequisites</h2>
-        <p class="lede">Olympus does not fetch any of these for you and does not install anything behind your back.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <ul class="reqs">
-        <li><strong>Node 18 or newer.</strong> Check with <code>node --version</code>.</li>
-        <li><code>opencode</code> available on your <code>PATH</code>. Check with <code>opencode --version</code> and see <a href="#opencode">the note below</a> about which version.</li>
-        <li>A model that already runs locally: Ollama, LM Studio, vLLM, llama.cpp, any loopback OpenAI-compatible server, or a provider configured inside opencode.</li>
-        <li>A project folder on your machine. Nothing is fetched for you.</li>
-      </ul>
-
-      <h3 style="margin-top:clamp(40px,4.4vw,58px);margin-bottom:14px">Platforms</h3>
-      <p class="lede" style="margin-top:0">Intended targets for the Electron build. All three are built and tested. If one breaks on a new OS release, it breaks in the open and goes in the <a href="changelog.html">changelog</a>.</p>
-      <div class="cards cards--3" style="margin-top:24px">
-        <article class="card card--plain">
-          <h3>macOS</h3>
-          <p>Apple Silicon and Intel, as separate builds. Both are covered by the same licence. Apple Silicon is a first-class target, not Rosetta.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>Windows</h3>
-          <p>Windows 10 and Windows 11, 64-bit. Shipped as a signed installer.</p>
-        </article>
-        <article class="card card--plain">
-          <h3>Linux</h3>
-          <p>64-bit, shipped as an AppImage. Other distributions will very likely work, but they are not what we test against.</p>
-        </article>
-      </div>
-
-      <p class="note">
-        <strong>All set?</strong> <a href="how-it-works.html">Work through the four steps</a>, or read <a href="features.html">what is in the window</a> first.
-      </p>
-    </div>
-  </section>
-
-  <!-- ── opencode compatibility ──────────────────────────────────────────
-       The riskiest thing about this product, written down where somebody
-       about to pay $49 will actually read it. -->
-  <section class="section" id="opencode" data-scrub aria-labelledby="opencode-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">Compatibility</p>
-        <h2 id="opencode-h">Olympus depends on somebody else&rsquo;s project</h2>
-        <p class="lede">This is the most important paragraph on the website, and it is here rather than in a footnote.</p>
-        <span class="fillet" aria-hidden="true"></span>
-      </div>
-
-      <div class="prose">
-        <p>Olympus is a separate, third-party tool. It is <strong>not affiliated with, endorsed by, sponsored by or supported by</strong> the opencode project or its maintainers, and it does not speak for them. It is a GUI and a process supervisor for a program you already have installed.</p>
-
-        <p>Which means:</p>
-        <ul>
-          <li><strong>A working <code>opencode</code> on your PATH is a hard requirement.</strong> Olympus does not bundle it, install it, or keep a private copy. If it is not there, nothing starts.</li>
-          <li><strong>opencode is evolving, and Olympus is coupled to its HTTP surface.</strong> Olympus supervises <code>opencode serve</code> and talks to it. When that interface changes, Olympus has to follow. Some versions will work. Some will not.</li>
-          <li><strong>Known to work: <code>1.18.x</code>.</strong> That is the line 0.1.0 was built and tested against, and the line the <a href="changelog.html">changelog</a> records for every release. Check it before you upgrade opencode, not after.</li>
-          <li><strong>Other versions are untested, not forbidden.</strong> Plenty of people will run something else and have it work. Olympus does not block you from trying.</li>
-        </ul>
-
-        <h3>What happens when a version does not fit</h3>
-        <p>Olympus reads the <code>opencode</code> version at startup and checks it. When what it finds does not match what it was built against, it says so on screen, names the version it actually found, and explains what to do about it. It does not start a daemon it cannot supervise, and it does not degrade quietly into a half-working state that looks fine until you notice the wrong thing happened.</p>
-        <p>If you would rather not find out at startup, the version check is one line in the <a href="https://docs.example.com/olympus">documentation</a>, and pinning opencode to <code>1.18.x</code> with whatever version manager you use is a perfectly reasonable thing to do.</p>
-
-        <h3>What this means for the licence</h3>
-        <p>Nothing good, which is why it is here. If a future opencode release breaks your working setup and we have not shipped a fix, that is a real cost to you and we cannot pretend otherwise. Two things limit it. First, <a href="refunds.html">the 14-day refund window</a> means you find out before it matters. Second, <a href="pricing.html">your 0.x build keeps working</a>: if a later opencode release stops working with 0.1.0, the version of opencode that does work with it is still installable, and we will have written down which one that is.</p>
-      </div>
-
-      <p class="note">
-        <strong>Nothing here is hidden, and nothing is guaranteed either.</strong> A security-conscious buyer should assume any app that wraps somebody else&rsquo;s fast-moving agent will occasionally be behind. We would rather you buy knowing that than find out in month three.
-      </p>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="pager-h">
-    <div class="wrap">
-      <h2 id="pager-h" class="visually-hidden">Read next</h2>
-      <div class="pager">
-        <a href="security.html">
-          <small>Previous</small>
-          <strong>What is actually true</strong>
-        </a>
-        <a class="is-next" href="pricing.html">
-          <small>Next</small>
-          <strong>Forty-nine dollars, once</strong>
-        </a>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="foot">
-  <div class="wrap foot__row">
-    <div class="foot__brand">
-      <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-        <g class="mk__sun"><path d="M14.89 1.45L16.00 -2.20L17.11 1.45M23.38 4.05L26.75 2.25L24.95 5.62M27.55 11.89L31.20 13.00L27.55 14.11M24.95 20.38L26.75 23.75L23.38 21.95M8.62 21.95L5.25 23.75L7.05 20.38M4.45 14.11L0.80 13.00L4.45 11.89M7.05 5.62L5.25 2.25L8.62 4.05"/><circle class="mk__ring" cx="16" cy="13.5" r="9.8" fill="none" stroke-width="0.55"/></g><g class="mk__laurel"><ellipse cx="12.55" cy="7" rx="1" ry="0.4" transform="rotate(-30 12.55 7)"/><ellipse cx="11.3" cy="7.9" rx="1" ry="0.4" transform="rotate(-6 11.3 7.9)"/><ellipse cx="10.65" cy="9.05" rx="1" ry="0.4" transform="rotate(22 10.65 9.05)"/><ellipse cx="19.45" cy="7" rx="1" ry="0.4" transform="rotate(30 19.45 7)"/><ellipse cx="20.7" cy="7.9" rx="1" ry="0.4" transform="rotate(6 20.7 7.9)"/><ellipse cx="21.35" cy="9.05" rx="1" ry="0.4" transform="rotate(-22 21.35 9.05)"/></g><g class="mk__temple"><circle cx="16" cy="13.5" r="9.55"/></g><g class="mk__bust"><path d="M8.8 22.7C9.1 19.9 10.3 18.1 12.6 17.5L19.4 17.5C21.7 18.1 22.9 19.9 23.2 22.7C23.2 23.55 8.8 23.55 8.8 22.7Z"/><path d="M11.6 10.3C11.3 13 12.2 16.3 16 18.6C19.8 16.3 20.7 13 20.4 10.3C18.5 11.3 13.5 11.3 11.6 10.3Z"/><ellipse cx="16" cy="8.6" rx="2.75" ry="3.05"/></g>
-      </svg>
-      <span class="lockup__word">Olympus</span>
-    </div>
-
-    <nav class="foot__nav" aria-label="Footer">
-      <a href="features.html">Features</a>
-      <a href="how-it-works.html">How it works</a>
-      <a href="pricing.html">Pricing</a>
-      <a href="security.html">Security</a>
-      <a href="requirements.html" aria-current="page">Requirements</a>
-      <a href="changelog.html">Changelog</a>
-    </nav>
-  </div>
-
-  <div class="wrap foot__cols">
-    <div class="foot__col">
-      <p class="foot__colh">Support</p>
-      <ul>
-        <li><a href="https://docs.example.com/olympus">Documentation</a></li>
-        <li><a href="mailto:support@example.com">support@example.com</a></li>
-        <li><a href="changelog.html">Changelog</a></li>
-        <li>Report a security problem: email <a href="mailto:security@example.com">security@example.com</a>. Please do not open a public issue for anything exploitable. A public issue is a disclosure.</li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">The small print</p>
-      <ul>
-        <li><a href="license.html">Licence</a></li>
-        <li><a href="terms.html">Terms of sale</a></li>
-        <li><a href="privacy.html">Privacy</a></li>
-        <li><a href="refunds.html">Refunds</a></li>
-      </ul>
-    </div>
-    <div class="foot__col">
-      <p class="foot__colh">What this is</p>
-      <ul>
-        <li>A desktop app for the <code>opencode</code> agent. It runs on your machine, against models you already run.</li>
-        <li>opencode is a separate third-party project. Olympus is not affiliated with it and is not endorsed by it.</li>
-        <li>Nothing on this site collects anything about you. There is no tracker in the app and none in these pages.</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="wrap foot__legal">
-    <p>&copy; 2026 Olympus. A one-time-purchase desktop licence, sold by an individual. Placeholder legal entity and jurisdiction, see <a href="terms.html">terms</a>.</p>
-    <p>Olympus sends no telemetry and runs no server.</p>
-  </div>
-</footer>
-
-<script src="script.js"></script>
+<header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
+<nav class="nav" aria-label="Primary"><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="index.html#downloads">Get Olympus <span aria-hidden="true">↓</span></a>
+<button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html" aria-current="page">Requirements</a><a href="changelog.html">Changelog</a><a href="index.html#faq">Questions</a></nav></div></header>
+<main id="main"><div class="pagehead"><div class="wrap"><p class="eyebrow">Requirements</p><h1>Ready for your computer.</h1><p class="lede">A short checklist before you start.</p><p class="pagehead__crumbs"><a href="index.html">Home</a><span>/</span><span>Requirements</span></p></div></div><section class="section" id="requirements" aria-labelledby="requirements-heading"><div class="wrap"><div class="sec__head"><h2 id="requirements-heading">What you need.</h2></div><ul class="reqs"><li><strong>A supported computer.</strong> macOS, Windows 10 or 11, or 64-bit Linux.</li><li><strong>A compatible coding agent.</strong> Have your chosen agent ready to use, including any setup it requires.</li><li><strong>Your choice of model provider.</strong> Use a local model or a cloud provider supported by your chosen setup.</li><li><strong>A project folder.</strong> Choose the work you want to open in Olympus.</li></ul></div></section><section class="section" id="platforms" aria-labelledby="platforms-heading"><div class="wrap"><div class="sec__head"><h2 id="platforms-heading">Choose your download.</h2></div><div class="cards cards--2"><article class="card"><h3>macOS</h3><p>Separate downloads are available for Apple Silicon and Intel Macs. Choose the one that matches your computer.</p></article><article class="card"><h3>Windows</h3><p>For Windows 10 and Windows 11 on a 64-bit computer.</p></article><article class="card"><h3>Linux</h3><p>For 64-bit Linux. The download is an AppImage.</p></article><article class="card"><h3>Your model</h3><p>Speed and memory needs depend on the AI model you choose. Check the requirements in your model app.</p></article></div><p style="margin-top:24px"><a class="btn btn--primary" href="index.html#downloads">Choose a download</a></p></div></section><section class="section" id="compatibility" aria-labelledby="compatibility-heading"><div class="wrap"><div class="sec__head"><h2 id="compatibility-heading">Version compatibility.</h2></div><div class="prose"><p>Compatibility depends on the agent, model, and versions you choose. Try the free release with your setup before purchasing.</p><p>If you have trouble getting started, check your installed version and the <a href="changelog.html">release notes</a>.</p><p><a href="how-it-works.html">Continue to the setup guide</a></p></div></div></section></main>
+<footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="index.html#downloads">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<script src="site.js"></script>
+<script src="motion.js"></script>
 </body>
 </html>

@@ -28,7 +28,7 @@ export default function StartupIntro() {
       />
 
       <motion.div
-        className="absolute h-[420px] w-[420px] rounded-full border border-sky-400/10"
+        className="absolute h-[420px] w-[420px] rounded-full border border-aether-400/10"
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: [0.5, 1.05, 1], opacity: [0, 0.8, 0.35], rotate: 120 }}
         transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
@@ -39,7 +39,7 @@ export default function StartupIntro() {
         transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
       />
       <motion.div
-        className="absolute h-52 w-52 rounded-full border border-sky-400/20"
+        className="absolute h-52 w-52 rounded-full border border-aether-400/20"
         animate={{ rotate: -360, scale: [0.96, 1.03, 0.96] }}
         transition={{ rotate: { duration: 7, repeat: Infinity, ease: 'linear' }, scale: { duration: 2.2, repeat: Infinity } }}
       />
@@ -59,7 +59,7 @@ export default function StartupIntro() {
 
       <div className="relative flex -translate-y-2 flex-col items-center">
         <motion.div
-          className="absolute -inset-16 rounded-full bg-sky-500/10 blur-3xl"
+          className="absolute -inset-16 rounded-full bg-aether-500/10 blur-3xl"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: [0, 1.15, 0.8], opacity: [0, 0.65, 0.25] }}
           transition={{ duration: 1.45, ease: 'easeOut' }}
@@ -79,7 +79,7 @@ export default function StartupIntro() {
           ].map((position) => (
             <motion.span
               key={position}
-              className={`absolute h-5 w-5 border-sky-400/55 ${position}`}
+              className={`absolute h-5 w-5 border-aether-400/55 ${position}`}
               initial={{ opacity: 0, scale: 1.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.55, duration: 0.45, ease: 'easeOut' }}
@@ -96,7 +96,7 @@ export default function StartupIntro() {
           Olympus
         </motion.div>
         <motion.div className="relative mt-3 h-px w-32 overflow-hidden bg-slate-100" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.85, duration: 0.45 }}>
-          <motion.span className="absolute inset-y-0 w-10 bg-sky-400" animate={{ x: [-42, 130] }} transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }} />
+          <motion.span className="absolute inset-y-0 w-10 bg-aether-400" animate={{ x: [-42, 130] }} transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }} />
         </motion.div>
         <motion.span
           className="relative mt-2 font-mono text-[9px] tracking-[0.24em] text-slate-400"

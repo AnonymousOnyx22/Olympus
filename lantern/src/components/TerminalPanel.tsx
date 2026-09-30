@@ -19,16 +19,22 @@ interface TerminalPanelProps {
   runCommand?: string | null
 }
 
+/**
+ * The accent hexes here are deliberately literal rather than `var(--accent-500)`: xterm
+ * paints its cursor and selection through the canvas/WebGL renderer, where a custom
+ * property has already been resolved away by the time the colour is used. Keep these in
+ * step with the `--accent-*` triplets in index.css.
+ */
 const THEME: ITheme = {
   background: '#f8fafc',
   foreground: '#334155',
-  cursor: '#0ea5e9',
+  cursor: '#2563eb',
   cursorAccent: '#ffffff',
-  selectionBackground: 'rgba(14,165,233,0.18)',
+  selectionBackground: 'rgba(37,99,235,0.18)',
   black: '#1e293b',
   brightBlack: '#64748b',
-  blue: '#0284c7',
-  brightBlue: '#0ea5e9',
+  blue: '#1e40af',
+  brightBlue: '#2563eb',
   cyan: '#0891b2',
   brightCyan: '#06b6d4',
   green: '#059669',
