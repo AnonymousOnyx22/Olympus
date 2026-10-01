@@ -53,4 +53,30 @@
     const match = set.querySelector(`[data-download="${platform}"]`);
     if (match) { match.classList.add('is-pick'); set.prepend(match); }
   });
+
+  // A gold pill that glides behind whichever nav link has hover or focus, and rests under
+  // the current page the rest of the time. Pure enhancement: the links work and read fine
+  // without it (CSS alone still gives hover/current a colour change).
+  const nav = document.querySelector('.nav');
+  const navLinks = nav ? [...nav.querySelectorAll('a')] : [];
+  if (nav && navLinks.length) {
+    const pill = document.createElement('span');
+    pill.className = 'nav__pill';
+    nav.prepend(pill);
+    const current = navLinks.find(a => a.hasAttribute('aria-current'));
+    const place = el => {
+      if (!el) { pill.style.opacity = '0'; return; }
+      pill.style.left = `${el.offsetLeft}px`;
+      pill.style.width = `${el.offsetWidth}px`;
+      pill.style.opacity = '1';
+    };
+    place(current);
+    navLinks.forEach(a => {
+      a.addEventListener('mouseenter', () => place(a));
+      a.addEventListener('focus', () => place(a));
+    });
+    nav.addEventListener('mouseleave', () => place(current));
+    nav.addEventListener('focusout', event => { if (!nav.contains(event.relatedTarget)) place(current); });
+    addEventListener('resize', () => place(nav.querySelector('a:hover') || current));
+  }
 })();
