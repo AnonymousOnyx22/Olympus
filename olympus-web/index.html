@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Olympus, a workspace for AI coding agents</title>
-<meta name="description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. Free to try, with a $49 one-time licence.">
+<meta name="description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. In development, with a a set price one-time licence.">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#eaf2f6">
 <meta name="robots" content="index, follow">
@@ -16,7 +16,7 @@
 <link rel="canonical" href="{{urls.site}}/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Olympus, a workspace for AI coding agents">
-<meta property="og:description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. Free to try, with a $49 one-time licence.">
+<meta property="og:description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. In development, with a a set price one-time licence.">
 <meta property="og:url" content="{{urls.site}}/">
 <meta property="og:site_name" content="Olympus">
 <meta property="og:locale" content="en_US">
@@ -27,18 +27,18 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@olympusapp">
 <meta name="twitter:title" content="Olympus, a workspace for AI coding agents">
-<meta name="twitter:description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. Free to try, with a $49 one-time licence.">
+<meta name="twitter:description" content="A calm workspace for AI coding, with your projects, conversations, and changes in view. In development, with a a set price one-time licence.">
 <meta name="twitter:image" content="{{urls.site}}/assets/olympus-og.jpg">
 <meta name="twitter:image:alt" content="Cartoon Athena, Greek columns, and golden olive leaves among illustrated clouds.">
 
-<link rel="icon" type="image/svg+xml" href="assets/olympus-mark.svg">
+<link rel="icon" type="image/png" href="assets/olympus-mark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
     <link rel="stylesheet" href="olympus.css" />
+<link rel="stylesheet" href="illustrations.css">
 
-<script type="application/ld+json">
-{
+<script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Olympus",
@@ -48,39 +48,64 @@
   "softwareVersion": "0.1.0",
   "description": "A workspace for AI coding that brings projects, conversations, change review, and previews together.",
   "url": "{{urls.site}}/",
-  "downloadUrl": "{{urls.downloadBase}}/",
+  "downloadUrl": "{{urls.waitlist}}/",
   "image": "{{urls.site}}/assets/olympus-cartoon-hero.webp",
   "inLanguage": "en",
-  "isAccessibleForFree": true,
+  "isAccessibleForIn development": true,
   "license": "{{urls.site}}/license.html",
-  "softwareRequirements": "A compatible coding agent and configured model provider",
-  "offers": [
-    {
-      "@type": "Offer",
-      "name": "Olympus free trial",
-      "price": "0",
-      "priceCurrency": "USD",
-      "description": "The full application, free, with no card and no account. No time limit."
-    },
-    {
-      "@type": "Offer",
-      "name": "Olympus one-time licence, per seat",
-      "price": "49",
-      "priceCurrency": "USD",
-      "description": "Perpetual, per user, commercial use permitted. 14-day refund window, no questions asked. Not a subscription.",
-      "availability": "https://schema.org/PreOrder"
-    }
-  ]
+  "softwareRequirements": "A compatible coding agent and configured model provider"
+}</script>
+<style>.plate-bleed{position:relative;background-color:#e6eef3;background-image:url("assets/olympus-closing-plate.jpg");background-size:cover;background-position:center top;background-repeat:no-repeat}
+@supports (background-image:url("x.webp")){.plate-bleed{background-image:url("assets/olympus-closing-plate.webp")}}
+.closing--plate{position:relative;min-height:clamp(420px,64vh,620px);display:grid;place-items:center;padding:0;overflow:hidden;background:none}
+.closing--plate::before,.closing--plate::after{display:none}
+.closing--plate .closing__cta{position:relative;z-index:2;margin:0;font-size:14px;padding:15px 28px}
+/* The sky is bright, so the footer sits on a wash rather than on the artwork directly. */
+.plate-bleed .site__foot{position:relative;background:linear-gradient(180deg,rgba(238,244,248,.72),rgba(240,246,250,.94) 42%,rgba(240,246,250,.98))}
+.plate-bleed .site__foot::before{content:"";position:absolute;left:0;right:0;top:0;height:180px;background:linear-gradient(180deg,transparent,rgba(240,246,250,.78));pointer-events:none}
+/* Accordion. <details> snaps open with no transition, so the content is animated:
+   natively via ::details-content where that is supported, and otherwise by measuring
+   the answer and animating its height, then releasing it so long answers are not
+   clipped. Both paths end at the same place. */
+@media (prefers-reduced-motion: no-preference) {
+  .faq__item { interpolate-size: allow-keywords; }
+  .faq__item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: block-size .42s var(--ease), opacity .3s var(--ease), content-visibility .42s allow-discrete;
+  }
+  .faq__item[open]::details-content { block-size: auto; opacity: 1; }
 }
-</script>
+/* Browsers without ::details-content get the measured version from the script below;
+   until it has run, the open state is simply visible rather than half-faded. */
+.faq__item.is-animating > .faq__answer,
+.faq__item.is-animating > p { overflow: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .faq__item.is-animating > .faq__answer,
+  .faq__item.is-animating > p { transition: height .42s var(--ease), opacity .3s var(--ease); }
+  .faq__item.is-animating[open] > .faq__answer,
+  .faq__item.is-animating[open] > p { opacity: 1; }
+}
+</style>
 </head>
 <body class="page-home">
+<div class="cloud-curtain" aria-hidden="true">
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
+  <span class="cloud-curtain__row"><span class="cloud-curtain__bank cloud-curtain__bank--left"></span><span class="cloud-curtain__bank cloud-curtain__bank--right"></span></span>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
-<nav class="nav" aria-label="Primary"><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a></nav>
-<div class="site__actions"><a class="btn btn--primary btn--sm" href="index.html#downloads">Get Olympus <span aria-hidden="true">↓</span></a>
+<header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
+<nav class="nav" aria-label="Primary">
+      <a href="app.html">The window</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="pricing.html#buy">Join the waitlist <span aria-hidden="true">↓</span></a>
 <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
-<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html" aria-current="page">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="index.html#faq">Questions</a></nav></div></header>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html" aria-current="page">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav></div></header>
 <main id="main">
   <section class="hero" aria-labelledby="hero-heading">
     <div class="wrap hero__grid">
@@ -88,7 +113,7 @@
         <a class="release-link" href="changelog.html"><span>Olympus 0.1.0</span> A new home for your local agents <span aria-hidden="true">↗</span></a>
         <h1 id="hero-heading">A higher place<br>to build.</h1>
         <p class="hero__lede">Your models. Your machine. Your own Olympus.<br>An independent agent harness, with every project, conversation, and change in view.</p>
-        <div class="hero__actions"><a class="btn btn--primary" href="#downloads">Get Olympus, free <span aria-hidden="true">↓</span></a><a class="btn" href="#watch"><span aria-hidden="true">▷</span> Explore the workspace</a></div>
+        <div class="hero__actions"><a class="btn btn--primary" href="#downloads">Join the waitlist <span aria-hidden="true">↓</span></a><a class="btn" href="#watch"><span aria-hidden="true">▷</span> Explore the workspace</a></div>
         <p class="hero__meta">macOS, Windows &amp; Linux &nbsp; · &nbsp; No account required</p>
       </div>
     </div>
@@ -106,7 +131,7 @@
       <div class="sec__head center-head"><p class="eyebrow">The Olympus workspace</p><h2 id="workspace-heading">Everything in view.<br>Room to think.</h2><p class="lede">Follow the agent, get into the code, or read the conversation. Three perspectives on the same work, in one place.</p></div>
       <div class="demo" aria-label="Interactive Olympus workspace illustration with sample data">
         <div class="demo__bar">
-          <div class="demo__brand"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><img src="assets/olympus-mark.svg" width="23" height="23" alt="">Olympus</div>
+          <div class="demo__brand"><span class="demo__dots" aria-hidden="true"><i></i><i></i><i></i></span><img src="assets/olympus-mark.png" width="23" height="23" alt="">Olympus</div>
           <div class="demo__tabs" role="tablist" aria-label="Workspace view">
             <button type="button" id="tab-agent" role="tab" aria-selected="true" aria-controls="view-agent" data-demo-tab>Agent</button>
             <button type="button" id="tab-code" role="tab" aria-selected="false" aria-controls="view-code" tabindex="-1" data-demo-tab>Code</button>
@@ -161,6 +186,33 @@
     </div>
   </section>
 
+  <section class="section" id="multi-project" aria-labelledby="multi-heading">
+    <div class="wrap">
+      <div class="sec__head center-head">
+        <p class="eyebrow">What Olympus actually is</p>
+        <h2 id="multi-heading">One screen. Every project you're working on, each with its own agent.</h2>
+        <p class="lede">Olympus is a multi-agent harness, not a single chat window. Open three projects and you get three independent agents, each with its own folder, its own conversation, and its own running work — all visible at once. Switching projects never interrupts the one you left.</p>
+      </div>
+      <div class="workspace-mock" role="img" aria-label="Three projects open at once: storefront-api is working on an edit, marketing-site has an edit waiting for approval, and data-pipeline is idle and ready.">
+        <div class="workspace-mock__pane">
+          <p class="workspace-mock__name"><span class="workspace-mock__dot workspace-mock__dot--busy" aria-hidden="true"></span>storefront-api</p>
+          <p class="workspace-mock__line">Add a <code>/health</code> endpoint that checks the database connection.</p>
+          <span class="workspace-mock__status workspace-mock__status--busy">Working</span>
+        </div>
+        <div class="workspace-mock__pane">
+          <p class="workspace-mock__name"><span class="workspace-mock__dot workspace-mock__dot--waiting" aria-hidden="true"></span>marketing-site</p>
+          <p class="workspace-mock__line">Fix the mobile nav overflowing on narrow screens.</p>
+          <span class="workspace-mock__status workspace-mock__status--waiting">1 edit waiting</span>
+        </div>
+        <div class="workspace-mock__pane">
+          <p class="workspace-mock__name"><span class="workspace-mock__dot" aria-hidden="true"></span>data-pipeline</p>
+          <p class="workspace-mock__line">Add retry logic to the nightly fetch step.</p>
+          <span class="workspace-mock__status workspace-mock__status--ready">Ready</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section section--tint" aria-labelledby="review-heading"><div class="wrap split">
     <div><p class="eyebrow">Stay close to the work</p><h2 id="review-heading">Let the agent build.<br>Keep the final say.</h2><p class="lede">An edit should be something you understand. Olympus puts the proposed change in front of you, so you can decide what reaches your files.</p><ul class="feature-list"><li>Read the diff before accepting an edit.</li><li>Approve shell commands separately.</li><li>Keep the project and its preview side by side.</li></ul><a class="text-link" href="features.html">Explore the features <span aria-hidden="true">↗</span></a></div>
     <div class="review-visual" role="img" aria-label="Illustration of a two-line heading change waiting for approval"><div class="diff-card"><div class="diff-card__head"><code>src/app/page.tsx</code><span>Proposed change</span></div><pre>  &lt;main className="studio"&gt;
@@ -169,18 +221,16 @@
   &lt;/main&gt;</pre><div class="diff-card__action"><span>Review before writing</span><span class="demo-approve">Accept edit</span></div></div><div class="approval-note"><span aria-hidden="true">✓</span> Your approval is part of the process.</div></div>
   </div></section>
 
-  <section class="section ownership" aria-labelledby="local-heading"><div class="wrap split">
-    <div class="ownership__copy"><p class="eyebrow">Your own Olympus</p><h2 id="local-heading">Power that stays<br>on your mountain.</h2><p class="lede">Connect the models running on your computer. Give each project its own agent. Move between ideas while the work keeps going.</p><p class="lede">No Olympus account or activity tracking. Use a model on your computer, or choose a cloud provider when you want one.</p><p style="margin-top:25px"><a class="text-link" href="security.html">How Olympus stays local <span aria-hidden="true">↗</span></a></p></div>
-    <img class="ownership__art" src="assets/olympus-cartoon-sanctuary.webp" width="1254" height="1254" loading="lazy" alt="A cartoon Greek sanctuary with a golden olive tree and cloud-covered steps.">
-  </div></section>
+  
 
-  <section class="section" id="pricing" aria-labelledby="pricing-heading"><div class="wrap">
-    <div class="section-intro"><div class="sec__head"><p class="eyebrow">Simple by design</p><h2 id="pricing-heading">A workspace to keep.</h2><p class="lede">Start free. Buy a licence when you want ongoing 0.x updates.<br>One payment, with room to make it your own.</p></div><a class="text-link" href="pricing.html">All pricing details <span aria-hidden="true">↗</span></a></div>
-    <div class="cards cards--2">
-      <article class="card-lg downloads" id="downloads"><h3>Make yourself at home</h3><p class="price__fig">Free</p><p class="price__terms">The full application. No card, no account, and no trial clock.</p><ul class="ticks price__list"><li>All workspace features</li><li>Local models and per-project agents</li><li>Keep using the current release</li></ul><div class="dlset" data-dlset><a class="dlbtn" data-download="macos" href="{{urls.downloadBase}}/{{artifacts.macArm64}}"><span class="dlbtn__tag">Your OS</span>macOS · Apple Silicon</a><a class="dlbtn" data-download="windows" href="{{urls.downloadBase}}/{{artifacts.windows}}"><span class="dlbtn__tag">Your OS</span>Windows</a><a class="dlbtn" data-download="linux" href="{{urls.downloadBase}}/{{artifacts.linux}}"><span class="dlbtn__tag">Your OS</span>Linux</a></div><a class="intel-link" href="{{urls.downloadBase}}/{{artifacts.macIntel}}">Download for an Intel Mac</a></article>
-      <article class="card-lg card-lg--gold"><h3>Yours for the long run</h3><p class="price__fig"><sup>$</sup>49 <small>USD · once, per person</small></p><p class="price__terms">A perpetual licence for the 0.x line, with every 0.y release included.</p><ul class="ticks price__list"><li>Everything in the free release</li><li>All 0.x updates and email support</li><li>Commercial use, on two computers</li><li>A 14-day refund window</li></ul><p class="price__cta"><a class="btn btn--primary" href="{{urls.checkout}}">Get a licence <span aria-hidden="true">↗</span></a></p></article>
+  <section class="section" id="downloads" aria-labelledby="stay-heading"><div class="wrap">
+    <div class="sec__head center-head">
+      <p class="eyebrow">In development</p>
+      <h2 id="stay-heading">Would you like to stay informed?</h2>
+      <p class="lede">There is nothing to buy yet and nothing to download. Olympus is still being built, and the commercial terms are not settled. Join the waitlist and we will tell you when there is a build worth having &mdash; and nothing else.</p>
+      <p class="price__cta"><a class="btn btn--primary" href="{{urls.waitlist}}">Join the waitlist <span aria-hidden="true">↓</span></a></p>
+      <p style="margin-top:18px;font-size:13px;color:var(--muted)">No newsletter, no drip sequence. One message when it matters, and you can leave whenever you like.</p>
     </div>
-    <p class="note">Make sure your computer and AI model are ready. <a href="requirements.html">Check the requirements</a> before downloading. Model services are separate from the Olympus licence.</p>
   </div></section>
 
   <section class="section section--tint" id="compare" aria-labelledby="compare-heading"><div class="wrap">
@@ -193,26 +243,61 @@
   </div></section>
 
   <section class="section" id="faq" aria-labelledby="faq-heading"><div class="wrap faq-layout">
-    <div class="sec__head"><p class="eyebrow">Before you settle in</p><h2 id="faq-heading">A few good questions.</h2><p class="lede">The practical details, so you know what to expect.</p><p style="margin-top:25px"><a class="text-link" href="how-it-works.html">Read the setup guide <span aria-hidden="true">↗</span></a></p></div>
+    <div class="sec__head"><p class="eyebrow">Before you settle in</p><h2 id="faq-heading">A few good questions.</h2><p class="lede">The practical details, so you know what to expect.</p><p style="margin-top:25px"><a class="text-link" href="how-it-works.html">Read the setup guide <span aria-hidden="true">↗</span></a></p><img class="scene-art scene-art--library" src="assets/olympus-sky-library.webp" srcset="assets/olympus-sky-library-small.webp 720w, assets/olympus-sky-library.webp 1440w" sizes="(max-width: 700px) 92vw, 44vw" width="1440" height="960" alt="" loading="lazy" decoding="async"></div>
     <div class="faq">
       <details class="faq__item"><summary>What do I need to get started?</summary><p>A supported computer, a project folder, and a compatible agent and model ready to use. The <a href="requirements.html">setup checklist</a> covers the software you need.</p></details>
       <details class="faq__item"><summary>Does everything run on my computer?</summary><p>With a model running on your computer, your AI work stays there. If you choose a cloud provider, your requests go to that provider. Olympus does not track your activity or require an account.</p></details>
-      <details class="faq__item"><summary>Can I really keep using it for free?</summary><p>Yes. The current release has all features and no time limit. The $49 licence adds ongoing updates throughout the 0.x line and email support. See the <a href="pricing.html">complete pricing terms</a>.</p></details>
+      <details class="faq__item"><summary>Can I use it now?</summary><p>No. Nothing is released yet, and nothing is for sale. Olympus is in development, and builds go to the waitlist first. What a licence will cost, and what it will include, has not been decided. See the <a href="pricing.html">complete pricing terms</a>.</p></details>
       <details class="faq__item"><summary>What can the agent change without asking?</summary><p>Proposed file edits wait for your approval. Commands ask separately because they can also change files. Review both before accepting. <a href="security.html">Learn about your controls</a>.</p></details>
       <details class="faq__item"><summary>Which models work with Olympus?</summary><p>Olympus is independent of any one provider. Use a model supported by your chosen agent and setup, whether it runs locally or through a connected cloud provider.</p></details>
-      <details class="faq__item"><summary>What if it isn’t the right fit?</summary><p>Try the free release first. If you buy a licence, the refund window is 14 days. The <a href="refunds.html">refund policy</a> explains the process.</p></details>
+      <details class="faq__item"><summary>What if it isn’t the right fit?</summary><p>Join the waitlist and you will be told when a build is ready. Any refund window will be published before the first sale, not after it. The <a href="refunds.html">refund policy</a> explains the process.</p></details>
     </div>
   </div></section>
-  <section class="closing" aria-labelledby="closing-heading"><p class="eyebrow">Your next idea starts here</p><h2 id="closing-heading">Find your higher ground.</h2><p>A little more clarity. A lot more room to build.</p><a class="btn btn--primary" href="#downloads">Get Olympus, free <span aria-hidden="true">↓</span></a></section>
+  
 </main>
 
-<footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.svg" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
-<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="index.html#downloads">Downloads</a></li></ul></nav>
-<nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
+<div class="plate-bleed">
+<section class="closing closing--plate" aria-labelledby="closing-heading"><h2 id="closing-heading" class="visually-hidden">Find your higher ground.</h2><a class="btn btn--primary closing__cta" href="{{urls.waitlist}}">Join the waitlist <span aria-hidden="true">↓</span></a></section>
+<footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="pricing.html#buy">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="faq.html">FAQ</a></li><li><a href="about.html">About</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
 <nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
 <div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+</div>
+</div>
 <script src="site.js"></script>
 <script src="demo-live.js"></script>
 <script src="motion.js"></script>
+<script>
+/* Accordion fallback for engines without ::details-content. Height is measured, animated,
+   then released to auto so a long answer is never permanently clipped. */
+(function () {
+  var items = document.querySelectorAll('.faq__item');
+  if (!items.length) return;
+  var supported = CSS.supports('selector(::details-content)');
+  if (supported) return; // the native path is doing the work
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  for (var i = 0; i < items.length; i += 1) {
+    (function (d) {
+      var answer = d.querySelector('.faq__answer') || (d.querySelector('summary') || {}).nextElementSibling;
+      if (!answer) return;
+      d.classList.add('is-animating');
+      d.addEventListener('toggle', function () {
+        answer.style.height = 'auto';
+        var full = answer.offsetHeight;
+        answer.style.height = d.open ? '0px' : full + 'px';
+        // force a reflow so the transition has a start value to move from
+        void answer.offsetHeight;
+        answer.style.height = d.open ? full + 'px' : '0px';
+        window.setTimeout(function () {
+          if (d.open) { answer.style.height = 'auto'; d.classList.remove('is-animating'); }
+        }, 440);
+      });
+    }(items[i]));
+  }
+}());
+
+</script>
 </body>
 </html>

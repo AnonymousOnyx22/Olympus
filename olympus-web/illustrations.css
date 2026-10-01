@@ -1,0 +1,34 @@
+/* Original illustrations: airy compositions fill unused space around the content. */
+.scene-art{display:block;width:100%;height:auto;object-fit:cover;aspect-ratio:3/2;border-radius:44% 44% 20px 20px / 12% 12% 20px 20px;border:1px solid #8baec3;box-shadow:0 10px 0 -5px #d2e4ed}
+.scene-intro>.wrap{display:grid;grid-template-columns:1.12fr 1fr;gap:32px 54px;align-items:center}
+.scene-intro>.wrap>*{grid-column:1/-1}
+.scene-intro>.wrap>.scene-art{grid-column:2;grid-row:1;max-height:340px}
+.scene-intro>.wrap>.sec__head{grid-column:1;grid-row:1;margin-bottom:0;max-width:none}
+.scene-art--library{margin-top:32px;max-width:430px;aspect-ratio:1.2;object-position:75% center;border-radius:48% 48% 18px 18px / 30% 30% 18px 18px}
+.ownership .ownership__art{aspect-ratio:1.12;object-position:65% center;border-radius:48% 48% 22px 22px / 22% 22% 22px 22px;box-shadow:7px 7px 0 #aacce1}
+.pagehead{isolation:isolate;min-height:300px;display:flex;align-items:center}
+.pagehead::after{width:48%;opacity:1;mask-image:linear-gradient(to right,transparent,black 28%);background-position:center;background-size:cover}
+.pagehead .wrap>h1,.pagehead .wrap>.lede{max-width:58%}
+.pagehead--features::after{background-image:url('assets/olympus-cartoon-sanctum.jpg')}
+.pagehead--how::after{background-image:url('assets/olympus-god-hephaestus.jpg')}
+.pagehead--pricing::after{background-image:url('assets/olympus-god-demeter.jpg')}
+.pagehead--security::after{background-image:url('assets/olympus-god-athena.jpg')}
+.pagehead--requirements::after{background-image:url('assets/olympus-god-artemis.jpg')}
+.pagehead--changelog::after{background-image:url('assets/olympus-god-zeus.jpg')}
+/* Document headings use quiet architectural detail, keeping long-form reading clear. */
+.pagehead--license::after,.pagehead--privacy::after,.pagehead--terms::after,.pagehead--refunds::after,.pagehead--faq::after{background-image:repeating-linear-gradient(90deg,transparent 0 34px,#769db326 35px 38px,transparent 39px 55px),linear-gradient(155deg,#ffedc3,transparent 65%);border-radius:50% 50% 0 0;right:5%;top:35px;bottom:-30px;width:30%;transform:rotate(-8deg);mask-image:linear-gradient(to bottom,black,transparent)}
+.page-home .closing{min-height:440px;padding:100px max(28px,calc((100vw - 1140px)/2));text-align:left;background:#a2d6f4 url('assets/olympus-aegean-harbor.webp') center 55%/cover no-repeat;isolation:isolate}
+.page-home .closing::before{inset:0;width:auto;height:auto;border:0;border-radius:0;background:linear-gradient(90deg,#edf7fff5 0%,#edf7ffed 32%,#edf7ff55 58%,transparent 75%);z-index:-1;transform:none}
+.page-home .closing::after{display:none}
+.page-home .closing>h2,.page-home .closing>p{max-width:520px;margin-left:0;margin-right:0}
+@media(max-width:800px){.scene-intro>.wrap{gap:24px}.pagehead::after{width:45%;background-position:65% center}.pagehead .wrap>h1,.pagehead .wrap>.lede{max-width:65%}.page-home .closing{background-position:65% center}.page-home .closing>h2,.page-home .closing>p{max-width:430px}}
+@media(max-width:600px){.scene-intro>.wrap{grid-template-columns:1fr}.scene-intro>.wrap>.sec__head{grid-column:1;grid-row:1}.scene-intro>.wrap>.scene-art{grid-column:1;grid-row:2;max-height:280px}.scene-art--library{max-width:none;aspect-ratio:1.65;object-position:65% 45%}.pagehead{padding-bottom:175px;min-height:360px}.pagehead .wrap>h1,.pagehead .wrap>.lede{max-width:100%}.pagehead::after{inset:auto 0 0;width:100%;height:165px;background-position:center 45%;mask-image:linear-gradient(to bottom,transparent,black 35%)}.pagehead--license::after,.pagehead--privacy::after,.pagehead--terms::after,.pagehead--refunds::after,.pagehead--faq::after{top:auto;right:0;width:100%;height:150px;transform:none;mask-image:linear-gradient(to bottom,transparent,black)}.page-home .closing{padding:60px 24px 250px;background-size:auto 100%;background-position:72% bottom}.page-home .closing::before{background:linear-gradient(to bottom,#edf7fff5 0%,#edf7ffed 42%,transparent 76%)}.page-home .closing>h2{font-size:38px}.ownership .ownership__art{margin-block:18px 35px}}
+
+/* Full-resolution, unique banners; preserve the entire composition. */
+.pagehead--how::after{background-image:url('assets/olympus-banner-how.webp')}
+.pagehead--pricing::after{background-image:url('assets/olympus-banner-pricing.webp')}
+.pagehead--security::after{background-image:url('assets/olympus-banner-security.webp')}
+.pagehead--requirements::after{background-image:url('assets/olympus-banner-requirements.webp')}
+.pagehead--changelog::after{background-image:url('assets/olympus-banner-changelog.webp')}
+.pagehead--how::after,.pagehead--pricing::after,.pagehead--security::after,.pagehead--requirements::after,.pagehead--changelog::after{width:48%;right:0;background-size:auto 100%;background-repeat:no-repeat;background-position:right center;mask-image:linear-gradient(to right,transparent 0%,transparent 33%,black 56%)}
+@media(max-width:600px){.pagehead--how::after,.pagehead--pricing::after,.pagehead--security::after,.pagehead--requirements::after,.pagehead--changelog::after{width:100%;height:180px;background-size:auto 100%;background-position:right center;mask-image:linear-gradient(to bottom,transparent,black 14%)}.pagehead--how::after{background-image:url('assets/olympus-banner-how-small.webp')}.pagehead--pricing::after{background-image:url('assets/olympus-banner-pricing-small.webp')}.pagehead--security::after{background-image:url('assets/olympus-banner-security-small.webp')}.pagehead--requirements::after{background-image:url('assets/olympus-banner-requirements-small.webp')}.pagehead--changelog::after{background-image:url('assets/olympus-banner-changelog-small.webp')}}

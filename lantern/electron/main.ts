@@ -35,7 +35,7 @@ const send = (channel: string, ...args: unknown[]) => {
  * privileged work (filesystem, git, process spawning, a local agent), so a stray frame must
  * never be able to reach them.
  */
-function assertTrustedSender(event: Electron.IpcMainInvokeEvent) {
+function assertTrustedSender(event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent) {
   if (!mainWindow || mainWindow.isDestroyed()) throw new Error('No window to serve this request')
   if (event.sender !== mainWindow.webContents) throw new Error('IPC rejected: untrusted sender')
   if (event.senderFrame && event.senderFrame.parent !== null) throw new Error('IPC rejected: untrusted frame')
@@ -56,6 +56,18 @@ function handle<T extends unknown[]>(channel: string, fn: (event: Electron.IpcMa
   })
 }
 
+/** The `ipcMain.on` sibling of `handle()`, for fire-and-forget channels that have no response. */
+function onTrusted<T extends unknown[]>(channel: string, fn: (event: Electron.IpcMainEvent, ...args: T) => void) {
+  ipcMain.on(channel, (event, ...args: unknown[]) => {
+    try {
+      assertTrustedSender(event)
+    } catch {
+      return
+    }
+    fn(event, ...(args as T))
+  })
+}
+
 /**
  * Olympus needs no camera, microphone, geolocation, notification, or sensor access, and its
  * renderer only ever talks to the main process. Electron approves renderer permission
@@ -70,13 +82,18 @@ pool.initSpacePool(send)
 
 /** Local port probe plus, if the daemon is up, the providers it knows (incl. opencode CLI setup). */
 async function listAllProviders(spaceId: string): Promise<LocalProvider[]> {
-  const local = await discoverProviders(getSettings().customEndpoints)
   const base = pool.baseUrl(spaceId)
   if (base) {
     const creds = pool.credentials(spaceId)
-    const fromDaemon = await fetchDaemonProviders(base, creds ? basicAuthHeader(creds) : undefined)
+    // Independent of each other — one probes local ports, the other asks the daemon over
+    // HTTP — so run them concurrently rather than paying both timeouts back to back.
+    const [local, fromDaemon] = await Promise.all([
+      discoverProviders(getSettings().customEndpoints),
+      fetchDaemonProviders(base, creds ? basicAuthHeader(creds) : undefined),
+    ])
     return mergeProviders(fromDaemon, local)
   }
+  const local = await discoverProviders(getSettings().customEndpoints)
   // No project daemon yet — spin up a throwaway one so models configured via the
   // opencode CLI still show on the welcome screen (before any folder is opened).
   const installed = await probeInstalledProviders()
@@ -390,12 +407,7 @@ function registerIpc() {
     if (!b) throw new Error('opencode daemon is not running')
     return b.ptyConnect(String(id))
   })
-  ipcMain.on('pty:write', (event, id: unknown, data: unknown) => {
-    try {
-      assertTrustedSender(event)
-    } catch {
-      return
-    }
+  onTrusted('pty:write', (_e, id: unknown, data: unknown) => {
     if (typeof data === 'string') pool.bridge(focusedSpaceId)?.ptyWrite(String(id), data)
   })
   handle('pty:disconnect', (_e, id: unknown) => pool.bridge(focusedSpaceId)?.ptyDisconnect(String(id)))
@@ -406,12 +418,7 @@ function registerIpc() {
     if (typeof p !== 'string' || typeof content !== 'string') return false
     return writeProjectFile(p, content)
   })
-  ipcMain.on('app:closeReady', (event, ok: unknown) => {
-    try {
-      assertTrustedSender(event)
-    } catch {
-      return
-    }
+  onTrusted('app:closeReady', (_e, ok: unknown) => {
     closePending = false
     const window = mainWindow
     if (!window) return

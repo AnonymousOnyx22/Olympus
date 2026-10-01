@@ -15,7 +15,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "dist": "electron-builder", "site:build": "node tools/build-site.mjs", "site:check": "node tools/build-site.mjs --check", "site:images": "node tools/optimise-images.mjs && node tools/swap-to-webp.mjs",
+    "dist": "electron-builder",
+    "site:build": "node tools/build-site.mjs",
+    "site:check": "node tools/build-site.mjs --check",
+    "site:images": "node tools/optimise-images.mjs && node tools/swap-to-webp.mjs",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
@@ -23,6 +26,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "@types/ws": "^8.18.2",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "^6.0.0",
     "diff": "^9.0.0",
@@ -32,7 +36,8 @@
     "react-dom": "^19.3.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "simple-icons": "^16.32.0"
+    "simple-icons": "^16.32.0",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -3,9 +3,19 @@
 h1,h2{letter-spacing:-.025em}h3{font-weight:750}
 .site{background:#fffdf5f5;border-bottom:2px solid var(--ink)}
 .lockup__word{font-weight:400;letter-spacing:.03em}
-.btn,.dlbtn{border:2px solid var(--ink);border-radius:12px;background:#fffdf5;box-shadow:3px 3px 0 var(--ink);font-weight:800;transition:transform .15s,box-shadow .15s}
+.btn,.dlbtn{position:relative;overflow:hidden;border:2px solid var(--ink);border-radius:12px;background:#fffdf5;box-shadow:3px 3px 0 var(--ink);font-weight:800;transition:transform .15s,box-shadow .15s}
 .btn:hover,.dlbtn:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink);background:#fce9b4}
 .btn--primary{background:var(--gold);color:var(--ink);border-color:var(--ink)}.btn--primary:hover{background:#ffd472;color:var(--ink)}
+/* A coin-glint: a diagonal band of light sweeps across on hover, like sunlight catching
+   struck gold. Pure CSS, one extra layer on top of the existing press-in interaction. */
+.btn::before,.dlbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.75) 48%,rgba(255,236,181,.4) 54%,transparent 70%);transform:translateX(-130%);transition:transform .65s cubic-bezier(.22,.7,.3,1);pointer-events:none}
+.btn:hover::before,.dlbtn:hover::before{transform:translateX(130%)}
+/* The meander, marching: a thin strip of the same key pattern that borders every section
+   fades in along the bottom edge on hover and scrolls while it stays there, instead of
+   sitting still as a static rule. */
+.btn::after,.dlbtn::after{content:'';position:absolute;left:6px;right:6px;bottom:3px;height:4px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10'%3E%3Crect width='24' height='10' fill='%23245f8d'/%3E%3Crect x='3' y='2' width='6' height='6' fill='none' stroke='%23efbb4f' stroke-width='1.6'/%3E%3Crect x='15' y='2' width='6' height='6' fill='none' stroke='%23efbb4f' stroke-width='1.6'/%3E%3C/svg%3E");background-size:24px 4px;background-repeat:repeat-x;border-radius:2px;opacity:0;transform:scaleX(.5);transform-origin:center;transition:opacity .25s ease,transform .35s cubic-bezier(.3,.9,.4,1.2);pointer-events:none}
+.btn:hover::after,.dlbtn:hover::after{opacity:1;transform:scaleX(1);animation:key-march 1s linear infinite}
+@keyframes key-march{from{background-position:0 0}to{background-position:24px 0}}
 .navtoggle{border:2px solid var(--ink);border-radius:10px;background:#fffdf5}
 .hero{background:#a4d8fa url('assets/olympus-cartoon-hero.webp') center center/cover no-repeat;border-bottom:2px solid var(--ink);isolation:isolate}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 49% 43%,#e7f6ffe8 0%,#d9efffaa 26%,transparent 58%);z-index:-1}
@@ -19,7 +29,7 @@ h1,h2{letter-spacing:-.025em}h3{font-weight:750}
 .hero__foot{justify-content:center;gap:26px;border:0;background:#fffdf5e8;padding:13px 20px;border-radius:16px 16px 0 0;font-weight:600}
 .greek-rule{height:12px;opacity:1;background-color:#ffe9b7}
 .providers{background:#fffdf5}.providers__row{color:var(--ink)}
-.eyebrow{color:#785315}.card,.card-lg,.step,.rel__item{border:2px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 #c9e2ef}
+.eyebrow{color:#785315}.card,.card-lg,.step,.rel__item,.workspace-mock__pane{border:2px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 #c9e2ef}
 .card-lg--gold{background:#fff4d3;box-shadow:5px 5px 0 var(--gold)}.card-lg--gold::before{display:none}
 .ico{border:2px solid var(--ink);border-radius:12px;background:#ddf0ff;color:var(--ink)}.ico--gold{background:#ffe2a0}
 .section{border-bottom:2px solid #d6e5ed}.workflow-card{border-top:2px solid var(--ink)}.workflow-card .mode-symbol{color:#95651a}
@@ -36,17 +46,18 @@ h1,h2{letter-spacing:-.025em}h3{font-weight:750}
 .demo__status{font-size:10px}.demo__heading{overflow-wrap:anywhere}.demo__heading span{flex-shrink:0}.preview-url{font-size:10px}.preview-work{margin-top:20px;padding:12px;background:#e3eef6;border-radius:8px;font-size:11px}
 .review-visual{border:2px solid var(--ink);border-radius:22px;background:#d7edfc;box-shadow:6px 6px 0 #aacbe0}.diff-card{border-color:#aac2cf;border-radius:8px}
 .ownership{background:#e0f2ff}.ownership__art{object-fit:cover;mask-image:none;border:2px solid var(--ink);border-radius:25px;min-height:0;height:auto;aspect-ratio:1;box-shadow:7px 7px 0 #aacce1;margin-block:45px}
-.pagehead{background:#dff1ff;border-bottom:2px solid var(--ink)}.pagehead::after{background-image:url('assets/olympus-cartoon-sanctuary.webp');opacity:.2}
-.pagehead--features::after{background-image:url('assets/olympus-athena.webp')}
-.pagehead--how::after{background-image:url('assets/olympus-mountains.webp')}
-.pagehead--pricing::after{background-image:url('assets/olympus-hero.webp')}
-.pagehead--changelog::after{background-image:url('assets/olympus-clouds.webp')}
-.pagehead--requirements::after{background-image:url('assets/olympus-cartoon-hero.webp')}
-.pagehead--security::after{background-image:url('assets/olympus-sanctuary.webp')}
-.pagehead--privacy::after{background-image:url('assets/olympus-athena.webp')}
-.pagehead--refunds::after{background-image:url('assets/olympus-clouds.webp')}
-.pagehead--terms::after{background-image:url('assets/olympus-mountains.webp')}
-.note{background:#fff2cc;border-left:4px solid #bf8a22;border-radius:0 12px 12px 0}.pager a{border:2px solid var(--ink);border-radius:12px;background:white}.faq__item{border-color:#9eb8cb}.closing{background:#d8eeff;border-top:2px solid var(--ink)}.closing::before,.closing::after{border-top:3px solid var(--ink);background:#fff9e9}.foot{background:#fffdf5}.foot__legal{border-top:2px solid var(--ink)}
+.pagehead{background:#dff1ff;border-bottom:2px solid var(--ink)}.pagehead::after{background-image:url('assets/olympus-cartoon-sanctum.jpg');opacity:.2}
+.pagehead--features::after{background-image:url('assets/olympus-cartoon-sanctum.jpg')}
+.pagehead--how::after{background-image:url('assets/olympus-god-hephaestus.jpg')}
+.pagehead--pricing::after{background-image:url('assets/olympus-god-demeter.jpg')}
+.pagehead--changelog::after{background-image:url('assets/olympus-god-zeus.jpg')}
+.pagehead--requirements::after{background-image:url('assets/olympus-god-artemis.jpg')}
+.pagehead--security::after{background-image:url('assets/olympus-god-athena.jpg')}
+.pagehead--privacy::after{background-image:url('assets/olympus-cartoon-hero.webp')}
+.pagehead--refunds::after{background-image:url('assets/olympus-god-zeus.jpg')}
+.pagehead--terms::after{background-image:url('assets/olympus-god-athena.jpg')}
+.pagehead--about::after{background-image:url('assets/olympus-about-sanctum.jpg')}
+.note{background:#fff2cc;border-left:4px solid #bf8a22;border-radius:0 12px 12px 0}.pager{border:2px solid var(--ink);border-radius:16px;background:#fffdf5;box-shadow:5px 5px 0 #c9e2ef}.pager a:first-child{border-right-color:var(--ink)}.pager a:hover{background:#fff3ce}.pager small{color:#785315}.faq__item{border-color:#9eb8cb}.closing{background:#d8eeff;border-top:2px solid var(--ink)}.closing::before,.closing::after{border-top:3px solid var(--ink);background:#fff9e9}.foot{background:#fffdf5}.foot__legal{border-top:2px solid var(--ink)}
 @media(max-width:1000px){.hero__copy{max-width:620px}.hero h1{font-size:72px}.hero__lede{max-width:490px}.hero__grid{min-height:620px}.hero__meta{max-width:none}}
 @media(max-width:800px){.hero{background-position:48% center}.hero__copy{max-width:550px}.hero h1{font-size:64px}.hero__lede{font-size:15px;max-width:440px}.hero__grid{min-height:610px}.demo__body{grid-template-columns:135px minmax(0,1fr)}.demo__preview{display:block;grid-column:1/-1;border-left:0;border-top:2px solid var(--ink)}.preview-page{min-height:190px}.preview-page h3{margin-top:20px}.preview-page p{font-size:12px}}
 @media(max-width:600px){.hero{background-position:46% center}.hero::before{background:#e5f5ffd9}.hero__grid{min-height:590px}.hero__copy{padding:55px 0}.hero h1{font-size:58px}.hero__lede{font-size:14px;max-width:340px}.hero__meta{font-size:10px}.hero__foot{flex-direction:column;gap:3px;font-size:9px;text-align:center}.hero__actions{gap:14px}.hero__art{display:none}.demo__body{grid-template-columns:1fr}.demo__sidebar{display:flex;flex-direction:row;gap:6px;padding:10px;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}.demo__sidebar .demo__label,.demo__local,.project__sub{display:none}.project{white-space:nowrap;font-size:10px;min-width:max-content;width:auto;padding:7px}.demo__preview{display:block}.demo__panel{padding:16px}.demo__heading{flex-wrap:wrap}.demo__heading span{margin-left:0}.ownership__art{margin-block:20px 35px}.release-link{font-size:9px;gap:6px}.cards{gap:22px}.card,.card-lg{box-shadow:4px 4px 0 #c9e2ef}.demo__foot{flex-wrap:wrap}.demo__brand{gap:6px}.demo__tabs button{padding:5px 9px}}

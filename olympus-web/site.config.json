@@ -1,5 +1,5 @@
 {
-  "_comment": "Single source of truth for every value that ties this product to a real entity, a real host, or a real inbox. Nothing in the site hard-codes these; tools/build-site.mjs substitutes the {{TOKENS}} into a dist/ folder and REFUSES to build while any required value is still a placeholder. That is the point: you cannot ship a legal page that names nobody.",
+  "_comment": "Single source of truth for every value that ties this product to a real entity, a real host, or a real inbox. tools/build-site.mjs substitutes the {{TOKENS}} into a dist/ folder and REFUSES to build while any required value is still a TODO. Commercial terms are deliberately NOT configured here: pricing is undecided, so no rate appears anywhere on the site and every call to action points at the waitlist.",
 
   "entity": {
     "legalName": "TODO: registered company or sole-trader name",
@@ -17,23 +17,22 @@
 
   "urls": {
     "site": "https://projectclipforge.netlify.app",
-    "downloadBase": "TODO: e.g. https://github.com/OWNER/REPO/releases/download",
-    "checkout": "TODO: Stripe Payment Link",
+    "waitlist": "TODO: where sign-ups go. A form endpoint, a mailto: with a subject, or a hosted list. Every primary call to action on every page resolves to this one value.",
     "docs": "TODO: documentation URL",
     "repoSlug": "TODO: owner/repo"
   },
 
-  "artifacts": {
-    "_comment": "The four shipped binaries. Three download buttons exist; the Intel Mac build needs its own, which is why there are four names and only three buttons.",
-    "macArm64": "Olympus-0.1.0-arm64.dmg",
-    "macIntel": "Olympus-0.1.0-x64.dmg",
-    "windows": "Olympus-0.1.0-setup.exe",
-    "linux": "olympus_0.1.0_amd64.AppImage"
+  "commerce": {
+    "_comment": "Intentionally empty. No price, no licence tier, no checkout, no download host. These are undecided, and publishing an undecided number is worse than publishing nothing. When they are decided, add the URLs here and swap the waitlist tokens in the pages back to them.",
+    "price": "TODO: undecided",
+    "checkout": "TODO: undecided",
+    "downloadBase": "TODO: undecided"
   },
 
   "product": {
     "name": "Olympus",
     "version": "0.1.0",
+    "status": "In development. Nothing is released. There is nothing to download yet.",
     "copyrightHolder": "TODO: copyright holder",
     "copyrightYear": "2026"
   },
@@ -51,8 +50,7 @@
     "contact.supportEmail",
     "contact.securityEmail",
     "contact.serviceEmail",
-    "urls.downloadBase",
-    "urls.checkout",
+    "urls.waitlist",
     "urls.docs",
     "urls.repoSlug",
     "product.copyrightHolder"

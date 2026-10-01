@@ -1,3 +1,4 @@
+import { WebSocket as NodeWebSocket } from 'ws'
 import { basicAuthHeader, type DaemonCredentials } from './daemonManager'
 import type { BridgeResponse } from '../src/types/opencode'
 
@@ -39,7 +40,7 @@ export class OpencodeBridge {
   private baseUrl: string | null = null
   private credentials: DaemonCredentials | null = null
   private sseAbort: AbortController | null = null
-  private sockets = new Map<string, WebSocket>()
+  private sockets = new Map<string, NodeWebSocket>()
 
   constructor(
     private readonly onEvent: (event: unknown) => void,
@@ -135,6 +136,11 @@ export class OpencodeBridge {
           // Normalize only after a complete event boundary is found. CRLF can be
           // split across network chunks, so normalizing each chunk loses boundaries.
           buffer += value
+          // Unlike an ordinary request, nothing here bounds how long this can grow if a
+          // single event is never terminated by a blank-line boundary. Cap it the same
+          // as any other single response, so a malformed or hostile stream can't grow
+          // this buffer without limit and exhaust the whole process's memory.
+          if (buffer.length > MAX_RESPONSE_BYTES) throw new Error('event stream exceeded the response size cap')
           let match: RegExpMatchArray | null
           while ((match = buffer.match(/\r\n\r\n|\n\n|\r\r/))) {
             const boundary = match.index ?? 0
@@ -171,11 +177,13 @@ export class OpencodeBridge {
     if (!PTY_ID_PATTERN.test(ptyID)) return Promise.reject(new Error('invalid pty id'))
     this.sockets.get(ptyID)?.close()
 
-    // The WebSocket API has no header option, so the credential travels as URL userinfo,
-    // which the platform client turns into a basic-auth header.
-    const userinfo = `${encodeURIComponent(this.credentials.username)}:${encodeURIComponent(this.credentials.password)}`
-    const host = this.baseUrl.replace(/^http/, 'ws').replace(/^(wss?:\/\/)/, `$1${userinfo}@`)
-    const ws = new WebSocket(`${host}/pty/${ptyID}/connect`)
+    // Credentials as URL userinfo relies on the client turning it into a Basic-Auth header,
+    // which the platform WebSocket does not do — the request would go out unauthenticated.
+    // `ws` (unlike the global WebSocket) takes a real `headers` option, so send it there.
+    const host = this.baseUrl.replace(/^http/, 'ws')
+    const ws = new NodeWebSocket(`${host}/pty/${ptyID}/connect`, {
+      headers: { authorization: basicAuthHeader(this.credentials) },
+    })
     ws.binaryType = 'arraybuffer'
     this.sockets.set(ptyID, ws)
     const decoder = new TextDecoder()
@@ -198,7 +206,7 @@ export class OpencodeBridge {
 
   ptyWrite(ptyID: string, data: string) {
     const ws = this.sockets.get(ptyID)
-    if (ws?.readyState === WebSocket.OPEN) ws.send(data)
+    if (ws?.readyState === NodeWebSocket.OPEN) ws.send(data)
   }
 
   ptyDisconnect(ptyID: string) {

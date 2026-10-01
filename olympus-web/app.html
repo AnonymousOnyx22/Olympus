@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The window, tab by tab | Olympus</title>
+<meta name="description" content="A walk through the actual Olympus interface: the Chat, Agents, Code and Thread views, the diff review, the terminal, the live preview, and the projects list — each shown as it behaves." />
+<link rel="canonical" href="{{urls.site}}/app.html" />
+<link rel="icon" type="image/png" href="assets/olympus-mark.png" />
+<meta property="og:title" content="The window, tab by tab | Olympus" />
+<meta property="og:description" content="Every view in Olympus, shown rather than described." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{{urls.site}}/app.html" />
+<meta property="og:image" content="{{urls.site}}/assets/olympus-og.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@olympusapp" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="olympus.css" />
+<style>
+/* Styles scoped to this page only, so the shared bundle stays untouched. */
+.walk { --ink:#111; --muted:#5b6472; --line:rgba(17,17,20,.10); --panel:#14141a; --panel2:#1c1c24; --gold:#e8b23a; --ember:#ff4d2e; }
+.walk .stage { border:1px solid var(--line); border-radius:14px; background:var(--panel); color:#ececee; overflow:hidden; box-shadow:0 40px 90px -60px rgba(0,0,0,.7); }
+.walk .stage__bar { display:flex; align-items:center; gap:10px; padding:10px 14px; background:#0f0f14; border-bottom:1px solid rgba(255,255,255,.07); font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:#7c7c88; }
+.walk .stage__dots { display:flex; gap:5px; }
+.walk .stage__dots i { width:9px; height:9px; border-radius:50%; background:#2c2c33; }
+.walk .stage__tabs { display:flex; gap:2px; margin-left:8px; }
+.walk .stage__tab { padding:5px 12px; border-radius:999px; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:#7c7c88; }
+.walk .stage__tab[data-on] { background:linear-gradient(135deg,#fff3d6,#ffe8ab); color:#111; box-shadow:inset 0 0 0 1px #e8c165; }
+.walk .stage__note { margin-left:auto; text-transform:none; letter-spacing:.02em; }
+.walk .stage__body { padding:20px 22px; font-family:var(--font); font-size:14px; line-height:1.62; }
+
+/* the live transcript */
+.walk .you { font-family:var(--mono); font-size:12.5px; color:#a9c6e6; }
+.walk .think { position:relative; padding-left:20px; margin:14px 0; color:#8d8d99; font-style:italic; font-size:13px; }
+.walk .think::before { content:"\2192"; position:absolute; left:0; top:0; font-style:normal; color:#ff6a4d; }
+.walk .think span { display:block; }
+.walk .row { display:flex; align-items:center; gap:8px; width:100%; padding:6px 8px; background:none; border:0; border-radius:6px; font:inherit; font-size:12.5px; color:#8d8d99; text-align:left; cursor:pointer; }
+.walk .row:hover { background:rgba(255,255,255,.05); }
+.walk .row:focus-visible { outline:2px solid #ff6a4d; outline-offset:1px; }
+.walk .row b { flex:none; font-weight:600; color:#7c7c88; font-family:var(--mono); font-size:11.5px; }
+.walk .row .arg { flex:1 1 auto; min-width:0; font-family:var(--mono); font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.walk .row .out { display:none; margin:0 0 8px; padding:10px 12px; background:#0f0f14; border-left:2px solid #2c2c33; font-family:var(--mono); font-size:11.5px; line-height:1.65; color:#8d8d99; white-space:pre; overflow-x:auto; }
+.walk .row[aria-expanded="true"] + .out { display:block; }
+.walk .gate { margin:14px 0; padding:13px 15px; background:rgba(255,77,46,.10); border:1px solid rgba(255,77,46,.42); border-radius:9px; }
+.walk .gate p { margin:0 0 10px; font-size:13px; color:#ececee; }
+.walk .gate .b { display:inline-block; padding:5px 14px; margin-right:8px; border-radius:999px; background:#ff4d2e; color:#0b0b0c; font-size:12px; font-weight:600; border:0; cursor:pointer; }
+.walk .gate .b.sec { background:transparent; color:#a9a9b4; border:1px solid #3a3a44; }
+.walk .ok { color:#3ecf72; font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+
+/* the diff review */
+.walk .diff { margin:10px 0 0; font-family:var(--mono); font-size:11.5px; line-height:1.7; background:#0f0f14; border:1px solid rgba(255,255,255,.07); border-radius:8px; overflow:auto; }
+.walk .diff div { padding:0 12px; white-space:pre; }
+.walk .add { background:rgba(62,207,114,.10); color:#3ecf72; }
+.walk .del { background:rgba(255,77,46,.10); color:#ff8a70; }
+
+/* two-up layouts that mirror the real UI */
+.walk .split { display:grid; grid-template-columns:210px minmax(0,1fr); min-height:260px; }
+.walk .split__side { background:#0f0f14; border-right:1px solid rgba(255,255,255,.07); padding:12px; font-family:var(--mono); font-size:11.5px; }
+.walk .split__side .f { display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:5px; color:#8d8d99; }
+.walk .split__side .f.on { background:rgba(255,255,255,.07); color:#ececee; }
+.walk .split__side .f i { width:6px; height:6px; border-radius:2px; background:#3a3a40; }
+.walk .split__side .f.on i { background:var(--gold); }
+.walk .split__main { padding:14px 16px; }
+.walk .tabs-row { display:flex; gap:4px; flex-wrap:wrap; margin:0 0 14px; }
+.walk .pill { padding:5px 11px; border-radius:999px; border:1px solid var(--line); font-size:11.5px; color:var(--muted); background:#fff; }
+.walk .pill[data-on] { background:#111; color:#fff; border-color:#111; }
+.walk .cap { font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:26px 0 10px; }
+@media (prefers-reduced-motion: no-preference) {
+  .walk .think span { animation:wfade 380ms var(--ease) both; }
+  .walk .think span:nth-child(2) { animation-delay:620ms; }
+  .walk .think span:nth-child(3) { animation-delay:1240ms; }
+}
+@keyframes wfade { from { opacity:0; transform:translateX(-4px);} to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce) { .walk .think span { animation:none; } }
+</style>
+</head>
+<body>
+<div class="marble-veil" aria-hidden="true"></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site__bar">
+  <div class="wrap site__bar__in">
+    <a class="lockup" href="index.html" aria-label="Olympus home">
+      <svg class="lockup__mark" width="26" height="22" viewBox="0 0 32 26" fill="none" aria-hidden="true"><path d="M2 24h28M6 24V13l10-9 10 9v11M12 24v-7h8v7M6 13h20" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span class="lockup__word">OLYMPUS</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html">Overview</a>
+      <a href="app.html" aria-current="page">The window</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="security.html">Security</a>
+    </nav>
+    <div class="site__actions">
+      <a class="btn btn--primary btn--sm" href="{{urls.waitlist}}">Join the waitlist <span aria-hidden="true">↓</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ══ 1. CHAT ══ -->
+<section class="section" aria-labelledby="chat-h">
+  <div class="wrap walk">
+    <p class="eyebrow">View one of four</p>
+    <h2 id="chat-h">Chat</h2>
+    <p class="lede">The conversation, with the work left in. An agent that says it will edit a file has not edited it. Reasoning arrives as it is produced, every tool call is a row you can open, and nothing touches your disk until you say so.</p>
+
+    <div class="stage" style="margin-top:32px">
+      <div class="stage__bar">
+        <span class="stage__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="stage__tabs"><span class="stage__tab" data-on>Chat</span><span class="stage__tab">Agents</span><span class="stage__tab">Code</span><span class="stage__tab">Thread</span></span>
+        <span class="stage__note">general &middot; a new conversation</span>
+      </div>
+      <div class="stage__body">
+        <p class="you">›&nbsp; add a startup check for the opencode version, and say clearly when it is missing</p>
+
+        <div class="think">
+          <span>There is no version check in main.ts, and the daemon just fails with</span>
+          <span>a port error if opencode is not on PATH. That is a poor first run, so</span>
+          <span>the fix belongs at startup rather than in the daemon.</span>
+        </div>
+
+        <button class="row" type="button" aria-expanded="false">
+          <b>Grep</b><span class="arg">detectOpencodeVersion</span><span style="color:#5c5c68">0.2s</span>
+        </button>
+        <div class="out">electron/daemonManager.ts:58
+electron/main.ts:121
+2 matches</div>
+
+        <button class="row" type="button" aria-expanded="false">
+          <b>Read</b><span class="arg">electron/main.ts</span><span style="color:#5c5c68">0.1s</span>
+        </button>
+        <div class="out">318  app.whenReady().then(() =&gt; {
+319    migrateLegacyUserData()
+320    startWatchers()
+321    registerIpc()
+322    createWindow()</div>
+
+        <button class="row" type="button" aria-expanded="false">
+          <b>Edit</b><span class="arg">electron/main.ts</span>
+        </button>
+        <div class="diff">
+          <div class="add">+  const { version, available } = detectOpencodeVersion()</div>
+          <div class="add">+  if (!available) showBanner('opencode was not found')</div>
+          <div class="del">-  const state = await startForProject(id, cwd)</div>
+        </div>
+
+        <div class="gate">
+          <p><strong>1 edit is waiting for you.</strong> Nothing has been written to disk.</p>
+          <button class="b" type="button" data-approve>Allow</button>
+          <button class="b sec" type="button" data-deny>Deny</button>
+        </div>
+
+        <button class="row" type="button" aria-expanded="false">
+          <b>Shell</b><span class="arg">npm test</span><span class="ok" data-ok>passed</span>
+        </button>
+        <div class="out">94 passed, 1 skipped
+7 files, 5.4s</div>
+      </div>
+    </div>
+
+    <div class="split" style="margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden">
+      <div class="split__side">
+        <div class="cap" style="margin:0 0 8px">Composer</div>
+        <div class="f on"><i></i>Choose project</div>
+        <div class="f"><i></i>ollama / qwen2.5-coder</div>
+        <div style="margin-top:14px;color:#5c5c68;line-height:1.6">Enter queues the message.<br />Ctrl+Enter sends the next one.</div>
+      </div>
+      <div class="split__main">
+        <h3 style="font-family:var(--font-display);font-size:20px;margin:0 0 8px">Queued, never dropped</h3>
+        <p style="color:var(--muted);font-size:14.5px;margin:0 0 10px">Send while the agent is working and your message queues behind the current turn. It is delivered when the agent goes idle, in the order you sent it. Interrupt, and the queue survives the switch.</p>
+        <p style="color:var(--muted);font-size:14.5px;margin:0">The model picker sits on the same bar and shows which providers are actually reachable right now, not which ones you configured once.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 2. AGENTS ══ -->
+<section class="section section--tint" aria-labelledby="agents-h">
+  <div class="wrap walk">
+    <p class="eyebrow">View two of four</p>
+    <h2 id="agents-h">Agents</h2>
+    <p class="lede">Several working at once, in one project, side by side. Each is a real window with its own conversation, its own tool activity and its own approvals. One of them can be reading a file while another is running its tests.</p>
+
+    <div class="split" style="margin-top:32px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff">
+      <div class="split__side" style="background:#faf9f6;border-color:var(--line)">
+        <div class="f" style="color:#111"><b style="font-weight:700">3 agent windows</b></div>
+        <div style="height:12px"></div>
+        <div class="f on"><i style="background:#e8b23a"></i>refactor the daemon pool</div>
+        <div class="f"><i style="background:#0b4a9b"></i>write the migration test</div>
+        <div class="f"><i style="background:#3ecf72"></i>audit the IPC surface</div>
+        <div style="height:12px"></div>
+        <div class="f" style="color:#8a6412"><i style="background:#ff4d2e"></i>1 needs approval</div>
+      </div>
+      <div class="split__main">
+        <div class="tabs-row">
+          <span class="pill" data-on>refactor the daemon pool</span>
+          <span class="pill">write the migration test</span>
+          <span class="pill">audit the IPC surface</span>
+        </div>
+        <h3 style="font-family:var(--font-display);font-size:19px;margin:0 0 8px">They keep working when you look away</h3>
+        <p style="color:var(--muted);font-size:14.5px;margin:0 0 10px">Switching view never interrupts an agent. A window you close is the only thing that stops it, and the Projects list keeps showing which project has work still running.</p>
+        <p style="color:var(--muted);font-size:14.5px;margin:0">Every project runs its own daemon process, so one project stalling cannot freeze another.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 3. CODE ══ -->
+<section class="section" aria-labelledby="code-h">
+  <div class="wrap walk">
+    <p class="eyebrow">View three of four</p>
+    <h2 id="code-h">Code</h2>
+    <p class="lede">The editor, the file tree, the diff review and the version control menu, in one place. Not a second application bolted on — the same session, seen from the file side.</p>
+
+    <div class="split" style="margin-top:32px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff">
+      <div class="split__side" style="background:#faf9f6;border-color:var(--line)">
+        <div class="cap" style="margin:0 0 8px">Explorer</div>
+        <div class="f on"><i style="background:#e8b23a"></i>electron / daemonManager.ts</div>
+        <div class="f"><i></i>electron / opencodeBridge.ts</div>
+        <div class="f"><i></i>electron / spacePool.ts</div>
+        <div class="f"><i></i>src / App.tsx</div>
+        <div class="f"><i></i>src / services / api.ts</div>
+        <div class="f"><i></i>package.json</div>
+        <div class="f"><i></i>vite.config.ts</div>
+      </div>
+      <div class="split__main">
+        <h3 style="font-family:var(--font-display);font-size:19px;margin:0 0 8px">Saves that cannot be lost</h3>
+        <p style="color:var(--muted);font-size:14.5px;margin:0 0 10px">Saving is serialised, so a second save waits for the first rather than overwriting it. Changing project asks before it discards an unsaved buffer, and closing the window is held back until the file has actually reached disk.</p>
+        <p style="color:var(--muted);font-size:14.5px;margin:0">The tree is windowed, not exhaustive: a project with three thousand files opens instantly instead of rendering three thousand rows.</p>
+      </div>
+    </div>
+
+    <p class="cap">Pending edits</p>
+    <div class="stage">
+      <div class="stage__bar"><span class="stage__note" style="margin:0">2 edits waiting for review</span></div>
+      <div class="stage__body">
+        <p style="font-family:var(--mono);font-size:12.5px;color:#a9c6e6;margin:0 0 4px">electron/spacePool.ts</p>
+        <div class="diff" style="margin-top:0">
+          <div class="del">-const MAX_RUNNING_DAEMONS = 6</div>
+          <div class="add">+const MAX_RUNNING_DAEMONS = 4</div>
+          <div> </div>
+          <div class="del">-  if (runningCount() &lt;= 6) return</div>
+          <div class="add">+  if (runningCount() &lt;= MAX_RUNNING_DAEMONS) return</div>
+          <div class="add">+  // Never evict the focused space, and never one that is busy.</div>
+        </div>
+        <div class="gate" style="margin-bottom:0">
+          <p><strong>Approve, or refuse.</strong> Commands ask separately, because a command can change files the diff did not show.</p>
+          <button class="b" type="button" data-approve>Accept both</button>
+          <button class="b sec" type="button" data-deny>Reject</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4. THREAD ══ -->
+<section class="section section--tint" aria-labelledby="thread-h">
+  <div class="wrap walk">
+    <p class="eyebrow">View four of four</p>
+    <h2 id="thread-h">Thread</h2>
+    <p class="lede">The tool activity as a log, with the result of each call attached. Useful when the answer looks right but you want to know how it got there.</p>
+    <div class="stage" style="margin-top:32px">
+      <div class="stage__bar">
+        <span class="stage__tabs"><span class="stage__tab">Chat</span><span class="stage__tab">Agents</span><span class="stage__tab">Code</span><span class="stage__tab" data-on>Thread</span></span>
+        <span class="stage__note">4 tool calls</span>
+      </div>
+      <div class="stage__body">
+        <button class="row" type="button" aria-expanded="false"><b>List</b><span class="arg">src / services</span><span class="ok">4 files</span></button>
+        <div class="out">api.ts
+streamHandler.ts
+chatReducer.ts
+types.ts</div>
+        <button class="row" type="button" aria-expanded="false"><b>Read</b><span class="arg">src / services / streamHandler.ts</span><span style="color:#5c5c68">0.1s</span></button>
+        <div class="out">214 lines</div>
+        <button class="row" type="button" aria-expanded="false"><b>Grep</b><span class="arg">writtenOutput</span></button>
+        <div class="out">2 matches, one in a comment</div>
+        <button class="row" type="button" aria-expanded="false"><b>Todo</b><span class="arg">write the migration test</span><span class="ok">1 of 3</span></button>
+        <div class="out">in progress</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 5. THE REST OF THE WINDOW ══ -->
+<section class="section" aria-labelledby="rest-h">
+  <div class="wrap walk">
+    <p class="eyebrow">Everything else</p>
+    <h2 id="rest-h">The rest of the window</h2>
+    <p class="lede">The views above are the ones you spend time in. These are the ones you forget about until you need them.</p>
+
+    <div class="capsule-row" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:30px">
+      <article class="card" style="padding:20px">
+        <h3 style="font-family:var(--font-display);font-size:18px;margin:0 0 8px">Projects</h3>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 10px">Point Olympus at a folder and every project inside it appears. Search by name, path or stack, sort by recency or last edit, pin what matters, hide what you do not.</p>
+        <p style="color:var(--muted);font-size:14px;margin:0">A project with an agent running is named on its row, not just labelled open.</p>
+      </article>
+      <article class="card" style="padding:20px">
+        <h3 style="font-family:var(--font-display);font-size:18px;margin:0 0 8px">Preview</h3>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 10px">Your development server, embedded beside the agent, so you can see the change land without leaving the window. Only loopback addresses are allowed, by design.</p>
+        <p style="color:var(--muted);font-size:14px;margin:0">It opens itself when a run starts, and closes when you stop caring.</p>
+      </article>
+      <article class="card" style="padding:20px">
+        <h3 style="font-family:var(--font-display);font-size:18px;margin:0 0 8px">Terminal</h3>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 10px">A real shell against the project directory, not a simulated one. It is the same terminal the agent uses, so what it saw is what you see.</p>
+        <p style="color:var(--muted);font-size:14px;margin:0">Output is selectable, which sounds trivial until you have needed to copy a command.</p>
+      </article>
+      <article class="card" style="padding:20px">
+        <h3 style="font-family:var(--font-display);font-size:18px;margin:0 0 8px">Models</h3>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 10px">Ollama, LM Studio, vLLM and llama.cpp are discovered on their usual ports, alongside whatever providers your opencode install already knows about.</p>
+        <p style="color:var(--muted);font-size:14px;margin:0">Only models that answer right now are offered.</p>
+      </article>
+      <article class="card" style="padding:20px">
+        <h3 style="font-family:var(--font-display);font-size:18px;margin:0 0 8px">Approvals</h3>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 10px">Per project, ask or bypass. Edits and commands are separate decisions, because a command can change what the diff never showed.</p>
+        <p style="color:var(--muted);font-size:14px;margin:0">Bypass is a choice you make per project, not a hidden default.</p>
+      </article>
+      <article class="card" style="padding:20px">
+        <h3 style="font-family:var(--font-display);font-size:18px;margin:0 0 8px">Skills</h3>
+        <p style="color:var(--muted);font-size:14px;margin:0 0 10px">Whatever skills your opencode workspace exposes, listed in the sidebar and available to the agent without a prompt.</p>
+        <p style="color:var(--muted);font-size:14px;margin:0">Nothing is invented: if the workspace has no skills, the panel says so.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="section section--tint" aria-labelledby="cta-h">
+  <div class="wrap" style="text-align:center;max-width:60ch;margin-inline:auto">
+    <h2 id="cta-h" style="font-family:var(--font-display);font-size:clamp(28px,4vw,46px);line-height:1.1;letter-spacing:-.02em">The window is the argument.</h2>
+    <p class="lede" style="margin:18px auto 0">Nothing is released yet, and nothing is for sale. Join the waitlist and you will get a build as soon as there is one worth sending.</p>
+    <p style="margin-top:26px"><a class="btn btn--primary" href="{{urls.waitlist}}">Join the waitlist <span aria-hidden="true">↓</span></a></p>
+  </div>
+</section>
+
+</main>
+
+<footer class="site__foot">
+  <div class="wrap site__foot__in">
+    <div class="foot__brand"><span class="lockup__word">OLYMPUS</span><p class="foot__line">A higher place to build.</p></div>
+    <nav class="foot__nav" aria-label="Footer">
+      <a href="index.html">Overview</a><a href="app.html">The window</a><a href="how-it-works.html">How it works</a>
+      <a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a>
+      <a href="faq.html">FAQ</a><a href="about.html">About</a>
+    </nav>
+    <nav class="foot__nav" aria-label="Legal">
+      <a href="license.html">Licence</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of sale</a><a href="refunds.html">Refunds</a>
+    </nav>
+    <p class="foot__meta">&copy; {{product.copyrightYear}} {{entity.tradingAs}}. Independent software, made for your machine.<br />Independent by design. No activity tracking.</p>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+<script src="motion.js"></script>
+<script>
+// The approval gate in each demo is a real button, so the interaction demonstrated on
+// this page is the interaction the product has. It does not need a build step, and with
+// scripting off the buttons simply do nothing, leaving the transcript readable.
+(function () {
+  for (const btn of document.querySelectorAll('[data-approve]')) {
+    btn.addEventListener('click', function () {
+      const gate = btn.closest('.gate')
+      if (!gate) return
+      gate.style.background = 'rgba(62,207,114,.10)'
+      gate.style.borderColor = 'rgba(62,207,114,.42)'
+      const p = gate.querySelector('p')
+      if (p) p.innerHTML = '<strong>Written to disk.</strong> The agent carries on from here.'
+      for (const b of gate.querySelectorAll('button')) b.remove()
+    })
+  }
+  for (const btn of document.querySelectorAll('[data-deny]')) {
+    btn.addEventListener('click', function () {
+      const gate = btn.closest('.gate')
+      if (!gate) return
+      gate.style.background = 'rgba(255,255,255,.03)'
+      gate.style.borderColor = '#3a3a44'
+      const p = gate.querySelector('p')
+      if (p) p.innerHTML = '<strong>Refused.</strong> Nothing was written.'
+      for (const b of gate.querySelectorAll('button')) b.remove()
+    })
+  }
+  for (const row of document.querySelectorAll('.walk .row')) {
+    row.addEventListener('click', function () {
+      const open = row.getAttribute('aria-expanded') === 'true'
+      row.setAttribute('aria-expanded', open ? 'false' : 'true')
+    })
+  }
+  for (const ok of document.querySelectorAll('[data-ok]')) {
+    ok.textContent = 'passed'
+  }
+}());
+</script>
+</body>
+</html>

@@ -173,20 +173,21 @@ function reduce(state: StreamState, action: Action): StreamState {
     case 'message.part.delta': {
       const { sessionID, messageID, partID, field, delta } = ev.properties
       if (sessionID !== active) return state
-      return {
-        ...state,
-        messages: state.messages.map((m) => {
-          if (m.info.id !== messageID) return m
-          return {
-            ...m,
-            parts: m.parts.map((p) => {
-              if (p.id !== partID) return p
-              const current = (p as unknown as Record<string, unknown>)[field]
-              return { ...p, [field]: (typeof current === 'string' ? current : '') + delta } as Part
-            }),
-          }
-        }),
-      }
+      // Fires once per streamed token, so find the one message and one part directly
+      // instead of mapping over every message and every part on each character.
+      const mi = state.messages.findIndex((m) => m.info.id === messageID)
+      if (mi === -1) return state
+      const message = state.messages[mi]
+      const pi = message.parts.findIndex((p) => p.id === partID)
+      if (pi === -1) return state
+      const part = message.parts[pi]
+      const current = (part as unknown as Record<string, unknown>)[field]
+      const nextPart = { ...part, [field]: (typeof current === 'string' ? current : '') + delta } as Part
+      const nextParts = message.parts.slice()
+      nextParts[pi] = nextPart
+      const nextMessages = state.messages.slice()
+      nextMessages[mi] = { ...message, parts: nextParts }
+      return { ...state, messages: nextMessages }
     }
     case 'message.part.removed': {
       if (ev.properties.sessionID !== active) return state
