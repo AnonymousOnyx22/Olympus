@@ -1,0 +1,2913 @@
+{
+  "results": [
+    {
+      "file": "404.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "features",
+          "height": 17
+        },
+        {
+          "text": "how it works",
+          "height": 17
+        },
+        {
+          "text": "pricing",
+          "height": 17
+        },
+        {
+          "text": "security",
+          "height": 17
+        },
+        {
+          "text": "requirements",
+          "height": 17
+        },
+        {
+          "text": "changelog",
+          "height": 17
+        },
+        {
+          "text": "Licence",
+          "height": 17
+        },
+        {
+          "text": "terms",
+          "height": 17
+        },
+        {
+          "text": "privacy",
+          "height": 17
+        },
+        {
+          "text": "refunds",
+          "height": 17
+        }
+      ],
+      "linkIssues": [],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "about.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "changelog",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "changelog.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "Check the setup requirements",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "faq.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "setup checklist",
+          "height": 17
+        },
+        {
+          "text": "complete pricing terms",
+          "height": 17
+        },
+        {
+          "text": "refund policy",
+          "height": 17
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 17
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Email us",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "features.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "Explore the workspace",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "setup checklist",
+          "height": 19
+        },
+        {
+          "text": "requirements",
+          "height": 17
+        },
+        {
+          "text": "Read how your information is handled",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.windows}}",
+          "text": "YoursWindows",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.macArm64}}",
+          "text": "YoursmacOS",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.linux}}",
+          "text": "YoursLinux",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.checkout}}",
+          "text": "Buy for $49",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "index.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Explore the features ↗",
+          "height": 16
+        },
+        {
+          "text": "How Olympus stays local ↗",
+          "height": 16
+        },
+        {
+          "text": "Read the setup guide ↗",
+          "height": 16
+        },
+        {
+          "text": "setup checklist",
+          "height": 17
+        },
+        {
+          "text": "complete pricing terms",
+          "height": 17
+        },
+        {
+          "text": "Learn about your controls",
+          "height": 17
+        },
+        {
+          "text": "refund policy",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                "div[data-agent-history=\"\"] > .greek-thinking > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #a16c11, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
+          "nodes": [
+            {
+              "target": [
+                ".providers__row"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "license.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "refunds page",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "privacy policy",
+          "height": 20
+        },
+        {
+          "text": "refund terms",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Terms of sale",
+          "height": 17
+        },
+        {
+          "text": "Privacy policy",
+          "height": 17
+        },
+        {
+          "text": "Refund policy",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "pricing.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 19
+        },
+        {
+          "text": "changelog",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 19
+        },
+        {
+          "text": "The refund terms are here",
+          "height": 17
+        },
+        {
+          "text": "Licence",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.windows}}",
+          "text": "YoursWindows",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.macArm64}}",
+          "text": "YoursmacOS",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.linux}}",
+          "text": "YoursLinux",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.checkout}}",
+          "text": "Buy for $49",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "privacy.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 17
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "refunds.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "See pricing",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "requirements.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "release notes",
+          "height": 20
+        },
+        {
+          "text": "Continue to the setup guide",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "security.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "Read the privacy policy",
+          "height": 20
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "terms.html",
+      "width": 1440,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "refund section",
+          "height": 20
+        },
+        {
+          "text": "Licence",
+          "height": 20
+        },
+        {
+          "text": "changelog",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "refunds page",
+          "height": 20
+        },
+        {
+          "text": "14-day refund window",
+          "height": 20
+        },
+        {
+          "text": "Licence",
+          "height": 20
+        },
+        {
+          "text": "The privacy policy",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "404.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "features",
+          "height": 17
+        },
+        {
+          "text": "how it works",
+          "height": 17
+        },
+        {
+          "text": "pricing",
+          "height": 17
+        },
+        {
+          "text": "security",
+          "height": 17
+        },
+        {
+          "text": "requirements",
+          "height": 17
+        },
+        {
+          "text": "changelog",
+          "height": 17
+        },
+        {
+          "text": "Licence",
+          "height": 17
+        },
+        {
+          "text": "terms",
+          "height": 17
+        },
+        {
+          "text": "privacy",
+          "height": 17
+        },
+        {
+          "text": "refunds",
+          "height": 17
+        }
+      ],
+      "linkIssues": [],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "about.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "changelog",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "changelog.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "Check the setup requirements",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "faq.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 19
+        },
+        {
+          "text": "setup checklist",
+          "height": 17
+        },
+        {
+          "text": "complete pricing terms",
+          "height": 17
+        },
+        {
+          "text": "Learn about your controls",
+          "height": 17
+        },
+        {
+          "text": "refund policy",
+          "height": 17
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 17
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Email us",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "features.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "Explore the workspace",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "requirements",
+          "height": 17
+        },
+        {
+          "text": "The full breakdown",
+          "height": 19
+        },
+        {
+          "text": "Read how your information is handled",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.windows}}",
+          "text": "YoursWindows",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.macArm64}}",
+          "text": "YoursmacOS",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.linux}}",
+          "text": "YoursLinux",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.checkout}}",
+          "text": "Buy for $49",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "index.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Explore the features ↗",
+          "height": 16
+        },
+        {
+          "text": "How Olympus stays local ↗",
+          "height": 16
+        },
+        {
+          "text": "Read the setup guide ↗",
+          "height": 16
+        },
+        {
+          "text": "setup checklist",
+          "height": 17
+        },
+        {
+          "text": "complete pricing terms",
+          "height": 17
+        },
+        {
+          "text": "Learn about your controls",
+          "height": 17
+        },
+        {
+          "text": "refund policy",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": [
+                "div[data-agent-history=\"\"] > .greek-thinking > span:nth-child(2)"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.49 (foreground color: #a16c11, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
+          "nodes": [
+            {
+              "target": [
+                ".providers__row"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "license.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "refunds page",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "privacy policy",
+          "height": 20
+        },
+        {
+          "text": "refund terms",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Terms of sale",
+          "height": 17
+        },
+        {
+          "text": "Privacy policy",
+          "height": 17
+        },
+        {
+          "text": "Refund policy",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "pricing.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 19
+        },
+        {
+          "text": "changelog",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 19
+        },
+        {
+          "text": "The refund terms are here",
+          "height": 17
+        },
+        {
+          "text": "Licence",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.windows}}",
+          "text": "YoursWindows",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.macArm64}}",
+          "text": "YoursmacOS",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.downloadBase}}/{{artifacts.linux}}",
+          "text": "YoursLinux",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "{{urls.checkout}}",
+          "text": "Buy for $49",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "privacy.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 17
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 17
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "refunds.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 19
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "See pricing",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "requirements.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "release notes",
+          "height": 20
+        },
+        {
+          "text": "Continue to the setup guide",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "security.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "Read the privacy policy",
+          "height": 20
+        },
+        {
+          "text": "{{contact.securityEmail}}",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.securityEmail}}",
+          "text": "{{contact.securityEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    },
+    {
+      "file": "terms.html",
+      "width": 390,
+      "overflow": false,
+      "brokenImages": [],
+      "tinyTargets": [
+        {
+          "text": "refund promise",
+          "height": 19
+        },
+        {
+          "text": "Home",
+          "height": 19
+        },
+        {
+          "text": "refund section",
+          "height": 19
+        },
+        {
+          "text": "Licence",
+          "height": 20
+        },
+        {
+          "text": "changelog",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "refunds page",
+          "height": 20
+        },
+        {
+          "text": "setup requirements",
+          "height": 20
+        },
+        {
+          "text": "14-day refund window",
+          "height": 20
+        },
+        {
+          "text": "Licence",
+          "height": 20
+        },
+        {
+          "text": "The privacy policy",
+          "height": 20
+        },
+        {
+          "text": "{{contact.supportEmail}}",
+          "height": 20
+        },
+        {
+          "text": "Features",
+          "height": 16
+        },
+        {
+          "text": "How it works",
+          "height": 16
+        },
+        {
+          "text": "Pricing",
+          "height": 16
+        },
+        {
+          "text": "Downloads",
+          "height": 16
+        },
+        {
+          "text": "Requirements",
+          "height": 16
+        },
+        {
+          "text": "Security",
+          "height": 16
+        },
+        {
+          "text": "Changelog",
+          "height": 16
+        },
+        {
+          "text": "FAQ",
+          "height": 16
+        },
+        {
+          "text": "About",
+          "height": 16
+        },
+        {
+          "text": "Contact support",
+          "height": 16
+        },
+        {
+          "text": "Licence",
+          "height": 16
+        },
+        {
+          "text": "Privacy",
+          "height": 16
+        },
+        {
+          "text": "Terms of sale",
+          "height": 16
+        },
+        {
+          "text": "Refunds",
+          "height": 16
+        }
+      ],
+      "linkIssues": [
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "{{contact.supportEmail}}",
+          "problem": "Unresolved configuration token"
+        },
+        {
+          "href": "mailto:{{contact.supportEmail}}",
+          "text": "Contact support",
+          "problem": "Unresolved configuration token"
+        }
+      ],
+      "errors": [],
+      "accessibility": []
+    }
+  ],
+  "functions": {
+    "mobileMenuOpens": true,
+    "mobileMenuEscape": true,
+    "codeTab": true,
+    "tabKeyboard": true,
+    "faq": true,
+    "discovery": true,
+    "discoveryEscape": true
+  }
+}

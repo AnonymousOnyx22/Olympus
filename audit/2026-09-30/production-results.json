@@ -1,0 +1,161 @@
+{
+  "policy": "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'",
+  "inlinePolicyErrors": 73,
+  "sample": [
+    "Applying inline style violates the following Content Security Policy directive 'style-src 'self' https://fonts.googleapis.com'. Either the 'unsafe-inline' keyword, a hash ('sha256-Ad/XhuCDryyPAVWU2kFxVd5zAya67GOtbWjOvXer6pE='), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present. The action has been blocked.",
+    "Applying inline style violates the following Content Security Policy directive 'style-src 'self' https://fonts.googleapis.com'. Either the 'unsafe-inline' keyword, a hash ('sha256-Ad/XhuCDryyPAVWU2kFxVd5zAya67GOtbWjOvXer6pE='), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present. The action has been blocked.",
+    "Framing 'http://localhost:55745/' violates the following Content Security Policy directive: \"frame-ancestors 'none'\". The request has been blocked.\n"
+  ],
+  "rowPositions": [
+    "-288px",
+    "-135px",
+    "18px",
+    "171px",
+    "324px",
+    "477px",
+    "630px",
+    "783px"
+  ],
+  "narrow": [
+    {
+      "file": "404.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "about.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "changelog.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "faq.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "features.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "index.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "license.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "pricing.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "privacy.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "refunds.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "requirements.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "security.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "terms.html",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "file": "404.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "about.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "changelog.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "faq.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "features.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "index.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "license.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "pricing.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "privacy.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "refunds.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "requirements.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "security.html",
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "file": "terms.html",
+      "width": 768,
+      "overflow": false
+    }
+  ]
+}

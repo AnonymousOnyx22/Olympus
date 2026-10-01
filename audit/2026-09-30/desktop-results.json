@@ -1,0 +1,67 @@
+{
+  "startup": "Olympus\nNew agent\nManage projects\n0\nWorkspace\n0\nSkills\n18\nProjects\n\nNo projects yet.\n\nReady\nGeneral\nChat\nAgents\nCode\nThread\nAsk\n⌄\nGeneral\nReady\nAgent 35\n▼\n+\nOpenCode Agent\n\nopencode / big-pickle\n\nGeneral workspace\n\nhey\n\nHey! What can I help you with?\n\nChoose project\nBig Pickle\nFree\n\nEnter to send / Shift+Enter for a new line",
+  "externalLink": "Error invoking remote method 'shell:openExternal': Error: Only http(s) links can be opened",
+  "state": {
+    "environment": {
+      "version": "1.18.33",
+      "supported": true,
+      "available": true
+    },
+    "license": {
+      "product": "Olympus",
+      "model": "per-seat perpetual",
+      "allowsCommercialUse": true,
+      "redistribution": false,
+      "seatsPerPurchase": 1,
+      "trialDays": 14,
+      "licensed": false,
+      "trial": true,
+      "expired": false,
+      "daysLeft": 14,
+      "email": null
+    }
+  },
+  "minimum": {
+    "width": 1086,
+    "height": 604,
+    "overflow": false
+  },
+  "frames": [
+    "file:///C:/Users/Nick/Downloads/Project%20-%20Copy/lantern/dist/index.html",
+    ""
+  ],
+  "errors": [],
+  "accessibility": [
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "nodes": [
+        {
+          "target": [
+            ".text-slate-400.text-\\[11px\\]"
+          ],
+          "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.45 (foreground color: #94a3b8, background color: #f8fafc, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
+        {
+          "target": [
+            ".mt-1.text-slate-400"
+          ],
+          "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+        }
+      ]
+    },
+    {
+      "id": "list",
+      "impact": "serious",
+      "nodes": [
+        {
+          "target": [
+            "ul"
+          ],
+          "summary": "Fix all of the following:\n  List element has direct children that are not allowed: p"
+        }
+      ]
+    }
+  ],
+  "focusEscapesDialog": true
+}
