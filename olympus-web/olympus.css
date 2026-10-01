@@ -129,6 +129,15 @@ h1,h2{letter-spacing:-.025em}h3{font-weight:750}
 .review-visual{border:2px solid var(--ink);border-radius:22px;background:#d7edfc;box-shadow:6px 6px 0 #aacbe0}.diff-card{border-color:#aac2cf;border-radius:8px}
 .ownership{background:#e0f2ff}.ownership__art{object-fit:cover;mask-image:none;border:2px solid var(--ink);border-radius:25px;min-height:0;height:auto;aspect-ratio:1;box-shadow:7px 7px 0 #aacce1;margin-block:45px}
 .pagehead{background:#dff1ff;border-bottom:2px solid var(--ink)}.pagehead::after{background-image:url('assets/olympus-cartoon-sanctuary.webp');opacity:.2}
+.pagehead--features::after{background-image:url('assets/olympus-athena.webp')}
+.pagehead--how::after{background-image:url('assets/olympus-mountains.webp')}
+.pagehead--pricing::after{background-image:url('assets/olympus-hero.webp')}
+.pagehead--changelog::after{background-image:url('assets/olympus-clouds.webp')}
+.pagehead--requirements::after{background-image:url('assets/olympus-cartoon-hero.webp')}
+.pagehead--security::after{background-image:url('assets/olympus-sanctuary.webp')}
+.pagehead--privacy::after{background-image:url('assets/olympus-athena.webp')}
+.pagehead--refunds::after{background-image:url('assets/olympus-clouds.webp')}
+.pagehead--terms::after{background-image:url('assets/olympus-mountains.webp')}
 .note{background:#fff2cc;border-left:4px solid #bf8a22;border-radius:0 12px 12px 0}.pager a{border:2px solid var(--ink);border-radius:12px;background:white}.faq__item{border-color:#9eb8cb}.closing{background:#d8eeff;border-top:2px solid var(--ink)}.closing::before,.closing::after{border-top:3px solid var(--ink);background:#fff9e9}.foot{background:#fffdf5}.foot__legal{border-top:2px solid var(--ink)}
 @media(max-width:1000px){.hero__copy{max-width:620px}.hero h1{font-size:72px}.hero__lede{max-width:490px}.hero__grid{min-height:620px}.hero__meta{max-width:none}}
 @media(max-width:800px){.hero{background-position:48% center}.hero__copy{max-width:550px}.hero h1{font-size:64px}.hero__lede{font-size:15px;max-width:440px}.hero__grid{min-height:610px}.demo__body{grid-template-columns:135px minmax(0,1fr)}.demo__preview{display:block;grid-column:1/-1;border-left:0;border-top:2px solid var(--ink)}.preview-page{min-height:190px}.preview-page h3{margin-top:20px}.preview-page p{font-size:12px}}
