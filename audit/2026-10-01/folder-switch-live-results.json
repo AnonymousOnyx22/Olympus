@@ -1,0 +1,12 @@
+{
+  "scratch": "C:\\Users\\Nick\\AppData\\Local\\Temp\\olympus-folder-audit-JFq5nb",
+  "checks": [
+    "only selected pane changed folder",
+    "other pane remained open",
+    "old session retained in source",
+    "new session directory is target",
+    "cross-project session request rejected",
+    "window mapping persisted",
+    "General excluded from folder picker"
+  ]
+}

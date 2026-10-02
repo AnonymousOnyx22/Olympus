@@ -14,7 +14,7 @@ const RENDERER_CSP = [
   "font-src 'self' data:",
   "worker-src 'self' blob:",
   "connect-src 'self'",
-  "frame-src http://127.0.0.1:* http://localhost:*",
+  "frame-src http://127.0.0.1:* http://localhost:* https://127.0.0.1:* https://localhost:*",
   "base-uri 'none'",
   "form-action 'none'",
   "frame-ancestors 'none'",

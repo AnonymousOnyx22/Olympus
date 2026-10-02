@@ -17,8 +17,8 @@ export interface AgentPaneShared {
   onRemoveEndpoint: (id: string) => Promise<void>
   onReviewEdits: () => void
   onOpenProjects: () => void
-  /** Focuses a specific project's own view — what the folder chip in an agent's composer jumps to. */
-  goToProject: (spaceId: string) => void
+  /** Changes the folder used by this agent window. */
+  goToProject: (spaceId: string, sessionId: string) => void
 }
 
 interface Props extends AgentPaneShared {
@@ -183,7 +183,7 @@ export function AgentPane(props: AgentPaneProps) {
   const canClose = !busy && !queue.length && !sending.current && !effectivePermissions.length
   const orbKind: OrbKind = !props.ready || !stream.loaded ? 'connecting' : effectivePermissions.length ? 'attention' : busy ? 'working' : 'ready'
   const statusLabel = !props.ready || !stream.loaded ? 'Connecting' : effectivePermissions.length ? 'Needs approval' : busy ? 'Working' : 'Ready'
-  return <article aria-label={`Agent chat: ${props.title}`} data-session-id={props.sessionID} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-aegean ring-1 ring-slate-200 transition focus-within:ring-aether-400">
+  return <article aria-label={`Agent chat: ${props.title}`} data-session-id={props.sessionID} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-aegean">
     <header className="flex h-9 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3">
       <StatusOrb kind={orbKind} size={13} />
       <span className="min-w-0 flex-1 truncate text-xs font-medium text-slate-900" title={`${props.projectName} · ${props.title}`}>{props.projectName} · {props.title}</span>
@@ -199,7 +199,10 @@ export function AgentPane(props: AgentPaneProps) {
       model={model} variant={variant} providers={props.providers} onSelectModel={(next) => { setModel(next); setVariant(null) }} onSelectVariant={setVariant}
       onRescan={props.onRescan} rescanning={props.rescanning} onAddEndpoint={props.onAddEndpoint} onRemoveEndpoint={props.onRemoveEndpoint}
       ready={props.ready && stream.loaded} hasProject hasModels={props.providers.some((provider) => provider.online && provider.models.length > 0)}
-      onChooseProject={() => props.goToProject(props.spaceId)} onSend={send} onAbort={() => void stop()} queuedMessages={queue} onRemoveQueued={(id) => setQueue((items) => items.filter((item) => item.id !== id))} />
+      onChooseProject={() => {
+        if (!canClose) { setError('Stop this agent and clear its queue or approvals before changing folders.'); return }
+        props.goToProject(props.spaceId, props.sessionID)
+      }} onSend={send} onAbort={() => void stop()} queuedMessages={queue} onRemoveQueued={(id) => setQueue((items) => items.filter((item) => item.id !== id))} />
     {queuePaused && queue.length > 0 && <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500"><span>Queue paused</span><button onClick={() => { setQueuePaused(false); setError('') }} className="rounded-lg px-2 py-1 text-slate-900 transition hover:bg-white">Resume queue</button></div>}
   </article>
 }

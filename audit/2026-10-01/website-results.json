@@ -1,0 +1,826 @@
+{
+  "results": [
+    {
+      "file": "404.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "about.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "app.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "changelog.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "faq.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "features.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": [
+        {
+          "id": "aria-valid-attr-value",
+          "nodes": [
+            {
+              "target": [
+                "button[aria-controls=\"v-chat\"]"
+              ],
+              "summary": "Fix all of the following:\n  Invalid ARIA attribute value: aria-controls=\"v-chat\""
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".row:nth-child(3) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(3) > .inline-style-11"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.78 (foreground color: #5c5c68, background color: #14141a, font size: 9.4pt (12.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(5) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(5) > .inline-style-11"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.78 (foreground color: #5c5c68, background color: #14141a, font size: 9.4pt (12.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(7) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(10) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".viewpanel[data-shown=\"\"][data-panel=\"chat\"] > .inline-style-14.cap"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.19 (foreground color: #5b6472, background color: #0f0f14, font size: 7.9pt (10.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "index.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "license.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "pricing.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "privacy.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "refunds.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "requirements.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "security.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "terms.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "thanks.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "waitlist.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "404.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "about.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "app.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "changelog.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "faq.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "features.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": [
+        {
+          "id": "aria-valid-attr-value",
+          "nodes": [
+            {
+              "target": [
+                "button[aria-controls=\"v-chat\"]"
+              ],
+              "summary": "Fix all of the following:\n  Invalid ARIA attribute value: aria-controls=\"v-chat\""
+            }
+          ]
+        },
+        {
+          "id": "color-contrast",
+          "nodes": [
+            {
+              "target": [
+                ".row:nth-child(3) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(3) > .inline-style-11"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.78 (foreground color: #5c5c68, background color: #14141a, font size: 9.4pt (12.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(5) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(5) > .inline-style-11"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 2.78 (foreground color: #5c5c68, background color: #14141a, font size: 9.4pt (12.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(7) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".row:nth-child(10) > b"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 4.45 (foreground color: #7c7c88, background color: #14141a, font size: 8.6pt (11.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".viewpanel[data-shown=\"\"][data-panel=\"chat\"] > .inline-style-14.cap"
+              ],
+              "summary": "Fix any of the following:\n  Element has insufficient color contrast of 3.19 (foreground color: #5b6472, background color: #0f0f14, font size: 7.9pt (10.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "nodes": [
+            {
+              "target": [
+                ".stage:nth-child(3) > .stage__body > .diff"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            },
+            {
+              "target": [
+                ".inline-style-27"
+              ],
+              "summary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "index.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "license.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "pricing.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "privacy.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "refunds.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "requirements.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "security.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "terms.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "thanks.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "waitlist.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "404.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "about.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "app.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "changelog.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "faq.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "features.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "index.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "license.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "pricing.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "privacy.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "refunds.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "requirements.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "security.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "terms.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "thanks.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "waitlist.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "404.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "about.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "app.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "changelog.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "faq.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "features.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "how-it-works.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "index.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "license.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "pricing.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "privacy.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "refunds.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "requirements.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "security.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "terms.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "thanks.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "waitlist.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    }
+  ],
+  "functions": {
+    "menu": "true",
+    "agent": "assets/showcase/agent-working.webp",
+    "plays": "true",
+    "pauses": "false",
+    "local": "This is a local preview. Signups will open on the published website."
+  }
+}

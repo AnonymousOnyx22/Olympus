@@ -1,0 +1,24 @@
+/* Accordion. <details> snaps open with no transition, so the content is animated:
+   natively via ::details-content where that is supported, and otherwise by measuring
+   the answer and animating its height, then releasing it so long answers are not
+   clipped. Both paths end at the same place. */
+@media (prefers-reduced-motion: no-preference) {
+  .faq__item { interpolate-size: allow-keywords; }
+  .faq__item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: block-size .42s var(--ease), opacity .3s var(--ease), content-visibility .42s allow-discrete;
+  }
+  .faq__item[open]::details-content { block-size: auto; opacity: 1; }
+}
+/* Browsers without ::details-content get the measured version from the script below;
+   until it has run, the open state is simply visible rather than half-faded. */
+.faq__item.is-animating > .faq__answer,
+.faq__item.is-animating > p { overflow: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .faq__item.is-animating > .faq__answer,
+  .faq__item.is-animating > p { transition: height .42s var(--ease), opacity .3s var(--ease); }
+  .faq__item.is-animating[open] > .faq__answer,
+  .faq__item.is-animating[open] > p { opacity: 1; }
+}

@@ -31,8 +31,8 @@ body,
 }
 
 body {
-  @apply bg-white font-sans text-slate-900 antialiased;
-  background-color: #ffffff;
+  @apply font-sans text-slate-900 antialiased;
+  background-color: rgb(var(--accent-200));
   overflow: hidden;
   user-select: none;
 }
@@ -206,3 +206,11 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus
 @media (prefers-reduced-motion: reduce) {
   .todo-active { animation: none; }
 }
+
+/* Readable secondary text; icons can still use softer border colors. */
+.text-slate-400{color:#64748b}
+.placeholder\:text-slate-400::placeholder{color:#64748b}
+:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px}
+
+.workspace-title{color:#64748b}
+.text-slate-300{color:#64748b}

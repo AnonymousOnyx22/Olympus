@@ -1,3 +1,4 @@
+import { useDialogFocus } from './useDialogFocus'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import StatusOrb from './StatusOrb'
 import { GENERAL_SPACE } from '../constants'
@@ -56,7 +57,7 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
   const [query, setQuery] = useState(initialQuery ?? '')
   const searchRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => searchRef.current?.focus(), [])
+  const dialogRef = useDialogFocus<HTMLDivElement>()
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
@@ -86,7 +87,7 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
       className="fixed inset-0 z-50 flex items-start justify-center bg-slate-900/40 p-4 pt-[12vh] backdrop-blur-[2px]"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
-      <div role="dialog" aria-modal="true" aria-label={title} className="flex max-h-[70vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean-lg">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} className="flex max-h-[70vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean-lg">
         <header className="shrink-0 border-b border-slate-200 px-4 pb-3 pt-4">
           <h2 className="text-[14px] font-semibold text-slate-900">{title}</h2>
           <p className="mt-1 text-[11.5px] leading-relaxed text-slate-500">{hint}</p>

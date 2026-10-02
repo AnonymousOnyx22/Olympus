@@ -53,7 +53,7 @@ function fromHunks(patch: StructuredPatch): { original: string; modified: string
   return { original: before.join('\n'), modified: after.join('\n') }
 }
 
-async function resolveDiffs(request: PermissionRequest): Promise<FileDiff[]> {
+async function resolveDiffs(spaceId: string, request: PermissionRequest): Promise<FileDiff[]> {
   const diffText = typeof request.metadata.diff === 'string' ? request.metadata.diff : ''
   const fallbackPath = typeof request.metadata.filepath === 'string' ? request.metadata.filepath : request.patterns[0] ?? 'file'
   if (!diffText) {
@@ -68,7 +68,7 @@ async function resolveDiffs(request: PermissionRequest): Promise<FileDiff[]> {
     patches.map(async (patch) => {
       const target = stripPrefix(patch.newFileName && patch.newFileName !== '/dev/null' ? patch.newFileName : patch.oldFileName ?? fallbackPath)
       const isNew = patch.oldFileName === '/dev/null' || patch.hunks.every((h) => h.oldLines === 0)
-      const onDisk = isNew ? '' : await window.electronAPI.readProjectFile(target)
+      const onDisk = isNew ? '' : await window.electronAPI.readProjectFile(spaceId, target)
       if (onDisk !== null) {
         const patched = applyPatch(onDisk, patch, { fuzzFactor: 2 })
         if (patched !== false) return { path: target, original: onDisk, modified: patched, approximate: false, reviewable: true }
@@ -89,13 +89,13 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
     let cancelled = false
     setFiles(null)
     setActive(0)
-    resolveDiffs(request)
+    resolveDiffs(spaceId, request)
       .then((f) => !cancelled && setFiles(f))
       .catch((err) => !cancelled && setError(String(err.message ?? err)))
     return () => {
       cancelled = true
     }
-  }, [request])
+  }, [request, spaceId])
 
   const respond = async (reply: PermissionReply) => {
     setBusy(reply)

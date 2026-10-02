@@ -311,11 +311,12 @@ export interface ElectronAPI {
   onPtyData(callback: (ptyID: string, data: string) => void): () => void
 
   /** Reads a UTF-8 file inside the open project. Returns null if missing or outside the project. */
-  readProjectFile(path: string): Promise<string | null>
+  confirmProjectSwitch(file: string): Promise<'save' | 'discard' | 'cancel'>
+  readProjectFile(spaceId: string, path: string): Promise<string | null>
   /** Lists files inside the active project, excluding dependency and build folders. */
-  listProjectFiles(): Promise<string[]>
+  listProjectFiles(spaceId: string): Promise<string[]>
   /** Saves an existing UTF-8 file inside the active project. */
-  writeProjectFile(path: string, content: string): Promise<boolean>
+  writeProjectFile(spaceId: string, path: string, content: string): Promise<boolean>
   /** Returns a detected package run command, if the project declares one. */
   getRunCommand(): Promise<string | null>
   /** Finds a conventional localhost development server. */
@@ -327,6 +328,7 @@ export interface ElectronAPI {
    */
   onResync(callback: (spaceId: string) => void): () => void
   /** Opens an http(s) link in the user's default browser. Anything else is refused. */
+  onPreviewError(callback: (url: string, message: string) => void): () => void
   openExternal(url: string): Promise<void>
   /**
    * Registers a last-chance save. Returning false (or throwing) blocks the window from

@@ -1,0 +1,21 @@
+.showcase-intro{max-width:740px;margin-bottom:30px}
+.showcase-intro p{color:var(--muted);line-height:1.7}
+.showcase{margin:0;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:#eef5fa;box-shadow:7px 7px 0 #c3dbe9}
+.showcase__image{display:block;width:100%;height:auto;aspect-ratio:1418/884;object-fit:contain;background:#eef5fa}
+.showcase figcaption{padding:18px 24px;background:#fffdf5;color:var(--ink);font-size:14px;line-height:1.6}
+.showcase figcaption a{margin-left:12px}
+.showcase-controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.showcase-controls button{font:inherit;font-size:14px;cursor:pointer;background:#fffdf5;color:var(--ink);border:1px solid #6d8da3;border-radius:24px;padding:10px 18px}
+.showcase-controls button[aria-pressed="true"]{background:#f3c255;border-color:var(--ink)}
+.showcase-controls [data-tour-play]{margin-left:auto}
+.showcase-detail{margin-top:28px;max-width:720px;color:var(--muted);line-height:1.7}
+.beta-note{display:inline-block;border:1px solid #92b2c7;border-radius:20px;padding:6px 12px;font-size:13px;color:#274a65;background:#e5f3fc}
+.waitlist-layout{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;line-height:1.7}
+.waitlist-form{padding:32px;border:2px solid var(--ink);border-radius:20px;background:#fff;box-shadow:6px 6px 0 #c9e2ef}
+.waitlist-form>label{display:block;margin-bottom:8px;font-weight:600}
+.waitlist-form>input,.waitlist-form>select{display:block;width:100%;box-sizing:border-box;margin-bottom:22px;min-height:48px;border:1px solid #7897aa;border-radius:8px;padding:10px 12px;font:inherit;color:var(--ink);background:white}
+.waitlist-form .waitlist-consent{display:flex;align-items:start;gap:10px;font-weight:400;font-size:14px;margin-bottom:24px}
+.waitlist-consent input{margin-top:6px;width:18px;height:18px;flex-shrink:0}
+.form-status{margin:14px 0 0;font-size:14px}
+.waitlist-form button:disabled{opacity:.7;cursor:wait}
+@media(max-width:600px){.waitlist-layout{grid-template-columns:1fr;gap:28px}.waitlist-form{padding:24px}.showcase-controls{gap:8px}.showcase-controls button{padding:9px 13px;font-size:13px}.showcase-controls [data-tour-play]{margin-left:0}.showcase figcaption{padding:15px;font-size:13px}.showcase figcaption a{display:block;margin:8px 0 0}}

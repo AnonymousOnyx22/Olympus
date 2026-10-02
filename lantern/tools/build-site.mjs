@@ -25,7 +25,6 @@ const OUT = path.join(SITE, 'dist')
 const config = JSON.parse(fs.readFileSync(path.join(SITE, 'site.config.json'), 'utf8'))
 const checkOnly = process.argv.includes('--check')
 
-const get = (dotted) => dotted.split('.').reduce((o, k) => (o == null ? undefined : o[k]), config)
 
 /** Flattens the config into the token map, skipping the _comment keys. */
 function tokens() {
@@ -54,34 +53,24 @@ const missing = (config._required ?? []).filter((k) => {
 // host behind would still ship dead buttons.
 const domains = ['downloads.example.com', 'buy.example.com', 'docs.example.com', '@example.com']
 
-const copy = (dir, dest, skip) => {
-  fs.mkdirSync(dest, { recursive: true })
-  let bytes = 0
+const files = new Map()
+const collect = (dir, prefix = '') => {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (skip.has(entry.name)) continue
+    if (SKIP.has(entry.name)) continue
     const from = path.join(dir, entry.name)
-    const to = path.join(dest, entry.name)
-    if (entry.isDirectory()) {
-      bytes += copy(from, to, skip)
-      continue
-    }
+    const relative = path.join(prefix, entry.name)
+    if (entry.isDirectory()) { collect(from, relative); continue }
+    let data = fs.readFileSync(from)
     if (/\.(html|css|js|xml|txt|json)$/i.test(entry.name)) {
-      let text = fs.readFileSync(from, 'utf8')
-      for (const [k, v] of Object.entries(T)) {
-        text = text.split(`{{${k}}}`).join(v)
-      }
-      fs.writeFileSync(to, text, 'utf8')
-      bytes += Buffer.byteLength(text)
-    } else {
-      fs.copyFileSync(from, to)
-      bytes += fs.statSync(to).size
+      let text = data.toString('utf8')
+      for (const [k, v] of Object.entries(T)) text = text.split('{{' + k + '}}').join(v)
+      data = Buffer.from(text)
     }
+    files.set(relative, data)
   }
-  return bytes
 }
 
 const SKIP = new Set(['dist', 'site.config.json', 'README.md', 'node_modules'])
-const rendered = {} // filled in below, after we know the files
 
 console.log('olympus site build')
 console.log(`  config: site.config.json (${Object.keys(T).length} tokens)`)
@@ -92,7 +81,7 @@ if (missing.length) {
   console.log('\n  Fill these in site.config.json and re-run. A site that names no seller and')
   console.log('  points its download buttons at a host that does not exist is worse than unbuilt,')
   console.log('  because it looks finished.')
-  console.log('\n  Re-run with --check to build anyway for local preview (placeholders preserved).')
+  console.log('\n  --check reports missing configuration without publishing incomplete pages.')
   process.exit(1)
 }
 
@@ -101,19 +90,20 @@ if (checkOnly) {
 }
 
 // ---- render ---------------------------------------------------------------
-fs.rmSync(OUT, { recursive: true, force: true })
-const bytes = copy(SITE, OUT, SKIP)
+collect(SITE)
+const bytes = [...files.values()].reduce((sum, data) => sum + data.length, 0)
 
 // ---- verify the OUTPUT, not the source -----------------------------------
 const problems = []
-for (const f of fs.readdirSync(OUT).filter((n) => n.endsWith('.html'))) {
-  const text = fs.readFileSync(path.join(OUT, f), 'utf8')
+for (const [f, data] of files) {
+  if (!f.endsWith('.html')) continue
+  const text = data.toString('utf8')
   for (const d of domains) {
     if (text.includes(d)) problems.push(`${f}: still references ${d}`)
   }
   if (/\{\{[\w.]+\}\}/.test(text)) problems.push(`${f}: unresolved {{token}}`)
 }
-const sm = fs.existsSync(path.join(OUT, 'sitemap.xml')) ? fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf8') : ''
+const sm = files.get('sitemap.xml')?.toString('utf8') ?? ''
 if (sm && !sm.includes(T['urls.site'])) problems.push('sitemap.xml: canonical origin not substituted')
 
 if (problems.length) {
@@ -122,5 +112,14 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`  built dist/  ${(bytes / 1024 / 1024).toFixed(2)} MB`)
+if (!checkOnly) {
+  if (path.dirname(OUT) !== SITE || path.basename(OUT) !== 'dist') throw new Error('Unsafe output directory')
+  fs.rmSync(OUT, { recursive: true, force: true })
+  for (const [relative, data] of files) {
+    const target = path.join(OUT, relative)
+    fs.mkdirSync(path.dirname(target), { recursive: true })
+    fs.writeFileSync(target, data)
+  }
+}
+console.log(checkOnly ? '  checked without writing files' : '  built dist/ ' + (bytes / 1024 / 1024).toFixed(2) + ' MB')
 console.log(`  verified: no placeholder domains, no unresolved tokens`)

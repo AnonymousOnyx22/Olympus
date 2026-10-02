@@ -35,7 +35,7 @@
   $('#view-agent').innerHTML='<div class="demo__heading"><strong data-project-title></strong></div><div class="conversation" data-agent-history aria-label="Project walkthrough"></div>';
   $('#view-thread').innerHTML='<div class="demo__heading"><strong data-thread-title></strong></div><div class="conversation" data-thread-history aria-label="Project conversation"></div>';
   $('.demo__preview').innerHTML='<div class="preview-page live-projects">'+projects.map(p=>`<iframe data-app="${p.id}" title="${p.name} working preview" src="assets/demo-projects/${p.id}/index.html" ${p!==current?'hidden':''}></iframe>`).join('')+'</div>';
-  function indicator(p){return `<div class="greek-thinking"><img class="greek-thinking__mark" src="assets/olympus-thinking.svg" width="18" height="18" alt="" aria-hidden="true"><span>${p.label}&#8230;</span><span class="thinking-detail">(esc to interrupt &middot; 48s &middot; &darr; 1.8k tokens)</span></div>`;}
+  function indicator(p){return `<div class="greek-thinking"><img class="greek-thinking__mark" src="assets/olympus-thinking.svg" width="18" height="18" alt="" aria-hidden="true"><span>${p.label}&#8230;</span></div>`;}
   const conversations={
     'studio-site':[
       ['Can each project have its own personality?', 'Yes. Helios gets a sunny gold identity, Tide uses blue and a wave motif, and Olive & Earth has a soft green palette. Each has its own story in the case study.'],

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface PreviewPanelProps {
   projectKey: string
@@ -9,7 +9,7 @@ interface PreviewPanelProps {
 function normalizeLocalUrl(value: string): string | null {
   try {
     const url = new URL(/^https?:\/\//i.test(value) ? value : `http://${value}`)
-    if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return null
+    if (!['localhost', '127.0.0.1'].includes(url.hostname)) return null
     return url.toString().replace(/\/$/, '')
   } catch {
     return null
@@ -20,8 +20,29 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
   const [url, setUrl] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
   const [checking, setChecking] = useState(false)
+  const loadTimer = useRef<number | undefined>(undefined)
+  const [frameLoading, setFrameLoading] = useState(false)
   const [refresh, setRefresh] = useState(0)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => window.electronAPI.onPreviewError((failedUrl, message) => {
+    if (url && failedUrl.replace(/\/$/, '') === url.replace(/\/$/, '')) {
+      window.clearTimeout(loadTimer.current)
+      setFrameLoading(false)
+      setError('Could not load this preview. Check that the local server is running, then refresh. (' + message + ')')
+    }
+  }), [url])
+
+  useEffect(() => {
+    if (!url) return
+    setFrameLoading(true)
+    setError(null)
+    loadTimer.current = window.setTimeout(() => {
+      setFrameLoading(false)
+      setError('The preview is taking longer than expected. Check the local server and refresh to try again.')
+    }, 15000)
+    return () => window.clearTimeout(loadTimer.current)
+  }, [url, refresh])
 
   const discover = useCallback(async () => {
     setChecking(true)
@@ -80,7 +101,7 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M20 6v5h-5M4 18v-5h5" /><path d="M18.5 9A7 7 0 0 0 6 6.5L4 9m2 6a7 7 0 0 0 12 2.5L20 15" /></svg>
         </button>
         <form className="flex min-w-0 flex-1" onSubmit={(event) => { event.preventDefault(); openDraft() }}>
-          <input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="localhost:5173" className="h-7 w-full rounded-xl bg-slate-50 px-3 font-mono text-[10.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-aether-400" />
+          <input value={draft} onChange={(event) => setDraft(event.target.value)} aria-label="Local preview address" placeholder="localhost:5173" className="h-7 w-full rounded-xl bg-slate-50 px-3 font-mono text-[10.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-aether-400" />
         </form>
         <button type="button" onClick={() => void discover()} disabled={checking} className="h-7 rounded-lg px-2.5 text-[10.5px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40">
           {checking ? 'Finding…' : 'Auto-find'}
@@ -88,7 +109,7 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
       </div>
       <div className="relative min-h-0 flex-1">
         {url ? (
-          <iframe key={`${url}:${refresh}`} src={url} title="Local project preview" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts" className="h-full w-full border-0 bg-white" />
+          <iframe key={`${url}:${refresh}`} onLoad={() => { window.clearTimeout(loadTimer.current); setFrameLoading(false) }} src={url} title="Local project preview" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts" className="h-full w-full border-0 bg-white" />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-aether-50 text-aether-500 ring-1 ring-aether-100">
@@ -100,7 +121,8 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
             </div>
           </div>
         )}
-        {error && <div className="absolute inset-x-3 bottom-3 rounded-xl bg-rose-50 px-3 py-2 text-[11px] text-rose-700 ring-1 ring-rose-200">{error}</div>}
+        {frameLoading && <div role="status" className="absolute left-3 top-3 rounded-lg bg-white px-3 py-2 text-xs text-slate-600 shadow">Loading preview?</div>}
+        {error && <div role="alert" className="absolute inset-x-3 bottom-3 rounded-xl bg-rose-50 px-3 py-2 text-[11px] text-rose-700 ring-1 ring-rose-200">{error}</div>}
       </div>
     </div>
   )

@@ -38,7 +38,7 @@ export function ensureMonaco(): Promise<void> {
       inherit: true,
       rules: [],
       colors: {
-        'editor.background': '#ffffff',
+        'editor.background': '#faf3e3',
         // Literal accent hexes: Monaco resolves this theme object into canvas colours, so
         // `var(--accent-500)` has no way to reach it. Mirrors the --accent-* triplets in index.css.
         'editor.lineHighlightBackground': '#2563eb08',
@@ -48,7 +48,7 @@ export function ensureMonaco(): Promise<void> {
         'diffEditor.removedTextBackground': '#f43f5e26',
         'diffEditor.insertedLineBackground': '#10b98114',
         'diffEditor.removedLineBackground': '#f43f5e14',
-        'editorGutter.background': '#ffffff',
+        'editorGutter.background': '#faf3e3',
         'scrollbarSlider.background': '#0f172a14',
         'scrollbarSlider.hoverBackground': '#0f172a22',
       },

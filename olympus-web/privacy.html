@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="olympus.css" />
 <link rel="stylesheet" href="illustrations.css">
 
+<link rel="stylesheet" href="page-styles.css">
 </head>
 <body class="page-document">
 <div class="cloud-curtain" aria-hidden="true">
@@ -50,102 +51,16 @@
 </div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
-<nav class="nav" aria-label="Primary">
-      <a href="app.html">The window</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav>
+<nav class="nav" aria-label="Primary"><div class="nav__item"><a class="nav__top nav__trigger" href="features.html">Product <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="features.html"><strong>Features</strong><small>Every part of the workspace, explained</small></a><a class="nav__menu-item" href="how-it-works.html"><strong>How it works</strong><small>Agents, approvals, and previews, step by step</small></a></div></div><a class="nav__top" href="pricing.html">Availability</a><div class="nav__item"><a class="nav__top nav__trigger" href="faq.html">Resources <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="faq.html"><strong>FAQ</strong><small>Every answer in one place</small></a><a class="nav__menu-item" href="requirements.html"><strong>Requirements</strong><small>What your computer needs to run it</small></a><a class="nav__menu-item" href="changelog.html"><strong>Changelog</strong><small>What shipped, and when</small></a></div></div><div class="nav__item"><a class="nav__top nav__trigger" href="security.html" aria-current="page">Legal <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="security.html"><strong>Security</strong><small>Threat model &amp; practices</small></a><a class="nav__menu-item" href="privacy.html" aria-current="page"><strong>Privacy</strong><small>What we collect (and do not)</small></a><a class="nav__menu-item" href="terms.html"><strong>Terms</strong><small>Terms of Service</small></a></div></div><a class="nav__top" href="about.html">About</a></nav>
 <div class="site__actions"><a class="btn btn--primary btn--sm" href="pricing.html#buy">Join the waitlist <span aria-hidden="true">↓</span></a>
 <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
-<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav></div></header>
-<main id="main">
-
-  <div class="pagehead pagehead--privacy">
-    <div class="wrap">
-      <p class="eyebrow">The small print</p>
-      <h1>Privacy</h1>
-      <p class="lede" style="--d:.12s">How your information is stored, what we receive when you buy a licence, and what your chosen AI provider may receive.</p>
-      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Privacy</span></p>
-    </div>
-  </div>
-
-  <section class="section section--tint" id="privacy" aria-labelledby="privacy-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">The short version</p>
-        <h2 id="privacy-h">We hold two things, and neither is your code</h2>
-        <p class="lede" style="--d:.12s">An email address and a transaction reference, so we can deliver a licence and answer a support email. That is the list.</p>
-      </div>
-
-      <div class="prose">
-        <p class="prose__meta">Privacy policy &middot; version 0.1 &middot; effective <time datetime="2026-09-28">28 September 2026</time> &middot; {{entity.legalName}} is a placeholder</p>
-
-        <h2>1. Who is responsible</h2>
-        <p><strong>{{entity.legalName}}</strong>, of <strong>{{entity.registeredAddress}}</strong>, is the data controller for the limited processing described here. Contact: <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a>. [PLACEHOLDER: a data-controller identity and contact must be inserted before launch. If the selling jurisdiction requires a named representative or a regulator, that must be added too.]</p>
-
-        <h2>2. What the app collects</h2>
-        <p>Olympus does not collect usage analytics, track your activity, or automatically send crash reports. You do not need an account to use the app.</p>
-        <p>We do not collect your project files or prompts. Your chosen AI provider may receive them when you use its service, as explained below.</p>
-
-        <h2>3. Where the app&rsquo;s own data lives</h2>
-        <p>Your settings and app data are stored on your computer.</p>
-        <p>This folder stores your project list, preferences, window settings, licence key, and local logs. Your project files stay in the folders you chose.</p>
-        <p><strong>Deleting the app does not delete this directory.</strong> That is deliberate, because reinstalling should not mean rebuilding your project list, but it does mean the data outlives the install. Remove it by hand when you want it gone. Log files may contain fragments of terminal output, including paths and error text from commands you approved.</p>
-
-        <h2>4. What we hold about you, as a customer</h2>
-        <p>Only what a purchase requires:</p>
-        <ul>
-          <li>The email address used for the purchase.</li>
-          <li>The transaction reference and amount, from our payment processor.</li>
-          <li>The date of purchase, and which version line the licence covers.</li>
-          <li>Anything you have chosen to send us in a support email, which is kept as long as it takes to resolve the matter and no longer.</li>
-        </ul>
-        <p>We do not build profiles, we do not buy lists, and we do not share or sell customer data. Payment card details are handled entirely by our payment processor and never reach us. [PLACEHOLDER: name the payment processor here once it is chosen, and state its own data terms.]</p>
-        <p>Legal basis for keeping purchase records: performing the contract with you, and meeting tax and accounting obligations. Retention: [PLACEHOLDER: state the actual period required by the selling jurisdiction. Seven years is a common figure for tax records, and it is not ours to choose.]</p>
-
-        <h2>5. When something does leave your machine</h2>
-        <p>Your chosen model, provider, or project may make connections of its own. The following explains the main situations.</p>
-        <ul>
-          <li><strong>Your chosen AI model.</strong> The agent shares your prompts and relevant project content with the model you choose. When the model runs on your computer, that processing stays on your computer.</li>
-          <li><strong>A cloud AI provider.</strong> If you choose a cloud provider, your prompts and relevant project content are sent to it. That provider’s privacy terms apply.</li>
-          <li><strong>Your project preview.</strong> Running a project may connect to services that the project itself uses.</li>
-        </ul>
-        <p>The agents and model providers you connect have their own privacy practices. Olympus does not control how those third-party tools handle your data.</p>
-
-        <h2>6. What &ldquo;local-first&rdquo; does and does not mean here</h2>
-        <p>It means Olympus does not collect activity data or require an account. You can work offline when your chosen AI model and project also support it.</p>
-        <p><strong>It does not mean:</strong></p>
-        <ul>
-          <li>That every AI tool you choose works offline. Check the settings and privacy practices of your chosen tools.</li>
-          <li>That every connection is encrypted. Olympus does not make that promise.</li>
-          <li><strong>That the agent is safe to leave unattended.</strong> It is a program running with your permissions, and approval is a human process.</li>
-          <li><strong>Your chosen tools have their own policies.</strong> Check how your agent and model provider handle your data.</li>
-        </ul>
-
-        <h2>7. This website</h2>
-        <p>This website uses Google Fonts. Your browser contacts Google to load the fonts, which shares your IP address with Google. The website does not use analytics or tracking cookies.</p>
-        <p>The interactive notes and weekend planner examples save what you enter in this browser so it is available when you return. These notes and plans are not sent to us or to an AI provider. You can remove individual entries in the examples, or clear this website's browser data to remove everything saved by them.</p>
-
-<h2>8. Your rights</h2>
-        <p>Because the data we hold is a purchase record, your rights are mostly about access and correction. Email <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> to ask what we hold about you, to correct it, or to have it deleted. We will answer, and we will do it without asking you to prove anything beyond that you are the person who bought it.</p>
-        <p>Deleting the app&rsquo;s local data is entirely under your control and needs no request: remove the app data described in section 3. [PLACEHOLDER: statutory rights, supervisory authority and complaint procedure must be added here to match the selling jurisdiction before launch.]</p>
-
-        <h2>9. Children</h2>
-        <p>Olympus is a developer tool that runs a coding agent with your permissions. It is not directed at children and is not intended for use by anyone under 18.</p>
-
-        <h2>10. Changes</h2>
-        <p>This policy may change, in a later version published on this page with its own effective date. Because the app collects nothing and this site sets no cookies, a change here cannot retroactively affect data already gathered from your use of the software.</p>
-      </div>
-
-      <p class="note">
-        <strong>If you find a claim on this page that the software does not honour,</strong> that is a bug with legal weight. Report it at <a href="mailto:{{contact.securityEmail}}">{{contact.securityEmail}}</a> or <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> and it will be treated as the first thing to fix.
-      </p>
-    </div>
-  </section>
-
-</main>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Availability</a><a href="faq.html">FAQ</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="security.html">Security</a><a href="privacy.html" aria-current="page">Privacy</a><a href="terms.html">Terms</a><a href="about.html">About</a></nav></div></header>
+<main id="main"><div class="pagehead pagehead--privacy"><div class="wrap"><p class="eyebrow">Privacy</p><h1>Your information.</h1><p class="lede">How this website and the Olympus waitlist handle information.</p></div></div><section class="section"><div class="wrap prose"><h2>Who operates this site</h2><p>Olympus is operated by {{entity.legalName}}. Contact <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> with privacy questions or to request removal from the waitlist.</p><h2>The waitlist</h2><p>The form asks for your email address, your consent to receive availability updates, and optionally your computer platform. It is processed through Netlify Forms. Do not submit project files, credentials, or sensitive information.</p><p>Your email is used to send Olympus availability updates. You can ask to leave the list using the contact address above. There is no public release, download, or payment processing on this site.</p><h2>Website requests</h2><p>The website is hosted on Netlify and loads fonts from Google Fonts. Your browser sends network information, including your IP address, when it requests those resources. No advertising or product analytics script is included in the site.</p><h2>The app preview</h2><p>The showcase contains screenshots from the running Windows development build using a sample project. Playing the screenshot tour does not connect to an AI model or upload your files.</p><h2>When using the app</h2><p>The app stores project settings and conversations locally through the app and its configured agent. A connected cloud model provider receives the prompts and project context you choose to send through that agent. Each provider has its own data practices. Local models can keep inference on your computer.</p><h2>Questions and requests</h2><p>Email <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> to ask about your signup or request its removal. This notice will be updated as the app and signup flow change.</p></div></section></main>
 <footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
-<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="pricing.html#buy">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Availability</a></li><li><a href="waitlist.html">Waitlist</a></li></ul></nav>
 <nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="faq.html">FAQ</a></li><li><a href="about.html">About</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
-<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
-<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li><li><a href="security.html">Security</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© {{product.copyrightYear}} {{entity.tradingAs}}</p></div></footer>
 <script src="site.js"></script>
 <script src="motion.js"></script>
 </body>

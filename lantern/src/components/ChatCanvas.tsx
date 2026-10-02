@@ -346,7 +346,7 @@ function Composer(props: ComposerProps) {
   }
 
   return (
-    <div className="rounded-2xl bg-white p-2.5 ring-1 ring-slate-200 transition focus-within:ring-aether-400">
+    <div className="rounded-2xl bg-white p-2.5 shadow-aegean">
       <div className="flex items-end gap-2 pl-1.5">
         <textarea
           ref={inputRef}

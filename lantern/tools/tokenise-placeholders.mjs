@@ -66,6 +66,6 @@ for (const f of files) {
   for (const d of ['downloads.example.com', 'buy.example.com', 'docs.example.com', '@example.com']) {
     if (text.includes(d)) left.push(`${f}: ${d}`)
   }
-  for (const m of text.matchAll(/\[[A-Z][A-Z \-]{3,40}\]/g)) left.push(`${f}: ${m[0]}`)
+  for (const m of text.matchAll(/\[[A-Z][A-Z -]{3,40}\]/g)) left.push(`${f}: ${m[0]}`)
 }
 console.log(left.length ? `\n  still present:\n     ${left.join('\n     ')}` : '\n  no placeholder domains or bracketed names remain in the source')

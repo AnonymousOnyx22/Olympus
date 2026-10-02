@@ -1,40 +1,9 @@
-import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import OlympusLogo from './OlympusLogo'
 import heroArt from '../assets/olympus-cartoon-hero.png'
 
-/** Fake-technical boot log. Cosmetic — nothing here reflects real progress, the bar does that —
- * but it reads like a real startup trace, the way an OS or a game boot screen does. */
-const LOG_LINES = [
-  'mounting workspace/',
-  'resolving opencode on PATH… ok',
-  'probing local model servers',
-  'handshake: daemon 0x' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0'),
-  'loading project index',
-  'restoring last session',
-  'warming the composer',
-]
-
-/**
- * The boot screen shown while settings, the project list, and the first space load. Full-bleed
- * cartoon hero art from the marketing site (assets/olympus-cartoon-hero.png there, mirrored
- * here), a frosted panel on top with the mark, a real progress bar, and a small boot log.
- * `progress` is driven by actual startup milestones in App.tsx; the log lines are decoration,
- * not a task list.
- */
+/** Startup progress is supplied by actual initialization milestones. */
 export default function OlympusBoot({ progress = 0, label = 'Waking the workspace…' }: { progress?: number; label?: string }) {
-  const [lines, setLines] = useState<string[]>([])
-
-  useEffect(() => {
-    let i = 0
-    const id = window.setInterval(() => {
-      if (i >= LOG_LINES.length) { window.clearInterval(id); return }
-      setLines((current) => [...current, LOG_LINES[i]])
-      i += 1
-    }, 260)
-    return () => window.clearInterval(id)
-  }, [])
-
   return (
     <motion.div
       className="fixed inset-0 z-50 grid place-items-center overflow-hidden bg-[#cfe6f7]"
@@ -65,13 +34,7 @@ export default function OlympusBoot({ progress = 0, label = 'Waking the workspac
           />
         </div>
 
-        <div className="mt-4 h-24 w-full overflow-hidden rounded-lg bg-[#1c3a5e]/[0.06] px-2.5 py-2 font-mono text-[9.5px] leading-[1.6] text-[#1c3a5e]/60">
-          {lines.map((line, i) => (
-            <motion.p key={i} initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}>
-              <span className="text-[#1c3a5e]/35">&gt;</span> {line}
-            </motion.p>
-          ))}
-        </div>
+        <p className="mt-4 text-center text-xs text-slate-600">Preparing your workspace. Your projects stay on your computer.</p>
       </div>
     </motion.div>
   )

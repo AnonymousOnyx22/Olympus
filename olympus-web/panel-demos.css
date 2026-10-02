@@ -1,0 +1,85 @@
+/* panel-demos.css — the interactive demonstration panels.
+ *
+ * These are not illustrations of the product. They are the product's own components
+ * rendered at page scale: a tool row that opens, a diff you can read, an approval you
+ * can answer. The demos sit on top of the copy rather than replacing it, so the page
+ * reads completely with scripting off.
+ *
+ * Used by app.html and features.html. Scoped under .walk so it cannot reach the rest of
+ * the site, and kept in a file of its own so there is one copy rather than two that drift.
+ *
+ * Named panel-demos rather than showcase: "showcase" was already taken by a different
+ * component, and two files competing for one name is how the first one silently lost
+ * its styles.
+ */
+
+.walk { --ink:#111; --muted:#5b6472; --line:rgba(17,17,20,.10); --panel:#14141a; --panel2:#1c1c24; --gold:#e8b23a; --ember:#ff4d2e; }
+.walk .stage { border:1px solid var(--line); border-radius:14px; background:var(--panel); color:#ececee; overflow:hidden; box-shadow:0 40px 90px -60px rgba(0,0,0,.7); }
+.walk .stage__bar { display:flex; align-items:center; gap:10px; padding:10px 14px; background:#0f0f14; border-bottom:1px solid rgba(255,255,255,.07); font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:#7c7c88; }
+.walk .stage__dots { display:flex; gap:5px; }
+.walk .stage__dots i { width:9px; height:9px; border-radius:50%; background:#2c2c33; }
+.walk .stage__tabs { display:flex; gap:2px; margin-left:8px; }
+.walk .stage__tab { padding:5px 12px; border-radius:999px; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:#7c7c88; }
+.walk .stage__tab[data-on] { background:linear-gradient(135deg,#fff3d6,#ffe8ab); color:#111; box-shadow:inset 0 0 0 1px #e8c165; }
+.walk .stage__note { margin-left:auto; text-transform:none; letter-spacing:.02em; }
+.walk .stage__body { padding:20px 22px; font-family:var(--font); font-size:14px; line-height:1.62; }
+
+/* the live transcript */
+.walk .you { font-family:var(--mono); font-size:12.5px; color:#a9c6e6; }
+.walk .think { position:relative; padding-left:20px; margin:14px 0; color:#8d8d99; font-style:italic; font-size:13px; }
+.walk .think::before { content:"\2192"; position:absolute; left:0; top:0; font-style:normal; color:#ff6a4d; }
+.walk .think span { display:block; }
+.walk .row { display:flex; align-items:center; gap:8px; width:100%; padding:6px 8px; background:none; border:0; border-radius:6px; font:inherit; font-size:12.5px; color:#8d8d99; text-align:left; cursor:pointer; }
+.walk .row:hover { background:rgba(255,255,255,.05); }
+.walk .row:focus-visible { outline:2px solid #ff6a4d; outline-offset:1px; }
+.walk .row b { flex:none; font-weight:600; color:#7c7c88; font-family:var(--mono); font-size:11.5px; }
+.walk .row .arg { flex:1 1 auto; min-width:0; font-family:var(--mono); font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.walk .row .out { display:none; margin:0 0 8px; padding:10px 12px; background:#0f0f14; border-left:2px solid #2c2c33; font-family:var(--mono); font-size:11.5px; line-height:1.65; color:#8d8d99; white-space:pre; overflow-x:auto; }
+.walk .row[aria-expanded="true"] + .out { display:block; }
+.walk .gate { margin:14px 0; padding:13px 15px; background:rgba(255,77,46,.10); border:1px solid rgba(255,77,46,.42); border-radius:9px; }
+.walk .gate p { margin:0 0 10px; font-size:13px; color:#ececee; }
+.walk .gate .b { display:inline-block; padding:5px 14px; margin-right:8px; border-radius:999px; background:#ff4d2e; color:#0b0b0c; font-size:12px; font-weight:600; border:0; cursor:pointer; }
+.walk .gate .b.sec { background:transparent; color:#a9a9b4; border:1px solid #3a3a44; }
+.walk .ok { color:#3ecf72; font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+
+/* the diff */
+.walk .diff { margin:10px 0 0; font-family:var(--mono); font-size:11.5px; line-height:1.7; background:#0f0f14; border:1px solid rgba(255,255,255,.07); border-radius:8px; overflow:auto; }
+.walk .diff div { padding:0 12px; white-space:pre; }
+.walk .add { background:rgba(62,207,114,.10); color:#3ecf72; }
+.walk .del { background:rgba(255,77,46,.10); color:#ff8a70; }
+
+/* two-up layouts that mirror the real UI */
+.walk .split { display:grid; grid-template-columns:210px minmax(0,1fr); min-height:260px; }
+.walk .split__side { background:#0f0f14; border-right:1px solid rgba(255,255,255,.07); padding:12px; font-family:var(--mono); font-size:11.5px; }
+.walk .split__side .f { display:flex; align-items:center; gap:7px; padding:5px 7px; border-radius:5px; color:#8d8d99; }
+.walk .split__side .f.on { background:rgba(255,255,255,.07); color:#ececee; }
+.walk .split__side .f i { width:6px; height:6px; border-radius:2px; background:#3a3a40; }
+.walk .split__side .f.on i { background:var(--gold); }
+.walk .split__main { padding:14px 16px; }
+.walk .tabs-row { display:flex; gap:4px; flex-wrap:wrap; margin:0 0 14px; }
+.walk .pill { padding:5px 11px; border-radius:999px; border:1px solid var(--line); font-size:11.5px; color:var(--muted); background:#fff; }
+.walk .pill[data-on] { background:#111; color:#fff; border-color:#111; }
+.walk .cap { font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:26px 0 10px; }
+
+/* The view switcher. Clicking a tab swaps the panel, which is what the real workspace
+   does. Real buttons with aria-selected, so a keyboard user can step through them and a
+   screen reader announces which one is current. */
+.walk .views { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:0 0 16px; border:0; padding:0 }
+.walk .views button { padding:9px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; font:inherit; font-size:12.5px; color:var(--muted); cursor:pointer; transition:background-color .2s, color .2s, border-color .2s }
+.walk .views button[aria-selected="true"] { background:#111; color:#fff; border-color:#111 }
+.walk .views button:focus-visible { outline:2px solid #ff6a4d; outline-offset:2px }
+.walk .viewpanel { display:none }
+.walk .viewpanel[data-shown] { display:block }
+
+@media (prefers-reduced-motion: no-preference) {
+  .walk .think span { animation:panel-in 380ms var(--ease) both; }
+  .walk .think span:nth-child(2) { animation-delay:620ms; }
+  .walk .think span:nth-child(3) { animation-delay:1240ms; }
+}
+@keyframes panel-in { from { opacity:0; transform:translateX(-4px);} to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce) { .walk .think span { animation:none; } }
+@media (max-width: 720px) {
+  .walk .split { grid-template-columns:minmax(0,1fr) }
+  .walk .split__side { border-right:0; border-bottom:1px solid rgba(255,255,255,.07) }
+  .walk .views { grid-template-columns:minmax(0,1fr) }
+}

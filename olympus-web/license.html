@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Licence | Olympus</title>
-<meta name="description" content="The Olympus end-user licence: one person, two machines, commercial use permitted, no redistribution of the binary, no warranty.">
+<meta name="description" content="Olympus is in development. There is no public release or product for sale.">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#eaf2f6">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, follow">
 
 <!-- Every entity, contact, URL and artifact value on this page is injected at
      build time from site.config.json. tools/build-site.mjs refuses to build while
@@ -16,7 +16,7 @@
 <link rel="canonical" href="{{urls.site}}/license.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Licence | Olympus">
-<meta property="og:description" content="One person, two machines, commercial use permitted, no redistribution of the binary, no warranty.">
+<meta property="og:description" content="Olympus is in development. There is no public release or product for sale.">
 <meta property="og:url" content="{{urls.site}}/license.html">
 <meta property="og:site_name" content="Olympus">
 <meta property="og:locale" content="en_US">
@@ -35,7 +35,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
     <link rel="stylesheet" href="olympus.css" />
 <link rel="stylesheet" href="illustrations.css">
+<link rel="stylesheet" href="showcase.css">
 
+<link rel="stylesheet" href="showcase.css">
+<link rel="stylesheet" href="page-styles.css">
 </head>
 <body class="page-document">
 <div class="cloud-curtain" aria-hidden="true">
@@ -50,96 +53,20 @@
 </div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
-<nav class="nav" aria-label="Primary">
-      <a href="app.html">The window</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav>
-<div class="site__actions"><a class="btn btn--primary btn--sm" href="{{urls.waitlist}}">Join the waitlist <span aria-hidden="true">↓</span></a>
+<nav class="nav" aria-label="Primary"><div class="nav__item"><a class="nav__top nav__trigger" href="features.html">Product <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="features.html"><strong>Features</strong><small>Every part of the workspace, explained</small></a><a class="nav__menu-item" href="how-it-works.html"><strong>How it works</strong><small>Agents, approvals, and previews, step by step</small></a></div></div><a class="nav__top" href="pricing.html">Availability</a><div class="nav__item"><a class="nav__top nav__trigger" href="faq.html">Resources <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="faq.html"><strong>FAQ</strong><small>Every answer in one place</small></a><a class="nav__menu-item" href="requirements.html"><strong>Requirements</strong><small>What your computer needs to run it</small></a><a class="nav__menu-item" href="changelog.html"><strong>Changelog</strong><small>What shipped, and when</small></a></div></div><div class="nav__item"><a class="nav__top nav__trigger" href="security.html">Legal <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="security.html"><strong>Security</strong><small>Threat model &amp; practices</small></a><a class="nav__menu-item" href="privacy.html"><strong>Privacy</strong><small>What we collect (and do not)</small></a><a class="nav__menu-item" href="terms.html"><strong>Terms</strong><small>Terms of Service</small></a></div></div><a class="nav__top" href="about.html">About</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="waitlist.html">Join the waitlist <span aria-hidden="true">↓</span></a>
 <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
-<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav></div></header>
-<main id="main">
-
-  <div class="pagehead">
-    <div class="wrap">
-      <p class="eyebrow">The small print</p>
-      <h1>Licence</h1>
-      <p class="lede" style="--d:.12s">Short, because there is not much to it. One person, two machines, commercial use fine, and one thing you may not do.</p>
-      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Licence</span></p>
-    </div>
-  </div>
-
-  <section class="section section--tint" id="licence" aria-labelledby="licence-h">
-    <div class="wrap">
-      <div class="prose">
-        <p class="prose__meta">Olympus End-User Licence &middot; version 0.1 &middot; effective <time datetime="2026-09-28">28 September 2026</time> &middot; governs builds from 0.1.0 onwards</p>
-
-        <h2 id="licence-h">1. Who this is between</h2>
-        <p>This licence is between you, the individual or organisation that bought it, and <strong>{{entity.legalName}}</strong>, the person or entity distributing Olympus, of <strong>{{entity.registeredAddress}}</strong> (&ldquo;<strong>{{entity.legalName}}</strong>&rdquo;). [PLACEHOLDER: the real legal entity, address and, where one is required, company registration number must be inserted here before any sale is made.]</p>
-        <p>&ldquo;You&rdquo; means the person who holds this licence. &ldquo;The software&rdquo; means Olympus, including its source, object form and any build of it that carries this licence.</p>
-
-        <h2>2. What you get</h2>
-        <p>A perpetual, non-exclusive, non-transferable licence to install and use the software, for as long as you hold it, on the terms below.</p>
-        <ul>
-          <li><strong>One person.</strong> A licence covers one human being. It is not a concurrent-session licence, and sharing it between colleagues is sharing it, whatever the arrangement is called.</li>
-          <li><strong>Two machines.</strong> At most two computers, which in practice means a desktop and a laptop, or Intel and Apple Silicon. Reinstalling or replacing a machine does not need a new licence.</li>
-          <li><strong>Perpetual.</strong> Your licence does not expire when the 0.x line stops receiving updates. Compatibility with third-party tools depends on the versions you use.</li>
-          <li><strong>Commercial use.</strong> You may use the software for paid work, on client repositories, inside an agency or a company, and you may charge for the result. You do not need a different licence for any of that.</li>
-          <li><strong>Any version line you have paid for.</strong> A licence bought for 0.x covers the whole 0.x line, including every later 0.y release, at no further cost. A future 1.0 would be a separate, one-off purchase.</li>
-        </ul>
-
-        <h2>3. What you may not do</h2>
-        <ul>
-          <li><strong>Redistribute the app.</strong> You may not publish, mirror, host, upload or otherwise make the software or a build of it available to anyone else. This includes putting it in a container image, a virtual machine template, a CI artefact other people can pull, a public mirror, or a bundle you hand on.</li>
-          <li><strong>Resell it.</strong> Selling, sublicensing or leasing the software, including as part of a managed or consultancy service where a customer can reach it, is not permitted.</li>
-          <li><strong>Remove or obscure the licence or copyright notices,</strong> or misrepresent who wrote the software.</li>
-          <li><strong>Use it to break the law,</strong> or to infringe anyone else&rsquo;s rights. This clause is not decoration.</li>
-        </ul>
-        <p>Reading the above: if you want a colleague to use Olympus, they need their own licence. If you want to ship something to a client, ship what you built, not the app.</p>
-
-        <h2>4. Third-party software</h2>
-        <p>Olympus is an independent agent harness. Agents and model providers connected to it are separate third-party products with their own licences. An Olympus licence does not grant rights to those products or imply their endorsement.</p>
-        <p>You are responsible for obtaining any third-party tools you connect and complying with their terms. Their subscriptions and usage charges are separate from your Olympus licence.</p>
-
-        <h2>5. No warranty</h2>
-        <p>THE SOFTWARE IS PROVIDED &ldquo;AS IS&rdquo;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. [PLACEHOLDER: a jurisdiction may require certain warranties or statutory rights to be excluded or restated. This clause must be reviewed against the law of the selling jurisdiction before launch.]</p>
-        <p>We have tested this software. We do not claim it is error-free, and you accept that it may not be. In particular, the software supervises an AI coding agent that can propose changes to your files: read what it wants to do before you approve it.</p>
-
-        <h2>6. Limitation of liability</h2>
-        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, {{entity.legalName}} IS NOT LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY OR PUNITIVE DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, DATA, OR SOURCE CODE, ARISING OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THIS LICENCE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
-        <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, {{entity.legalName}}&rsquo;s TOTAL AGGREGATE LIABILITY ARISING OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THIS LICENCE IS LIMITED TO THE AMOUNT YOU PAID FOR THE SOFTWARE, WHICH FOR A a set price PURCHASE IS a set price.undefined</p>
-        <p>Nothing in this licence excludes or limits liability for death or personal injury caused by negligence, for fraud or fraudulent misrepresentation, or for anything else that cannot lawfully be excluded. [PLACEHOLDER: these carve-outs must be checked against the law of the selling jurisdiction before launch.]</p>
-
-        <h2>7. Refunds</h2>
-        <p>If you are not satisfied, you can ask for a refund within 14 days of purchase, without giving a reason. That is a separate promise and it is described in full on the <a href="refunds.html">refunds page</a>. It is not limited by anything in section 5 or 6 above, and it is honoured first.</p>
-
-        <h2>8. Updates and support</h2>
-        <p>Updates within a version line you have paid for are included at no further cost, and are currently distributed by download rather than by an updater. Support is offered by email at <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> on a best-effort basis. There is no service-level agreement and no response-time commitment.</p>
-
-        <h2>9. Term and termination</h2>
-        <p>This licence lasts until you delete the software, except that it ends immediately and without refund if you redistribute or resell the app in breach of section 3. On termination you must stop using and remove the software. Sections 3, 5, 6, 10 and 11 survive termination.</p>
-
-        <h2>10. Changes to this licence</h2>
-        <p>This licence may change in a later version, and that version will be published on this page with its own effective date. A change does not apply retroactively to a licence you already bought: the version in force when you purchased continues to govern that purchase and that version line.</p>
-
-        <h2>11. General</h2>
-        <p>No third party may enforce this licence except as required by law. If any provision is found unenforceable, the rest continues in force. Your rights under the <a href="privacy.html">privacy policy</a> and the <a href="refunds.html">refund terms</a> are separate from this licence and are not affected by it.</p>
-
-        <h2>12. Contact</h2>
-        <p><a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> for anything about this licence. Security problems go to <a href="mailto:{{contact.securityEmail}}">{{contact.securityEmail}}</a> and never to a public issue, because a public issue is a disclosure.</p>
-        <p>[PLACEHOLDER: a registered address for service of formal notices must be added here before launch, together with {{entity.registeredAddress}} from section 1.]</p>
-      </div>
-
-      <p class="note">
-        <strong>Other documents.</strong> <a href="terms.html">Terms of sale</a> &middot; <a href="privacy.html">Privacy policy</a> &middot; <a href="refunds.html">Refund policy</a>. All four are placeholder drafts and the bracketed values in them must be filled in before a single licence is sold.
-      </p>
-    </div>
-  </section>
-
-</main>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Availability</a><a href="faq.html">FAQ</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="security.html">Security</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="about.html">About</a></nav></div></header>
+<main id="main"><div class="pagehead"><div class="wrap"><p class="eyebrow">In development</p><h1>Licence</h1><p class="lede">Olympus is in development. There is no public download and nothing for sale.</p></div></div><section class="section"><div class="wrap prose"><h2>Before a public release</h2><p>Pricing, licence terms, and any applicable purchase and refund policies have not been announced. They will be published before sales open.</p><p>You can join the waitlist without payment details. Joining does not create a purchase or grant access to a build.</p><p><a class="btn btn--primary" href="waitlist.html">Join the waitlist</a></p><p><a href="privacy.html">Read about privacy</a></p></div></section></main>
 <footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
-<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="pricing.html#buy">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Availability</a></li><li><a href="waitlist.html">Waitlist</a></li></ul></nav>
 <nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="faq.html">FAQ</a></li><li><a href="about.html">About</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
-<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
-<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li><li><a href="security.html">Security</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© {{product.copyrightYear}} {{entity.tradingAs}}</p></div></footer>
 <script src="site.js"></script>
 <script src="motion.js"></script>
+
+
+<script src="license-page.js"></script>
 </body>
 </html>

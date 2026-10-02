@@ -1,0 +1,46 @@
+[
+  {
+    "name": "production headers and 320px/768px layout across all pages",
+    "passed": true
+  },
+  {
+    "name": "FAQ filtering, no-result recovery and Enter without reload",
+    "passed": true
+  },
+  {
+    "name": "iframe previews work with CSP and X-Frame-Options",
+    "passed": true
+  },
+  {
+    "name": "workspace preserves unrelated drafts and reopens saved conversations",
+    "passed": true
+  },
+  {
+    "name": "mobile navigation, Escape and tab navigation",
+    "passed": true
+  },
+  {
+    "name": "normal-motion navigation and back recovery",
+    "passed": true
+  },
+  {
+    "name": "waitlist local preview avoids submission",
+    "passed": true
+  },
+  {
+    "name": "waitlist failure, retry, duplicate suppression and success using mocked transport",
+    "passed": true
+  },
+  {
+    "name": "workspace no-JavaScript fallback",
+    "passed": true
+  },
+  {
+    "name": "invalid saved demo data recovers and long text wraps",
+    "passed": true
+  },
+  {
+    "name": "waitlist stalled request times out and allows retry",
+    "passed": true
+  }
+]

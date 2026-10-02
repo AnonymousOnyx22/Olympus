@@ -69,12 +69,12 @@ export default function Sidebar(props: SidebarProps) {
                 <Icon path="M3 7V5h6l2 2h10v12H3Z" />
                 <span className="min-w-0 flex-1 truncate">{project.name}</span>
                 {props.busyBySpace[project.id]
-                  ? <span title="Agents working" aria-label="Agents working"><StatusOrb kind="working" size={12} /></span>
-                  : props.runningBySpace[project.id] && <span title="Open, idle" aria-label="Open, idle"><StatusOrb kind="open" size={12} /></span>}
+                  ? <span role="img" title="Agents working" aria-label="Agents working"><StatusOrb kind="working" size={12} /></span>
+                  : props.runningBySpace[project.id] && <span role="img" title="Open, idle" aria-label="Open, idle"><StatusOrb kind="open" size={12} /></span>}
               </li>
             )
           })}
-          {props.projects.length === 0 && <p className="px-3 py-2 text-xs text-slate-500">No projects yet.</p>}
+          {props.projects.length === 0 && <li className="px-3 py-2 text-xs text-slate-500">No projects yet.</li>}
         </ul>
         <div className="mx-3 mt-3 flex items-center gap-1.5 border-t border-slate-200 px-2 py-2.5">
           <StatusOrb kind={daemonOrb} size={13} />

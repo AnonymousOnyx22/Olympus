@@ -45,15 +45,21 @@ const api: ElectronAPI = {
   ptyDisconnect: (id) => ipcRenderer.invoke('pty:disconnect', id),
   onPtyData: (callback) => subscribe('pty:data', callback),
 
-  readProjectFile: (path) => ipcRenderer.invoke('fs:readProjectFile', path),
-  listProjectFiles: () => ipcRenderer.invoke('fs:listProjectFiles'),
-  writeProjectFile: (path, content) => ipcRenderer.invoke('fs:writeProjectFile', path, content),
+  confirmProjectSwitch: (file) => ipcRenderer.invoke('editor:confirmSwitch', file),
+  readProjectFile: (spaceId, path) => ipcRenderer.invoke('fs:readProjectFile', spaceId, path),
+  listProjectFiles: (spaceId) => ipcRenderer.invoke('fs:listProjectFiles', spaceId),
+  writeProjectFile: (spaceId, path, content) => ipcRenderer.invoke('fs:writeProjectFile', spaceId, path, content),
   getRunCommand: () => ipcRenderer.invoke('workspace:runCommand'),
   discoverPreview: () => ipcRenderer.invoke('preview:discover'),
 
   // Fired by the main process when the event stream reconnects after a gap, so the renderer
   // can re-read authoritative state instead of trusting a stream that may have lost events.
   onResync: (callback) => subscribe('oc:resync', callback),
+  onPreviewError: (callback) => {
+    const listener = (_event: Electron.IpcRendererEvent, url: string, message: string) => callback(url, message)
+    ipcRenderer.on('preview:error', listener)
+    return () => { ipcRenderer.removeListener('preview:error', listener) }
+  },
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
   opencodeStatus: () => ipcRenderer.invoke('app:opencodeStatus'),
   /** Display-only licence state. Never contains the key or the signing secret. */

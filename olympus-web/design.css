@@ -24,10 +24,32 @@ ul{padding-left:22px} li+li{margin-top:9px} [hidden]{display:none!important}
 .site__row{display:flex;align-items:center;justify-content:space-between;gap:32px;min-height:80px}
 .lockup{display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;flex-shrink:0}.lockup img{width:35px;height:35px}.lockup__word{font:22px var(--display);letter-spacing:.045em}
 .nav{display:flex;align-items:center;gap:4px;position:relative}.nav a{position:relative;z-index:1;padding:9px 15px;border-radius:999px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;transition:color .22s ease,transform .22s cubic-bezier(.3,.9,.4,1.3)}.nav a:hover,.nav a:focus-visible,.nav a[aria-current]{color:var(--ink)}.nav a:hover{transform:translateY(-1px)}.nav__pill{position:absolute;top:0;left:0;height:100%;width:0;border-radius:999px;background:linear-gradient(135deg,#fff3d6,#ffe8ab);box-shadow:inset 0 0 0 1px #e8c165;opacity:0;transition:left .32s cubic-bezier(.3,.9,.4,1.2),width .32s cubic-bezier(.3,.9,.4,1.2),opacity .2s ease;pointer-events:none;z-index:0}
-/* The same marching meander strip as the buttons, under whichever link the gold pill
-   currently sits behind. */
-.nav a::after{content:'';position:absolute;left:10px;right:10px;bottom:3px;height:3px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10'%3E%3Crect width='24' height='10' fill='%23245f8d'/%3E%3Crect x='3' y='2' width='6' height='6' fill='none' stroke='%23efbb4f' stroke-width='1.6'/%3E%3Crect x='15' y='2' width='6' height='6' fill='none' stroke='%23efbb4f' stroke-width='1.6'/%3E%3C/svg%3E");background-size:20px 3px;background-repeat:repeat-x;border-radius:2px;opacity:0;transform:scaleX(.5);transform-origin:center;transition:opacity .25s ease,transform .35s cubic-bezier(.3,.9,.4,1.2);pointer-events:none;z-index:1}
+/* The same twin marching meander strips as the buttons, top and bottom, closing in from
+   opposite corners behind whichever link the gold pill currently sits under. */
+.nav a::before,.nav a::after{content:'';position:absolute;left:10px;right:10px;height:3px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='10'%3E%3Crect width='24' height='10' fill='%23245f8d'/%3E%3Crect x='3' y='2' width='6' height='6' fill='none' stroke='%23efbb4f' stroke-width='1.6'/%3E%3Crect x='15' y='2' width='6' height='6' fill='none' stroke='%23efbb4f' stroke-width='1.6'/%3E%3C/svg%3E");background-size:20px 3px;background-repeat:repeat-x;border-radius:2px;opacity:0;transform:scaleX(0);transition:opacity .25s ease,transform .45s cubic-bezier(.22,.7,.3,1);pointer-events:none;z-index:1}
+.nav a::before{top:3px;transform-origin:left center}
+.nav a::after{bottom:3px;transform-origin:right center}
+.nav a:hover::before,.nav a:focus-visible::before,
 .nav a:hover::after,.nav a:focus-visible::after{opacity:1;transform:scaleX(1);animation:key-march 1s linear infinite}
+.nav__item{position:relative}
+/* An invisible bridge the exact footprint of the menu below, so the cursor never leaves a
+   hoverable element crossing the visual gap between the trigger and the panel. Without
+   this, the narrow trigger's own hover box is far thinner than the 280px menu it opens,
+   and any cursor path that is not a perfectly straight vertical line drops out of hover
+   before the menu can be reached. */
+.nav__item::before{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);width:300px;height:14px}
+.nav__trigger{display:inline-flex;align-items:center;gap:5px}
+.nav__chevron{transition:transform .2s ease}
+.nav__item:hover .nav__chevron,.nav__item:focus-within .nav__chevron{transform:rotate(180deg)}
+.nav__menu{position:absolute;top:calc(100% + 8px);left:50%;transform:translate(-50%,4px);min-width:280px;background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 40px rgb(35 61 77 / 0.14);padding:8px;display:grid;gap:2px;opacity:0;visibility:hidden;transition:opacity .18s ease,transform .18s ease;z-index:40}
+.nav__item:hover .nav__menu,.nav__item:focus-within .nav__menu,.nav__item.is-open .nav__menu{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.nav__item.is-dismissed .nav__menu{opacity:0;visibility:hidden}
+.nav__item.is-open .nav__chevron{transform:rotate(180deg)}
+.nav__menu-item{display:block;padding:9px 12px;border-radius:9px;text-decoration:none;color:var(--ink)}
+.nav__menu-item:hover,.nav__menu-item:focus-visible{background:var(--gold-light)}
+.nav__menu-item strong{display:block;font-size:12.5px;font-weight:650}
+.nav__menu-item small{display:block;margin-top:2px;color:var(--muted);font-size:11px;font-weight:500}
+.nav__menu-item[aria-current]{background:var(--gold-light)}
 .site__actions{display:flex;align-items:center;gap:12px}
 .btn,.dlbtn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:11px 23px;border:1px solid #bdcdd6;border-radius:5px;color:var(--ink);background:transparent;font-size:12px;font-weight:650;line-height:1.5;text-decoration:none;transition:background .15s,border-color .15s}
 .btn:hover,.dlbtn:hover{background:var(--sky);border-color:var(--blue)}.btn--primary{background:var(--ink);border-color:var(--ink);color:white}.btn--primary:hover{background:var(--blue);color:white;border-color:var(--blue)}
@@ -119,3 +141,32 @@ ul{padding-left:22px} li+li{margin-top:9px} [hidden]{display:none!important}
 @media(max-width:800px){.wrap{width:calc(100% - 40px)}.nav{display:none}.navtoggle{display:block}.site__row{min-height:68px}.mobilenav[data-open=true]{display:block;padding:12px 20px 20px;border-top:1px solid var(--line);max-height:calc(100dvh - 68px);overflow-y:auto}.mobilenav nav{display:grid;gap:3px}.mobilenav a{color:var(--ink);text-decoration:none;padding:9px 12px;font-size:14px}.mobilenav a[aria-current]{background:var(--cloud);color:var(--blue)}.hero__art{right:-125px;width:550px}.hero__grid{min-height:540px}.hero h1{font-size:56px}.hero__copy{max-width:370px}.hero__lede{font-size:13px;max-width:285px}.hero__actions{gap:9px}.hero__actions .btn{padding-inline:17px}.hero__meta{max-width:270px}.demo__body{grid-template-columns:145px minmax(0,1fr)}.demo__preview{display:none}.demo__status{font-size:9px}.demo__dots{display:none}.providers__row{gap:23px;font-size:17px}.section{padding:62px 0}.workflow-grid{gap:20px}.workflow-card h3{font-size:24px}.split{gap:30px}.review-visual{padding:20px}.foot__grid{gap:28px;grid-template-columns:1.5fr 1fr 1fr 1fr}.cards--3{grid-template-columns:1fr}.steps{gap:20px}}
 @media(max-width:600px){.wrap{width:calc(100% - 36px)}.lockup__word{font-size:19px}.lockup img{width:30px;height:30px}.site__actions{gap:8px}.site__actions .btn{padding-inline:12px;font-size:10px}.hero__grid{display:flex;flex-direction:column;min-height:0}.hero__copy{text-align:center;padding:34px 0 0;max-width:100%;width:100%}.hero h1{font-size:54px}.hero__lede{font-size:14px;max-width:340px;margin:18px auto 0}.release-link{margin-bottom:20px;font-size:10px}.hero__actions{justify-content:center;margin-top:23px}.hero__meta{font-size:10px;max-width:none}.hero__art{position:relative;right:auto;top:auto;width:calc(100% + 36px);max-width:none;height:345px;margin-top:5px;object-fit:contain;object-position:center;mask-image:linear-gradient(to bottom,transparent,black 10%,black 90%,transparent)}.hero__foot{font-size:9px;padding:14px 0;gap:15px}.hero__foot span:last-child{font-size:11px}.demo__bar{grid-template-columns:auto 1fr;padding:10px 12px}.demo__tabs{justify-self:end}.demo__tabs button{padding:5px 12px}.demo__status{display:none}.demo__body{grid-template-columns:1fr;min-height:430px}.demo__sidebar{display:none}.demo__panel{padding:20px 16px}.demo__foot{gap:12px;font-size:8px}.demo-caption{font-size:10px}.providers{padding-block:26px}.providers__row{gap:15px 23px}.providers__row small{flex-basis:100%}.section-intro{align-items:start;flex-direction:column;gap:18px}.workflow-grid,.split,.cards--2,.steps,.faq-layout{grid-template-columns:1fr}.workflow-grid{gap:26px;margin-top:30px}.workflow-card h3{font-size:26px}.workflow-card>p{font-size:14px}.ownership .split{gap:0}.ownership__copy{padding:45px 0 12px}.ownership__art{min-height:250px;height:250px;mask-image:linear-gradient(to bottom,transparent,black 12%)}.card,.card-lg{padding:26px}.faq-layout{gap:28px}.faq-layout .sec__head{margin:0}.pagehead{padding:40px 0}.pagehead h1{font-size:43px}.pagehead::after{width:55%;opacity:.1}.lede{font-size:14px}.page-document .section{padding:42px 0}.foot__grid{grid-template-columns:repeat(3,1fr);gap:30px 17px}.foot__brand{grid-column:1/-1}.foot__intro{max-width:320px}.foot__legal{flex-direction:column;gap:9px}.pager{gap:12px}.pager a{padding:17px}.pager strong{font-size:12px}.rel__item{padding:22px}.step{padding-left:70px}.cmp th,.cmp td{padding:16px}.closing{padding-block:65px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* The homepage "watch" demo, compacted so the whole illustration sits inside one
+   screen instead of needing a scroll. #watch wins the cascade over the generic
+   .demo__* rules (and any other .demo variants the bundle picked up elsewhere)
+   purely on specificity, regardless of source order. */
+#watch{padding:48px 0}
+#watch .sec__head{margin-bottom:24px}
+#watch .demo__body{min-height:0;height:min(560px,calc(100vh - 200px))}
+#watch .demo__body>*{min-height:0;overflow:auto}
+#watch .demo__center{overflow:hidden}
+#watch .demo__panel{overflow:auto}
+#watch .live-projects,#watch .live-projects iframe{min-height:0;height:100%}
+@media(max-width:800px){#watch .demo__body{height:auto}#watch .demo__panel{max-height:460px}#watch .demo__preview{height:420px}}
+#watch .demo__sidebar{padding:14px 10px}
+#watch .demo__panel{padding:14px 18px;min-height:0}
+#watch .demo__heading{margin-bottom:10px}
+#watch .demo__prompt{margin-bottom:10px;padding:8px 10px}
+#watch .tool-line{padding:4px 0}
+#watch .diff-card{margin-top:8px}
+#watch .diff-card pre{padding:6px 10px;line-height:1.5;font-size:9.5px}
+#watch .diff-card__action{padding:6px 10px}
+#watch .demo__composer{margin:0 14px 12px;padding:8px 10px}
+#watch .demo__preview{padding:12px}
+#watch .preview-page{padding:14px 12px;min-height:0}
+#watch .preview-page h3{margin-top:12px;font-size:19px}
+#watch .code-editor{padding:10px;font-size:10px;line-height:1.6}
+#watch .thread-message{padding:10px;margin-top:10px}
+#watch .demo-caption{padding-top:10px}
+#watch .workflow-grid{margin-top:22px;gap:20px}

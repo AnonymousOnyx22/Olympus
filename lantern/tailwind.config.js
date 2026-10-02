@@ -17,7 +17,7 @@ module.exports = {
         'aegean-lg': '0 20px 50px -12px rgb(var(--accent-500) / 0.22)',
       },
       fontFamily: {
-        sans: ['Times New Roman', 'Times', 'Georgia', 'serif'],
+        sans: ['Segoe UI', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['JetBrains Mono', 'Cascadia Code', 'Consolas', 'monospace'],
       },
       colors: {
@@ -33,6 +33,10 @@ module.exports = {
           600: 'rgb(var(--accent-600) / <alpha-value>)',
           700: 'rgb(var(--accent-700) / <alpha-value>)',
         },
+        // Warm parchment — overrides Tailwind's stock `white` so every `bg-white`/
+        // `border-white`/`ring-white` utility in the app reads as a soft cream instead of
+        // stark white, which was blending into the pale blue body behind it.
+        white: '#faf3e3',
         // Helios Gold — review/approval + critical warnings only.
         helios: {
           300: '#fcd34d',

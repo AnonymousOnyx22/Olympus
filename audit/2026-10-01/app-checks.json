@@ -1,0 +1,10 @@
+{
+  "scopedFiles": {
+    "saved": true,
+    "otherUnchanged": true,
+    "escapeBlocked": true
+  },
+  "external": true,
+  "focus": true,
+  "failure": "Error: keyboard.press: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> \"C:\\Users\\Nick\\Downloads\\Project - Copy\\lantern\\node_modules\\electron\\dist\\electron.exe\" \"--inspect=0\" \"--remote-debugging-port=0\" \"C:\\Users\\Nick\\AppData\\Local\\Temp\\olympus-showcase-ysZnTB\\launch.cjs\" \n<launched> pid=18780\n[pid=18780][out] \n[pid=18780][err] Debugger listening on ws://127.0.0.1:64222/b48ce3a2-cadf-4173-99b9-1696c82b9581\n[pid=18780][err] For help, see: https://nodejs.org/learn/getting-started/debugging\n[pid=18780][err] Debugger attached.\n[pid=18780][err] \n[pid=18780][err] DevTools listening on ws://127.0.0.1:64224/devtools/browser/d0690860-1114-4181-9fb8-f326abb9b042\n[pid=18780][err] Error occurred in handler for 'shell:openExternal': Error: Only http(s) links can be opened\n[pid=18780][err]     at C:\\Users\\Nick\\Downloads\\Project - Copy\\lantern\\dist-electron\\main.js:9:10567\n[pid=18780][err]     at C:\\Users\\Nick\\Downloads\\Project - Copy\\lantern\\dist-electron\\main.js:9:1839\n[pid=18780][err]     at Session.<anonymous> (node:electron/js2c/browser_init:1:118190)\n[pid=18780][err]     at Session.emit (node:events:514:28)"
+}

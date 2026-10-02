@@ -14,9 +14,9 @@
 .terminal-reply i{background:var(--ink)}
 .demo .terminal-diff{font:inherit;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible;background:transparent;padding:0}
 .terminal-diff span{display:block;padding:2px 12px}.terminal-diff .removed{background:#fae6e2;color:#904d43}.terminal-diff .added{background:#e4f3e8;color:#2d6245}
-.greek-thinking{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:18px 0 8px;color:#a16c11;font:11px var(--mono)}
+.greek-thinking{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:18px 0 8px;color:#68460e;font:11px var(--mono)}
 .greek-thinking__mark{width:18px;height:18px;flex:none;display:block}
-.thinking-detail{color:var(--muted);font-size:10px}
+.thinking-detail{color:#37536a;font-size:10px}
 
 /* Full project walkthroughs: real content, compact rhythm, working previews. */
 .demo__body{grid-template-columns:175px minmax(0,1fr) 330px;align-items:stretch}

@@ -1,10 +1,7 @@
 # Netlify deployment configuration for the Olympus site.
 #
-# The source is plain HTML, CSS and JavaScript with no bundler. The one build step# injects the entity, contact and download values from site.config.json, and FAILS# while any of them is still a TODO. A legal page that names no seller cannot ship.
-#
-# The site intentionally has no Node build. If someone later adds a bundler,
-# change `command` and `publish` here rather than relying on Netlify's defaults,
-# so the deploy settings live in the repository and not in a dashboard.
+# The source is plain HTML, CSS and JavaScript. A Node script injects the owner
+# and contact values from site.config.json and refuses unresolved required values.
 
 [build]
   command = "node ../lantern/tools/build-site.mjs"
@@ -21,7 +18,7 @@
 [[headers]]
   for = "/assets/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=3600, must-revalidate"
 
 # HTML is always revalidated, or a deploy would be invisible to anyone who
 # already has the page open.
@@ -38,8 +35,10 @@
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
+    # The home page embeds the sample apps served from this same site.
+    # Both framing policies allow those previews and reject external framing.
+    X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=(), interest-cohort=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'; object-src 'none'"

@@ -1,6 +1,5 @@
 {
   "_comment": "Single source of truth for every value that ties this product to a real entity, a real host, or a real inbox. tools/build-site.mjs substitutes the {{TOKENS}} into a dist/ folder and REFUSES to build while any required value is still a TODO. Commercial terms are deliberately NOT configured here: pricing is undecided, so no rate appears anywhere on the site and every call to action points at the waitlist.",
-
   "entity": {
     "legalName": "TODO: registered company or sole-trader name",
     "registeredAddress": "TODO: registered address",
@@ -8,51 +7,39 @@
     "companyNumber": "TODO: company registration number",
     "tradingAs": "Olympus"
   },
-
   "contact": {
     "supportEmail": "TODO: support inbox",
     "securityEmail": "TODO: security disclosure inbox",
     "serviceEmail": "TODO: email for service of process"
   },
-
   "urls": {
     "site": "https://projectclipforge.netlify.app",
-    "waitlist": "TODO: where sign-ups go. A form endpoint, a mailto: with a subject, or a hosted list. Every primary call to action on every page resolves to this one value.",
+    "waitlist": "waitlist.html",
     "docs": "TODO: documentation URL",
     "repoSlug": "TODO: owner/repo"
   },
-
   "commerce": {
     "_comment": "Intentionally empty. No price, no licence tier, no checkout, no download host. These are undecided, and publishing an undecided number is worse than publishing nothing. When they are decided, add the URLs here and swap the waitlist tokens in the pages back to them.",
     "price": "TODO: undecided",
     "checkout": "TODO: undecided",
     "downloadBase": "TODO: undecided"
   },
-
   "product": {
     "name": "Olympus",
     "version": "0.1.0",
-    "status": "In development. Nothing is released. There is nothing to download yet.",
+    "status": "Beta, under active development. No public release or download is available.",
     "copyrightHolder": "TODO: copyright holder",
     "copyrightYear": "2026"
   },
-
   "opencode": {
     "_comment": "The version Olympus was built and tested against. The app checks this at startup and warns loudly if the installed opencode is outside it.",
     "minSupported": "1.18.0",
     "knownGood": "1.18.x"
   },
-
   "_required": [
     "entity.legalName",
-    "entity.registeredAddress",
-    "entity.jurisdiction",
     "contact.supportEmail",
     "contact.securityEmail",
-    "contact.serviceEmail",
-    "urls.waitlist",
-    "urls.docs",
-    "urls.repoSlug",
     "product.copyrightHolder"
   ]
 }

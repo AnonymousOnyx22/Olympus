@@ -1,0 +1,16 @@
+.faq-hero{padding:72px 0 48px;background:#eaf2f6;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.faq-hero::after{content:'';position:absolute;inset:0 0 0 auto;width:37%;background:url('assets/olympus-cartoon-sanctum.jpg') center 25%/cover;opacity:.13;mask-image:linear-gradient(to right,transparent,black 60%);pointer-events:none}
+.faq-hero .wrap{position:relative;z-index:1;max-width:680px}
+.faq-hero .eyebrow{letter-spacing:.08em}
+.faq-hero h1{font-family:var(--display);font-size:clamp(40px,5vw,58px);line-height:1.08;margin-top:14px;font-weight:400}
+.faq-hero h1 em{font-style:italic;color:#8a6412}
+.faq-hero .lede{margin-top:20px;max-width:56ch}
+.faq-hero .faq-search{margin-top:28px;margin-bottom:0}
+.faq-rail-layout{display:grid;grid-template-columns:190px 1fr;gap:60px;align-items:start;padding-top:56px}
+.faq-rail{position:sticky;top:110px;display:flex;flex-direction:column;gap:14px}
+.faq-rail a{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);text-decoration:none;padding-left:14px;border-left:2px solid var(--line);transition:color .2s,border-color .2s}
+.faq-rail a.is-active{color:var(--ink);border-color:#bb9655}
+.faq-group{margin-bottom:48px}
+.faq-group:last-child{margin-bottom:0}
+.faq-group__label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#806331;margin-bottom:6px}
+@media(max-width:900px){.faq-rail-layout{grid-template-columns:1fr;padding-top:0}.faq-rail{display:none}}

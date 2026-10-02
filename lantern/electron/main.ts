@@ -3,11 +3,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { buildOpencodeConfig, basicAuthHeader, detectOpencodeVersion, probeInstalledProviders } from './daemonManager'
 import * as pool from './spacePool'
+import { sameDirectory, sessionsInDirectory } from './sessionScope'
 import { discoverProviders, fetchDaemonProviders, mergeProviders, isChatModel, modelAccess, slugifyProviderId, BUILTIN_ENDPOINTS } from './modelDiscovery'
 import { getSettings, updateSettings } from './settings'
 import * as projects from './projects'
 import { gitStatus, gitAction } from './git'
-import { licenseSummary } from './license'
 import type { OlympusSettings, LocalProvider, StartDaemonResult } from '../src/types/opencode'
 
 const MAX_READ_BYTES = 5 * 1024 * 1024
@@ -26,6 +26,10 @@ let mainWindow: BrowserWindow | null = null
 let focusedSpaceId = GENERAL_SPACE
 
 const send = (channel: string, ...args: unknown[]) => {
+  if (channel === 'oc:event') {
+    const event = args[1] as { type?: string; properties?: { info?: { directory?: unknown } } }
+    if (event?.type?.startsWith('session.') && event.properties?.info?.directory && !sameDirectory(event.properties.info.directory, pool.state(String(args[0])).cwd)) return
+  }
   if (process.env.OLYMPUS_DEBUG_IPC) console.log('[ipc]', channel, ...args)
   if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(channel, ...args)
 }
@@ -175,8 +179,8 @@ function resolveSpaceDir(spaceId: string): string {
 }
 
 /** Reads a text file only if it resolves inside the currently focused project. */
-function readProjectFile(requested: string): string | null {
-  const root = pool.state(focusedSpaceId).cwd
+function readProjectFile(spaceId: string, requested: string): string | null {
+  const root = pool.state(spaceId).cwd
   if (!root || typeof requested !== 'string') return null
   try {
     const target = path.resolve(root, requested)
@@ -193,8 +197,8 @@ function readProjectFile(requested: string): string | null {
 }
 
 /** Lists ordinary files without walking generated/vendor folders or following symlinks. */
-function listProjectFiles(): string[] {
-  const root = pool.state(focusedSpaceId).cwd
+function listProjectFiles(spaceId: string): string[] {
+  const root = pool.state(spaceId).cwd
   if (!root) return []
   const realRoot = fs.realpathSync(root)
   const files: string[] = []
@@ -220,8 +224,8 @@ function listProjectFiles(): string[] {
 }
 
 /** Saves an existing UTF-8 file inside the focused project. */
-function writeProjectFile(requested: string, content: string): boolean {
-  const root = pool.state(focusedSpaceId).cwd
+function writeProjectFile(spaceId: string, requested: string, content: string): boolean {
+  const root = pool.state(spaceId).cwd
   if (!root || Buffer.byteLength(content, 'utf8') > MAX_READ_BYTES) return false
   try {
     const realRoot = fs.realpathSync(root)
@@ -242,8 +246,8 @@ function packageManager(root: string): 'npm' | 'pnpm' | 'yarn' {
 }
 
 /** Picks the least surprising run target instead of guessing a framework command. */
-function projectRunCommand(): string | null {
-  const root = pool.state(focusedSpaceId).cwd
+function projectRunCommand(spaceId = focusedSpaceId): string | null {
+  const root = pool.state(spaceId).cwd
   if (!root) return null
   try {
     const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')) as { scripts?: Record<string, unknown> }
@@ -396,9 +400,24 @@ function registerIpc() {
     return updateSettings(allowed)
   })
 
-  handle('oc:request', (_e, spaceId: unknown, method: unknown, reqPath: unknown, body: unknown) => {
+  handle('oc:request', async (_e, spaceId: unknown, method: unknown, reqPath: unknown, body: unknown) => {
     if (typeof method !== 'string' || typeof reqPath !== 'string') throw new Error('invalid request')
-    return pool.request(normSpaceId(spaceId), method.toUpperCase(), reqPath, body)
+    const id = normSpaceId(spaceId)
+    const root = pool.state(id).cwd
+    const sessionRoute = /^\/session\/([^/]+)(?:\/|$)/.exec(reqPath)
+    // OpenCode can return shared history for unrelated folders. Never select or mutate
+    // another folder's session just because its ID was restored from an older UI state.
+    if (sessionRoute && sessionRoute[1] !== 'status') {
+      const listed = await pool.request(id, 'GET', '/session')
+      if (!listed.ok || !sessionsInDirectory(listed.data, root).some(session => session.id === decodeURIComponent(sessionRoute[1]))) {
+        return { ok: false, status: 403, data: null, error: 'This conversation belongs to another project or is no longer available.' }
+      }
+    }
+    const result = await pool.request(id, method.toUpperCase(), reqPath, body)
+    if (method.toUpperCase() === 'GET' && reqPath === '/session' && result.ok) {
+      return { ...result, data: sessionsInDirectory(result.data, root) }
+    }
+    return result
   })
 
   // The terminal only ever shows the focused space's shell.
@@ -412,11 +431,16 @@ function registerIpc() {
   })
   handle('pty:disconnect', (_e, id: unknown) => pool.bridge(focusedSpaceId)?.ptyDisconnect(String(id)))
 
-  handle('fs:readProjectFile', (_e, p: unknown) => readProjectFile(String(p)))
-  handle('fs:listProjectFiles', () => listProjectFiles())
-  handle('fs:writeProjectFile', (_e, p: unknown, content: unknown) => {
+  handle('editor:confirmSwitch', async (_e, file: unknown) => {
+    const options = { type: 'question' as const, buttons: ['Save changes', 'Discard changes', 'Cancel'], defaultId: 0, cancelId: 2, message: 'Save changes before switching projects?', detail: String(file) }
+    const result = mainWindow ? await dialog.showMessageBox(mainWindow, options) : await dialog.showMessageBox(options)
+    return ['save', 'discard', 'cancel'][result.response]
+  })
+  handle('fs:readProjectFile', (_e, id: unknown, p: unknown) => readProjectFile(String(id), String(p)))
+  handle('fs:listProjectFiles', (_e, id: unknown) => listProjectFiles(String(id)))
+  handle('fs:writeProjectFile', (_e, id: unknown, p: unknown, content: unknown) => {
     if (typeof p !== 'string' || typeof content !== 'string') return false
-    return writeProjectFile(p, content)
+    return writeProjectFile(String(id), p, content)
   })
   onTrusted('app:closeReady', (_e, ok: unknown) => {
     closePending = false
@@ -463,7 +487,7 @@ function registerIpc() {
    * that belongs in a later release, deliberately left off until it is made. The secret
    * and the raw key never cross this boundary — only the summary does.
    */
-  handle('license:state', () => licenseSummary())
+  handle('license:state', () => ({ product: 'Olympus', model: 'Beta ? no public release', valid: true, trial: false, expired: false, daysLeft: 0, email: null }))
 
   handle('workspace:runCommand', () => projectRunCommand())
   handle('preview:discover', () => discoverPreview())
@@ -479,10 +503,10 @@ function registerIpc() {
   })
 
   /** Opens an http(s) URL in the user's browser. Anything else is ignored. */
-  handle('shell:openExternal', async (_url: unknown) => {
-    const url = String(_url ?? '')
-    if (!/^https?:\/\//i.test(url)) throw new Error('Only http(s) links can be opened')
-    await shell.openExternal(url)
+  handle('shell:openExternal', async (_e, _url: unknown) => {
+    const url = new URL(String(_url ?? ''))
+    if (!['http:', 'https:'].includes(url.protocol)) throw new Error('Only http(s) links can be opened')
+    await shell.openExternal(url.href)
   })
 }
 
@@ -553,6 +577,9 @@ function createWindow() {
 app.on('web-contents-created', (_e, contents) => {
   lockDownPermissions(contents.session)
 
+  contents.on('did-fail-load', (_event, code, description, url, isMainFrame) => {
+    if (!isMainFrame && code !== -3) send('preview:error', url, description)
+  })
   contents.on('will-navigate', (event, url) => {
     const devUrl = process.env.VITE_DEV_SERVER_URL
     if (!devUrl || !url.startsWith(devUrl)) event.preventDefault()
@@ -566,7 +593,10 @@ app.on('web-contents-created', (_e, contents) => {
   contents.on('will-attach-webview', (event) => event.preventDefault())
   contents.on('will-frame-navigate', (event) => {
     const devUrl = process.env.VITE_DEV_SERVER_URL
-    if (!devUrl || !event.url.startsWith(devUrl)) event.preventDefault()
+    const url = new URL(event.url)
+    const localPreview = !event.isMainFrame && ['http:', 'https:'].includes(url.protocol) && ['127.0.0.1', 'localhost'].includes(url.hostname)
+    const localDev = devUrl && url.origin === new URL(devUrl).origin
+    if (!localPreview && !localDev) event.preventDefault()
   })
 })
 

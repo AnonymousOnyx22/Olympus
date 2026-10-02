@@ -36,6 +36,8 @@
     <link rel="stylesheet" href="olympus.css" />
 <link rel="stylesheet" href="illustrations.css">
 
+<link rel="stylesheet" href="page-styles.css">
+<link rel="stylesheet" href="faq-page.css">
 </head>
 <body class="page-document">
 <div class="cloud-curtain" aria-hidden="true">
@@ -50,46 +52,67 @@
 </div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
-<nav class="nav" aria-label="Primary">
-      <a href="app.html">The window</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="faq.html" aria-current="page">FAQ</a><a href="about.html">About</a></nav>
+<nav class="nav" aria-label="Primary"><div class="nav__item"><a class="nav__top nav__trigger" href="features.html">Product <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="features.html"><strong>Features</strong><small>Every part of the workspace, explained</small></a><a class="nav__menu-item" href="how-it-works.html"><strong>How it works</strong><small>Agents, approvals, and previews, step by step</small></a></div></div><a class="nav__top" href="pricing.html">Availability</a><div class="nav__item"><a class="nav__top nav__trigger" href="faq.html" aria-current="page">Resources <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="faq.html" aria-current="page"><strong>FAQ</strong><small>Every answer in one place</small></a><a class="nav__menu-item" href="requirements.html"><strong>Requirements</strong><small>What your computer needs to run it</small></a><a class="nav__menu-item" href="changelog.html"><strong>Changelog</strong><small>What shipped, and when</small></a></div></div><div class="nav__item"><a class="nav__top nav__trigger" href="security.html">Legal <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="security.html"><strong>Security</strong><small>Threat model &amp; practices</small></a><a class="nav__menu-item" href="privacy.html"><strong>Privacy</strong><small>What we collect (and do not)</small></a><a class="nav__menu-item" href="terms.html"><strong>Terms</strong><small>Terms of Service</small></a></div></div><a class="nav__top" href="about.html">About</a></nav>
 <div class="site__actions"><a class="btn btn--primary btn--sm" href="pricing.html#buy">Join the waitlist <span aria-hidden="true">↓</span></a>
 <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
-<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="faq.html" aria-current="page">FAQ</a><a href="about.html">About</a></nav></div></header>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Availability</a><a href="faq.html" aria-current="page">FAQ</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="security.html">Security</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="about.html">About</a></nav></div></header>
 <main id="main">
 
-  <div class="pagehead pagehead--faq">
+  <div class="faq-hero">
     <div class="wrap">
-      <p class="eyebrow">FAQ</p>
-      <h1>A few good questions.</h1>
-      <p class="lede">The practical details, so you know what to expect before you install anything.</p>
-      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>FAQ</span></p>
+      <p class="eyebrow">Resources &nbsp;·&nbsp; FAQ</p>
+      <h1>Every answer,<br>one <em>room</em>.</h1>
+      <p class="lede">The practical details, so you know what to expect while Olympus is still being built. If your question is not here, <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> is a real address and a person reads it.</p>
+      <form class="faq-search" role="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="search" data-faq-search placeholder="Search questions…" aria-label="Search questions"></form>
     </div>
   </div>
 
-  <section class="section" id="faq" aria-labelledby="faq-heading"><div class="wrap faq-layout">
-    <div class="sec__head"><p class="eyebrow">Before you settle in</p><h2 id="faq-heading">Start here.</h2><p class="lede">If your question is not here, <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> is a real address and a person reads it.</p></div>
-    <form class="faq-search" role="search" onsubmit="return false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="search" data-faq-search placeholder="Search questions…" aria-label="Search questions"></form>
+  <section class="section faq-section" aria-label="Frequently asked questions"><div class="wrap faq-rail-layout">
+    <aside class="faq-rail" aria-label="FAQ sections">
+      <a href="#faq-start" data-faq-rail-link>Getting started</a>
+      <a href="#faq-agent" data-faq-rail-link>Using the agent</a>
+      <a href="#faq-data" data-faq-rail-link>Your data &amp; security</a>
+      <a href="#faq-support" data-faq-rail-link>Support</a>
+    </aside>
     <div class="faq" data-faq-list>
       <p class="faq-empty" data-faq-empty>No questions match that search. <a href="mailto:{{contact.supportEmail}}">Email us</a> instead.</p>
-      <details class="faq__item"><summary>What do I need to get started?</summary><p>A supported computer, a project folder, and a compatible agent and model ready to use. The <a href="requirements.html">setup checklist</a> covers the software you need.</p></details>
-      <details class="faq__item"><summary>Does everything run on my computer?</summary><p>With a model running on your computer, your AI work stays there. If you choose a cloud provider, your requests go to that provider. Olympus does not track your activity or require an account.</p></details>
-      <details class="faq__item"><summary>Can I use it now?</summary><p>No. Nothing is released yet, and nothing is for sale. Olympus is in development, and builds go to the waitlist first. What a licence will cost, and what it will include, has not been decided. See the <a href="pricing.html">complete pricing terms</a>.</p></details>
-      <details class="faq__item"><summary>What can the agent change without asking?</summary><p>Proposed file edits wait for your approval. Commands ask separately because they can also change files. Review both before accepting. <a href="security.html">Learn about your controls</a>.</p></details>
-      <details class="faq__item"><summary>Which models work with Olympus?</summary><p>Olympus is independent of any one provider. Use a model supported by your chosen agent and setup, whether it runs locally or through a connected cloud provider.</p></details>
-      <details class="faq__item"><summary>What if it isn't the right fit?</summary><p>Join the waitlist and you will be told when a build is ready. Any refund window will be published before the first sale, not after it. The <a href="refunds.html">refund policy</a> explains the process.</p></details>
-      <details class="faq__item"><summary>Is there a subscription?</summary><p>No, and there is not going to be one. A one-time licence covers every update inside the 0.x line. A future major version would be a separate, one-off upgrade, priced and published before it ships.</p></details>
-      <details class="faq__item"><summary>What happens to my projects if I uninstall?</summary><p>Nothing. Your projects, your code, and your git history live where you put them, not inside Olympus. Uninstalling removes the app, not your work.</p></details>
-      <details class="faq__item"><summary>How do I report a bug or a security issue?</summary><p>Ordinary bugs: email <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a>, or open a public issue if you'd rather have the fix in the open. Security problems: email <a href="mailto:{{contact.securityEmail}}">{{contact.securityEmail}}</a> instead, and please don't open a public issue for anything exploitable.</p></details>
+
+      <div class="faq-group" id="faq-start" data-faq-group="Getting started">
+        <p class="faq-group__label">Getting started</p>
+        <details class="faq__item"><summary>Okay, so what actually is Olympus?</summary><p>A desktop workspace for AI coding agents. It brings your projects, the running agent, the code, and a live preview into one screen, with several projects open and working at once instead of a single chat window.</p></details>
+        <details class="faq__item"><summary>What do I need to get started?</summary><p>A supported computer, a project folder, and a compatible agent and model ready to use. The <a href="requirements.html">setup checklist</a> covers the software you need.</p></details>
+        <details class="faq__item"><summary>Can I use it now?</summary><p>Not yet. Olympus is still in development, and nothing is for sale. Join the <a href="pricing.html#buy">waitlist</a> to hear the moment a build is ready to try.</p></details>
+      </div>
+
+      <div class="faq-group" id="faq-agent" data-faq-group="Using the agent">
+        <p class="faq-group__label">Using the agent</p>
+        <details class="faq__item"><summary>What can the agent change without asking?</summary><p>In Ask mode, file edits and commands require approval. Auto edit allows file edits while commands still ask. Full access allows edits and commands without asking. Choose the mode in the app before giving an agent a task. <a href="security.html">Learn about your controls</a>.</p></details>
+        <details class="faq__item"><summary>Which models work with Olympus?</summary><p>Olympus is independent of any one provider. Use a model supported by your chosen agent and setup, whether it runs locally or through a connected cloud provider.</p></details>
+        <details class="faq__item"><summary>What happens to my projects if I uninstall?</summary><p>Nothing. Your projects, your code, and your git history live where you put them, not inside Olympus. Uninstalling removes the app, not your work.</p></details>
+      </div>
+
+      <div class="faq-group" id="faq-data" data-faq-group="Your data & security">
+        <p class="faq-group__label">Your data &amp; security</p>
+        <details class="faq__item"><summary>Does everything run on my computer?</summary><p>With a model running on your computer, your AI work stays there. If you choose a cloud provider, your requests go to that provider instead. Olympus does not track your activity or require an account.</p></details>
+        <details class="faq__item"><summary>Is there a subscription?</summary><p>That has not been decided. What is certain is there will be no hidden recurring charge you were not told about up front; pricing will be published before anything is sold.</p></details>
+      </div>
+
+      <div class="faq-group" id="faq-support" data-faq-group="Support">
+        <p class="faq-group__label">Support</p>
+        <details class="faq__item"><summary>What if it isn't the right fit?</summary><p>Join the waitlist and you will be told when a build is ready to try before anything is for sale, so you can decide for yourself whether it fits.</p></details>
+        <details class="faq__item"><summary>How do I report a bug or a security issue?</summary><p>Ordinary bugs: email <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a>, or open a public issue if you'd rather have the fix in the open. Security problems: email <a href="mailto:{{contact.securityEmail}}">{{contact.securityEmail}}</a> instead, and please don't open a public issue for anything exploitable.</p></details>
+      </div>
     </div>
   </div></section>
 
 </main>
 <footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
-<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="pricing.html#buy">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Availability</a></li><li><a href="waitlist.html">Waitlist</a></li></ul></nav>
 <nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="faq.html">FAQ</a></li><li><a href="about.html">About</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
-<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
-<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li><li><a href="security.html">Security</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© {{product.copyrightYear}} {{entity.tradingAs}}</p></div></footer>
 <script src="site.js"></script>
 <script src="motion.js"></script>
+<script src="faq-page.js"></script>
 </body>
 </html>

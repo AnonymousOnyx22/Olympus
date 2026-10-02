@@ -34,8 +34,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
     <link rel="stylesheet" href="olympus.css" />
+<link rel="stylesheet" href="panel-demos.css">
 <link rel="stylesheet" href="illustrations.css">
 
+<link rel="stylesheet" href="page-styles.css">
+<link rel="stylesheet" href="showcase.css">
 </head>
 <body class="page-document">
 <div class="cloud-curtain" aria-hidden="true">
@@ -50,25 +53,23 @@
 </div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
-<nav class="nav" aria-label="Primary">
-      <a href="app.html">The window</a><a href="features.html" aria-current="page">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav>
-<div class="site__actions"><a class="btn btn--primary btn--sm" href="{{urls.waitlist}}">Join the waitlist <span aria-hidden="true">↓</span></a>
+<nav class="nav" aria-label="Primary"><div class="nav__item"><a class="nav__top nav__trigger" href="features.html" aria-current="page">Product <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="features.html" aria-current="page"><strong>Features</strong><small>Every part of the workspace, explained</small></a><a class="nav__menu-item" href="how-it-works.html"><strong>How it works</strong><small>Agents, approvals, and previews, step by step</small></a></div></div><a class="nav__top" href="pricing.html">Availability</a><div class="nav__item"><a class="nav__top nav__trigger" href="faq.html">Resources <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="faq.html"><strong>FAQ</strong><small>Every answer in one place</small></a><a class="nav__menu-item" href="requirements.html"><strong>Requirements</strong><small>What your computer needs to run it</small></a><a class="nav__menu-item" href="changelog.html"><strong>Changelog</strong><small>What shipped, and when</small></a></div></div><div class="nav__item"><a class="nav__top nav__trigger" href="security.html">Legal <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="security.html"><strong>Security</strong><small>Threat model &amp; practices</small></a><a class="nav__menu-item" href="privacy.html"><strong>Privacy</strong><small>What we collect (and do not)</small></a><a class="nav__menu-item" href="terms.html"><strong>Terms</strong><small>Terms of Service</small></a></div></div><a class="nav__top" href="about.html">About</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="waitlist.html">Join the waitlist <span aria-hidden="true">↓</span></a>
 <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
-<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html" aria-current="page">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav></div></header>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html" aria-current="page">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Availability</a><a href="faq.html">FAQ</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="security.html">Security</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="about.html">About</a></nav></div></header>
 <main id="main">
 
   <div class="pagehead pagehead--features">
     <div class="wrap">
       <p class="eyebrow">Features</p>
       <h1>A clearer way to build</h1>
-      <p class="lede" style="--d:.12s">Everything you need to follow the work and keep your projects moving.</p>
+      <p class="inline-style-10 lede">Everything you need to follow the work and keep your projects moving.</p>
       <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Features</span></p>
     </div>
   </div>
 
-  <section class="section scene-intro section--tint" id="features" aria-labelledby="features-h">
-    <div class="wrap"><img class="scene-art " src="assets/olympus-cloud-workshop.webp" srcset="assets/olympus-cloud-workshop-small.webp 720w, assets/olympus-cloud-workshop.webp 1440w" sizes="(max-width: 700px) 92vw, 44vw" width="1440" height="960" alt="" loading="lazy" decoding="async">
-      <div class="sec__head"><h2 id="features-h">Everything you need, together.</h2><p class="lede">Keep your projects, conversations, files, and proposed changes in one workspace.</p></div>
+  <section class="section section--tint" id="features" aria-label="Features">
+    <div class="wrap">
 
       <div class="cards cards--2">
         <article class="card">
@@ -89,8 +90,8 @@
           <span class="ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.2" width="17.6" height="15.6" rx="2.4"/><path d="M9 4.2v15.6"/><path d="M12.4 10.2h5.2M12.4 13.6h5.2M12.4 17h3"/></svg>
           </span>
-          <h3>Three views on one session</h3>
-          <p>Follow the work in Agent, explore your files in Code, or read the conversation in Thread. Switch views without losing your place or your draft.</p>
+          <h3>Views for each kind of work</h3>
+          <p>Follow a task in Chat, see parallel sessions in Agents, explore files in Code, or read the conversation in Thread. Switch views without losing your place or your draft.</p>
         </article>
         <article class="card">
           <span class="ico ico--gold" aria-hidden="true">
@@ -129,17 +130,27 @@
         </article>
       </div>
 
+<!-- ── Showcase ───────────────────────────────────────────────────────
+       The eight cards above say what Olympus has. These show it. Each
+       panel is the real component: the tool rows open, the tabs swap the
+       view, the approval is a real button that answers the question. -->
+  <section class="section" id="showcase" aria-labelledby="showcase-h"><div class="wrap"><div class="showcase-intro"><h2 id="showcase-h">See it in the running app.</h2><p>A Windows development build, captured with a sample project open in Code and Live Preview.</p></div><figure class="showcase"><img class="showcase__image" src="assets/showcase/code-preview.webp" width="1418" height="884" alt="Olympus editing a README alongside the running Aegean journal preview." loading="lazy"><figcaption>Real app capture.</figcaption></figure></div></section>
+
+
       <p class="note">Keep your projects, conversations, and changes together. <a href="index.html#watch">Explore the workspace</a>.</p>
     </div>
   </section>
 
 </main>
 <footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
-<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="pricing.html#buy">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Availability</a></li><li><a href="waitlist.html">Waitlist</a></li></ul></nav>
 <nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="faq.html">FAQ</a></li><li><a href="about.html">About</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
-<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
-<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li><li><a href="security.html">Security</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© {{product.copyrightYear}} {{entity.tradingAs}}</p></div></footer>
 <script src="site.js"></script>
 <script src="motion.js"></script>
+
+
+
 </body>
 </html>

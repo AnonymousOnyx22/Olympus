@@ -58,15 +58,17 @@
   // the current page the rest of the time. Pure enhancement: the links work and read fine
   // without it (CSS alone still gives hover/current a colour change).
   const nav = document.querySelector('.nav');
-  const navLinks = nav ? [...nav.querySelectorAll('a')] : [];
+  const navLinks = nav ? [...nav.querySelectorAll('.nav__top')] : [];
   if (nav && navLinks.length) {
     const pill = document.createElement('span');
     pill.className = 'nav__pill';
     nav.prepend(pill);
     const current = navLinks.find(a => a.hasAttribute('aria-current'));
+    // Measured against the nav itself, not offsetLeft: dropdown triggers sit inside a
+    // positioned .nav__item, so their offsetLeft is relative to that wrapper and reads ~0.
     const place = el => {
       if (!el) { pill.style.opacity = '0'; return; }
-      pill.style.left = `${el.offsetLeft}px`;
+      pill.style.left = `${el.getBoundingClientRect().left - nav.getBoundingClientRect().left}px`;
       pill.style.width = `${el.offsetWidth}px`;
       pill.style.opacity = '1';
     };
@@ -77,7 +79,36 @@
     });
     nav.addEventListener('mouseleave', () => place(current));
     nav.addEventListener('focusout', event => { if (!nav.contains(event.relatedTarget)) place(current); });
-    addEventListener('resize', () => place(nav.querySelector('a:hover') || current));
+    addEventListener('resize', () => place(navLinks.find(a => a.matches(':hover')) || current));
+    document.fonts?.ready.then(() => place(current));
+
+    // Touch screens have no hover, so the first tap on a trigger opens its menu instead of
+    // navigating; a second tap (or a tap elsewhere) behaves normally.
+    const items = [...nav.querySelectorAll('.nav__item')];
+    const closeAll = except => items.forEach(item => { if (item !== except) item.classList.remove('is-open'); });
+    if (matchMedia('(hover: none)').matches) {
+      items.forEach(item => {
+        item.querySelector('.nav__trigger')?.addEventListener('click', event => {
+          if (item.classList.contains('is-open')) return;
+          event.preventDefault();
+          closeAll(item);
+          item.classList.add('is-open');
+        });
+      });
+      document.addEventListener('click', event => { if (!nav.contains(event.target)) closeAll(); });
+    }
+    nav.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      const item = event.target.closest('.nav__item');
+      if (!item) return;
+      closeAll();
+      item.querySelector('.nav__trigger')?.focus();
+      item.classList.add('is-dismissed');
+    });
+    items.forEach(item => {
+      item.addEventListener('mouseleave', () => item.classList.remove('is-dismissed'));
+      item.addEventListener('focusout', event => { if (!item.contains(event.relatedTarget)) item.classList.remove('is-dismissed'); });
+    });
   }
 
   // Paint closed on arrival, then reveal only once the destination has loaded.
@@ -147,6 +178,7 @@
   const faqList = document.querySelector('[data-faq-list]');
   if (faqSearch && faqList) {
     const items = [...faqList.querySelectorAll('.faq__item')];
+    const groups = [...faqList.querySelectorAll('.faq-group')];
     const empty = faqList.querySelector('[data-faq-empty]');
     faqSearch.addEventListener('input', () => {
       const q = faqSearch.value.trim().toLowerCase();
@@ -155,6 +187,9 @@
         const match = !q || item.textContent.toLowerCase().includes(q);
         item.hidden = !match;
         if (match) shown += 1;
+      });
+      groups.forEach(group => {
+        group.hidden = q && ![...group.querySelectorAll('.faq__item')].some(item => !item.hidden);
       });
       empty?.classList.toggle('is-shown', shown === 0);
     });

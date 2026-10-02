@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Sidebar from './components/Sidebar'
 import OlympusBoot from './components/OlympusBoot'
-import ChatCanvas from './components/ChatCanvas'
-import AgentWorkspace from './components/AgentWorkspace'
 import AllAgentsGrid, { type AgentGridEntry } from './components/AllAgentsGrid'
 import DiffViewer from './components/DiffViewer'
 import EditorWorkspace from './components/EditorWorkspace'
@@ -14,7 +12,7 @@ import ProjectsPage from './components/ProjectsPage'
 import TerminalPanel from './components/TerminalPanel'
 import WorkspaceBar, { type WorkspaceView } from './components/WorkspaceBar'
 import { api } from './services/api'
-import { describeActivity, useSessionStream } from './services/streamHandler'
+import { useSessionStream } from './services/streamHandler'
 import { GENERAL_SPACE } from './constants'
 import type { DaemonState, LocalProvider, ModelRef, PermissionMode, ProjectInfo, Session, Skill } from './types/opencode'
 
@@ -41,17 +39,6 @@ function pickModel(providers: LocalProvider[], preferred: ModelRef | null): Mode
 
 const topLevelByRecent = (sessions: Session[]) =>
   sessions.filter((s) => !s.parentID).sort((a, b) => b.time.updated - a.time.updated)
-
-interface QueuedMessage {
-  id: string
-  /** The space this message belongs to, captured at queue time so a focus switch can't misdeliver it. */
-  spaceId: string
-  text: string
-  sessionID: string | null
-  model: ModelRef
-  variant: string | null
-  priority: boolean
-}
 
 export default function App() {
   // Every open space (General chats + each project you've visited) keeps its own entry
@@ -109,13 +96,27 @@ export default function App() {
       return next
     })
 
+  const [windowOrder, setWindowOrder] = useState<string[]>(() => {
+    try {
+      const saved: unknown = JSON.parse(localStorage.getItem('olympus.agentWindowOrder') ?? 'null')
+      if (Array.isArray(saved)) return saved.filter((key): key is string => typeof key === 'string')
+    } catch { /* migrate existing windows */ }
+    return Object.entries(openIdsBySpace).flatMap(([id, ids]) => ids.map((sessionId) => JSON.stringify([id, sessionId])))
+  })
+  useEffect(() => {
+    const keys = Object.entries(openIdsBySpace).flatMap(([id, ids]) => ids.map((sessionId) => JSON.stringify([id, sessionId])))
+    const next = [...windowOrder.filter((key) => keys.includes(key)), ...keys.filter((key) => !windowOrder.includes(key))]
+    if (JSON.stringify(next) !== JSON.stringify(windowOrder)) setWindowOrder(next)
+    try { localStorage.setItem('olympus.agentWindowOrder', JSON.stringify(next)) } catch { /* best effort */ }
+  }, [openIdsBySpace, windowOrder])
+
   const [providers, setProviders] = useState<LocalProvider[]>([])
   const [rescanning, setRescanning] = useState(false)
   const [model, setModel] = useState<ModelRef | null>(null)
   const [appError, setAppError] = useState<string | null>(null)
   const [projects, setProjects] = useState<ProjectInfo[]>([])
   const [spaceId, setSpaceId] = useState<string>(GENERAL_SPACE)
-  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>('chat')
+  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>('workspace')
   const [screen, setScreen] = useState<'workspace' | 'projects'>('workspace')
   /**
    * What picking a project in the folder picker is supposed to do.
@@ -125,7 +126,7 @@ export default function App() {
    * whole point of asking — collapsing them into one button is what made the original
    * "New chat" control feel inert: it had nowhere to let you choose a folder at all.
    */
-  const [picker, setPicker] = useState<{ purpose: 'agent' | 'switch'; inId: string } | null>(null)
+  const [picker, setPicker] = useState<{ purpose: 'agent' | 'switch' | 'pane'; inId: string; sessionId?: string } | null>(null)
   const [contextOpen, setContextOpen] = useState(() => localStorage.getItem('olympus.contextOpen') !== 'false' && window.innerWidth >= 1100)
   const [terminalOpen, setTerminalOpen] = useState(false)
   const [runCommand, setRunCommand] = useState<string | null>(null)
@@ -138,15 +139,12 @@ export default function App() {
    * empty model picker with no explanation, which is indistinguishable from "no models found".
    */
   const [envIssue, setEnvIssue] = useState<{ version: string | null; supported: boolean; available: boolean } | null>(null)
-  const [messageQueue, setMessageQueue] = useState<QueuedMessage[]>([])
   const startedWith = useRef<string>('')
   const booted = useRef(false)
   /** Shows the boot screen until settings, the project list, and the first space have loaded. */
   const [ready, setReady] = useState(false)
   const [bootProgress, setBootProgress] = useState(6)
   const openRequested = useRef(new Set<string>())
-  /** Spaces with a send in flight right now, so two rapid sends cannot fork a session. */
-  const inFlightSends = useRef(new Set<string>())
   const daemon = daemonBySpace[spaceId] ?? STOPPED
   const activeSessionId = activeSessionIdBySpace[spaceId] ?? null
   const running = daemon.status === 'running'
@@ -163,12 +161,18 @@ export default function App() {
   // gets its own opencode daemon (see electron/spacePool.ts), so focusing a different
   // space never interrupts whatever another open space's agent is doing.
 
+  const editorSwitchGuard = useRef<(() => Promise<boolean>) | null>(null)
+  const switching = useRef(false)
   const startSpace = useCallback(async (id: string, force = false) => {
+    if (switching.current) return false
+    switching.current = true
+    try {
+    if (editorSwitchGuard.current && !(await editorSwitchGuard.current())) return false
     setSpaceId(id)
     setScreen('workspace')
     // The Workspace tab spans every open project, so switching focus shouldn't
     // knock you out of it — only the per-project tabs (code/thread/edits) reset.
-    setWorkspaceView((view) => (view === 'workspace' ? 'workspace' : 'chat'))
+    setWorkspaceView('workspace')
     setRunCommand(null)
     setRunNonce(0)
     setTerminalOpen(false)
@@ -183,6 +187,8 @@ export default function App() {
     const chosen = pickModel(result.providers, settings.selectedModel)
     setModel(chosen)
     if (chosen) void window.electronAPI.setSettings({ selectedModel: chosen })
+    return true
+    } finally { switching.current = false }
   }, [])
 
   useEffect(() => {
@@ -252,7 +258,7 @@ export default function App() {
   // agent panes sit at "Connecting" forever.
   useEffect(() => {
     for (const [id, ids] of Object.entries(openIdsBySpace)) {
-      if (id === GENERAL_SPACE || ids.length === 0 || openRequested.current.has(id)) continue
+      if (ids.length === 0 || openRequested.current.has(id)) continue
       const state = daemonBySpace[id]
       if (state?.status === 'running' || state?.status === 'starting') continue
       openRequested.current.add(id)
@@ -309,31 +315,19 @@ export default function App() {
     })
   }, [spaceId, sessionsBySpace])
 
-  /** Retries a space whose daemon failed to start. */
-  const retrySpace = (id: string) => {
-    setDaemonBySpace((prev) => ({ ...prev, [id]: STOPPED }))
-    window.electronAPI.openSpace(id)
-      .then((result) => setDaemonBySpace((prev) => ({ ...prev, [id]: result.state })))
-      .catch((error) => setAppError(error instanceof Error ? error.message : String(error)))
-  }
-
   const switchSpace = (id: string) => {
     if (id === spaceId) {
+      setWorkspaceView('workspace')
       setScreen('workspace')
       return
     }
     void startSpace(id).catch((error) => setAppError(error instanceof Error ? error.message : String(error)))
   }
 
-  /**
-   * An agent pane's folder chip: opens the same project-switcher picker the main composer's
-   * chip uses, pre-selected on that pane's own project. It must never force `workspaceView`
-   * to 'chat' — someone living in the Agents grid should stay there after picking a folder,
-   * not get bounced into the single-chat view.
-   */
-  const goToProject = (id: string) => openPicker('switch', id)
+  /** The pane's folder chip changes that pane, not the focused project in the sidebar. */
+  const goToProject = (id: string, sessionId: string) => setPicker({ purpose: 'pane', inId: id, sessionId })
 
-  const navigationLocked = busy || messageQueue.some((item) => item.spaceId === spaceId) || daemon.status === 'starting'
+  const navigationLocked = busy || daemon.status === 'starting'
   /**
    * Adds a folder as a project and returns its space id, or null if the dialog was cancelled.
    * Returning the id is what lets the folder picker adopt a brand-new folder immediately
@@ -354,18 +348,6 @@ export default function App() {
     } catch (error) {
       setAppError(error instanceof Error ? error.message : String(error))
       return null
-    }
-  }
-
-  const removeProject = async (id: string) => {
-    if (busyBySpace[id] || (id === spaceId && busy)) { setAppError('Stop this project agent before removing the project.'); return }
-    try {
-      const list = await window.electronAPI.removeProject(id)
-      setProjects(list)
-      void window.electronAPI.closeSpace(id).catch(() => {})
-      if (spaceId === id) await startSpace(GENERAL_SPACE)
-    } catch (error) {
-      setAppError(error instanceof Error ? error.message : String(error))
     }
   }
 
@@ -390,22 +372,6 @@ export default function App() {
     }
   }
 
-  const selectModel = (ref: ModelRef) => {
-    setModel(ref)
-    void window.electronAPI.setSettings({ selectedModel: ref })
-  }
-
-  const selectVariant = (variant: string | null) => {
-    if (!model) return
-    setSelectedVariants((current) => {
-      const next = { ...current }
-      if (variant) next[modelKey(model)] = variant
-      else delete next[modelKey(model)]
-      void window.electronAPI.setSettings({ selectedVariants: next })
-      return next
-    })
-  }
-
   // Surface the agent's skills for the focused space.
   useEffect(() => {
     if (!running) {
@@ -422,44 +388,19 @@ export default function App() {
     }
   }, [running, spaceId])
 
-  /**
-   * Starts a fresh single chat in the focused space.
-   *
-   * Clearing the active session id is the whole mechanism: the next send finds no id,
-   * creates one, and `deliverMessage` adopts it. Nothing is created up front, so an abandoned
-   * "New chat" never leaves an empty session behind in the daemon's list.
-   */
-  const newChat = () => {
-    if (navigationLocked) return
-    setScreen('workspace')
-    setWorkspaceView('chat')
-    setActiveSessionIdBySpace((prev) => ({ ...prev, [spaceId]: null }))
-  }
-
-  const selectSession = (sessionId: string) => {
-    if (navigationLocked) return
-    setActiveSessionIdBySpace((prev) => ({ ...prev, [spaceId]: sessionId }))
-  }
-
   const openPicker = (purpose: 'agent' | 'switch', inId = spaceId) => setPicker({ purpose, inId })
 
   /** Adds a folder, then does whatever the picker was opened for, in the new folder. */
   const addFolderFromPicker = async () => {
-    const purpose = picker?.purpose
+    const pending = picker
     // Keep the dialog open while the OS folder chooser is up so cancelling that returns you
     // to the list rather than dismissing the picker entirely.
     const id = await addProject(false)
-    if (!id || !purpose) return
+    if (!id || !pending) return
     setPicker(null)
-    if (purpose === 'agent') await startAgentInSpace(id)
+    if (pending.purpose === 'agent') await startAgentInSpace(id)
+    else if (pending.purpose === 'pane' && pending.sessionId) await changePaneProject(pending.inId, pending.sessionId, id)
     else switchSpace(id)
-  }
-
-  /** Picked "General" in the picker while trying to start an agent: no folder, no grid. */
-  const startAgentInGeneral = () => {
-    setPicker(null)
-    if (navigationLocked) return
-    void startSpace(GENERAL_SPACE).then(newChat).catch((error) => setAppError(error instanceof Error ? error.message : String(error)))
   }
 
   /**
@@ -470,102 +411,17 @@ export default function App() {
    * session-creation failure whenever the space was cold.
    */
   const startAgentInSpace = async (id: string) => {
-    if (id === GENERAL_SPACE) { startAgentInGeneral(); return }
     try {
-      if (id !== spaceId) await startSpace(id)
+      if (id !== spaceId && !(await startSpace(id))) return
       else {
         const result = await window.electronAPI.openSpace(id)
         setDaemonBySpace((prev) => ({ ...prev, [id]: result.state }))
         setScreen('workspace')
       }
-      setWorkspaceView('agents')
+      setWorkspaceView('workspace')
       await addAgentToSpace(id)
     } catch (error) {
       setAppError(error instanceof Error ? error.message : String(error))
-    }
-  }
-
-  const deliverMessage = async (
-    targetSpaceId: string,
-    text: string,
-    targetSessionID: string | null,
-    targetModel: ModelRef,
-    targetVariant: string | null,
-  ) => {
-    let id = targetSessionID
-    if (!id) {
-      const session = await api.createSession(targetSpaceId, text.length > 48 ? text.slice(0, 47) + '…' : text)
-      id = session.id
-      if (targetSpaceId === spaceId) stream.adoptNew(id)
-      setActiveSessionIdBySpace((prev) => ({ ...prev, [targetSpaceId]: id }))
-      setSessionsBySpace((prev) => ({ ...prev, [targetSpaceId]: topLevelByRecent([session, ...(prev[targetSpaceId] ?? []).filter((s) => s.id !== session.id)]) }))
-    }
-    await api.prompt(targetSpaceId, id, text, targetModel, targetVariant)
-  }
-
-  const send = async (text: string, priority = false) => {
-    if (!model) return
-    if (busy || busyBySpace[spaceId] || messageQueue.some((item) => item.spaceId === spaceId)) {
-      const item: QueuedMessage = {
-        id: crypto.randomUUID(),
-        spaceId,
-        text,
-        sessionID: activeSessionId,
-        model,
-        variant: selectedVariant,
-        priority,
-      }
-      setMessageQueue((current) => (priority ? [item, ...current] : [...current, item]))
-      return
-    }
-    // Two sends in quick succession both saw "not busy" before either had created its
-    // session, so both forked off a new session and the first reply landed in a window
-    // nobody was looking at. A synchronous in-flight guard closes that window.
-    if (inFlightSends.current.has(spaceId)) {
-      setMessageQueue((current) => [
-        ...current,
-        { id: crypto.randomUUID(), spaceId, text, sessionID: activeSessionId, model, variant: selectedVariant, priority },
-      ])
-      return
-    }
-    inFlightSends.current.add(spaceId)
-    try {
-      await deliverMessage(spaceId, text, activeSessionId, model, selectedVariant)
-    } finally {
-      inFlightSends.current.delete(spaceId)
-      void reconcileBusy(spaceId)
-    }
-  }
-
-  useEffect(() => {
-    const next = messageQueue.find(
-      (item) =>
-        !inFlightSends.current.has(item.spaceId) &&
-        daemonBySpace[item.spaceId]?.status === 'running' &&
-        !busyBySpace[item.spaceId] &&
-        (item.spaceId !== spaceId || !busy),
-    )
-    if (!next) return
-    // Deliberately no optimistic busy flag here. Writing a synthetic key meant no
-    // `session.idle` would ever clear it, so a single drained queue could wedge the space
-    // forever. The daemon reports busy over `/session/status`, which is what we reconcile
-    // against as soon as the send lands.
-    inFlightSends.current.add(next.spaceId)
-    setMessageQueue((current) => current.filter((item) => item.id !== next.id))
-    void deliverMessage(next.spaceId, next.text, next.sessionID, next.model, next.variant)
-      .then(() => {
-        inFlightSends.current.delete(next.spaceId)
-        void reconcileBusy(next.spaceId)
-      })
-      .catch((error) => {
-        inFlightSends.current.delete(next.spaceId)
-        setAppError(`Queued message failed: ${String(error)}`)
-      })
-  }, [busy, busyBySpace, daemonBySpace, messageQueue, spaceId, reconcileBusy])
-
-  const abort = () => {
-    if (activeSessionId) {
-      void api.abort(spaceId, activeSessionId).catch((error) => setAppError(error instanceof Error ? error.message : String(error)))
     }
   }
 
@@ -574,7 +430,6 @@ export default function App() {
   const editRequests = useMemo(() => stream.permissions.filter((p) => p.permission === 'edit'), [stream.permissions])
   const openEditReview = () => { setScreen('workspace'); setWorkspaceView('edits') }
 
-  const hasModels = providers.some((p) => p.online && p.models.length > 0)
   const hasProject = spaceId !== GENERAL_SPACE
   const project = projects.find((item) => item.id === spaceId)
   const workspaceTitle = project?.name ?? ''
@@ -596,7 +451,7 @@ export default function App() {
       const command = await window.electronAPI.getRunCommand()
       if (!command) {
         setAppError('No run target found. Add a dev or start script to package.json, or open the terminal.')
-        setWorkspaceView('chat')
+        setWorkspaceView('workspace')
         return
       }
       setAppError(null)
@@ -606,7 +461,7 @@ export default function App() {
       if (command.endsWith('run dev')) setContextOpen(true)
     } catch (error) {
       setAppError(error instanceof Error ? error.message : String(error))
-      setWorkspaceView('chat')
+      setWorkspaceView('workspace')
     }
   }
 
@@ -617,7 +472,43 @@ export default function App() {
     setDaemonBySpace((prev) => ({ ...prev, [id]: result.state }))
     const session = await api.createSession(id, `Agent ${(sessionsBySpace[id]?.length ?? 0) + 1}`)
     onSessionCreated(id, session)
-    setSpaceOpenIds(id, [...(openIdsBySpace[id] ?? []), session.id])
+    setOpenIdsBySpace((prev) => {
+      const next = { ...prev, [id]: [...(prev[id] ?? []), session.id] }
+      try { localStorage.setItem('olympus.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
+      return next
+    })
+  }
+  /** A session belongs to its original daemon directory. Open a replacement in the
+   * selected project, then close the old window while keeping its chat saved there. */
+  const changePaneProject = async (fromId: string, sessionId: string, toId: string) => {
+    if (fromId === toId) return
+    try {
+      setAppError(null)
+      const status = await api.sessionStatus(fromId)
+      if (status[sessionId] && status[sessionId].type !== 'idle') {
+        throw new Error('This agent is still working. Stop it before changing folders.')
+      }
+      const result = await window.electronAPI.openSpace(toId)
+      if (result.state.status !== 'running') throw new Error(result.state.error || 'The selected project could not start.')
+      setDaemonBySpace((prev) => ({ ...prev, [toId]: result.state }))
+      const original = sessionsBySpace[fromId]?.find((item) => item.id === sessionId)
+      const replacement = await api.createSession(toId, original?.title || 'New agent')
+      onSessionCreated(toId, replacement)
+      setWindowOrder((prev) => prev.map((key) => key === JSON.stringify([fromId, sessionId]) ? JSON.stringify([toId, replacement.id]) : key))
+      setOpenIdsBySpace((prev) => {
+        const next = {
+          ...prev,
+          [fromId]: (prev[fromId] ?? []).filter((item) => item !== sessionId),
+          [toId]: [...(prev[toId] ?? []), replacement.id],
+        }
+        try { localStorage.setItem('olympus.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
+        return next
+      })
+      setWorkspaceView('workspace')
+      setScreen('workspace')
+    } catch (error) {
+      setAppError(`Could not change agent folder: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
   const onSessionDeleted = (id: string, sessionId: string) => {
     setSessionsBySpace((prev) => ({ ...prev, [id]: (prev[id] ?? []).filter((item) => item.id !== sessionId) }))
@@ -629,17 +520,6 @@ export default function App() {
     () => Object.fromEntries(Object.entries(daemonBySpace).map(([id, state]) => [id, state.status === 'running'])),
     [daemonBySpace],
   )
-  // The focused project's pane must exist the instant you click it, before its daemon has
-  // even started (that's async) — otherwise the screen goes blank until it comes up, which
-  // reads as "switching did nothing." Any other project with a daemon entry stays mounted too
-  // (kept alive in the background, e.g. for the Workspace hub).
-  const openProjectIds = useMemo(() => {
-    const ids = new Set(Object.keys(daemonBySpace))
-    if (hasProject) ids.add(spaceId)
-    ids.delete(GENERAL_SPACE)
-    return [...ids]
-  }, [daemonBySpace, hasProject, spaceId])
-
   // Which agents are open in each project, by title, so the Projects page can name
   // them instead of just saying "Open". A project with a running daemon but no
   // open agent window is not open in any sense the reader can act on.
@@ -657,18 +537,36 @@ export default function App() {
   }, [openIdsBySpace, sessionsBySpace])
 
   const agentGridEntries: AgentGridEntry[] = Object.entries(openIdsBySpace).flatMap(([id, ids]) => {
-    if (id === GENERAL_SPACE) return []
     const paneProject = projects.find((item) => item.id === id)
     const list = sessionsBySpace[id]
     return ids.map((sessionId, index) => ({
       spaceId: id,
       sessionId,
       title: list?.find((session) => session.id === sessionId)?.title || `Agent ${index + 1}`,
-      projectName: paneProject?.name ?? id,
+      projectName: paneProject?.name ?? (id === GENERAL_SPACE ? 'General' : id),
       projectPath: paneProject?.path,
       ready: daemonBySpace[id]?.status === 'running',
     }))
   })
+
+  agentGridEntries.sort((a, b) => {
+    const rank = (entry: AgentGridEntry) => {
+      const index = windowOrder.indexOf(JSON.stringify([entry.spaceId, entry.sessionId]))
+      return index < 0 ? Number.MAX_SAFE_INTEGER : index
+    }
+    return rank(a) - rank(b)
+  })
+
+  const savedConversations = Object.entries(sessionsBySpace).flatMap(([id, sessions]) =>
+    sessions.map((session) => ({ spaceId: id, sessionId: session.id, title: session.title,
+      projectName: projects.find((project) => project.id === id)?.name ?? 'General',
+      open: (openIdsBySpace[id] ?? []).includes(session.id) })),
+  )
+  const openConversation = (id: string, sessionId: string) => {
+    setSpaceOpenIds(id, [...new Set([...(openIdsBySpace[id] ?? []), sessionId])])
+    setScreen('workspace')
+    setWorkspaceView('workspace')
+  }
 
   const toggleContext = () => setContextOpen((open) => { localStorage.setItem('olympus.contextOpen', String(!open)); return !open })
 
@@ -700,7 +598,7 @@ export default function App() {
   return (
     <>
     <AnimatePresence>{!ready && <OlympusBoot progress={bootProgress} />}</AnimatePresence>
-    <div className="workspace-shell flex h-screen w-screen gap-3 overflow-hidden bg-white p-2 text-slate-900">
+    <div className="workspace-shell flex h-screen w-screen gap-3 overflow-hidden bg-aether-200 p-2 text-slate-900">
       <Sidebar daemon={daemon} projects={projects.filter((item) => !item.hidden)} projectsActive={screen === 'projects'} spaceId={spaceId}
         busy={busy || !!busyBySpace[spaceId]} busyBySpace={busyBySpace} runningBySpace={runningBySpace} navigationLocked={navigationLocked}
         workspaceActive={screen === 'workspace' && workspaceView === 'workspace'} workspaceAgentCount={agentGridEntries.length}
@@ -711,7 +609,7 @@ export default function App() {
         {screen === 'workspace' ? <WorkspaceBar projectId={hasProject ? spaceId : null} editCount={editRequests.length} view={workspaceView} title={workspaceTitle || 'General'}
           permissionMode={permissionMode} permissionDisabled={navigationLocked || busy || !!busyBySpace[spaceId]} onPermissionModeChange={(mode) => void changePermissionMode(mode)}
           onChange={setWorkspaceView}
-        /> : <header className="flex h-11 shrink-0 items-center justify-between px-2 text-xs text-slate-500"><span>Project manager</span><button onClick={() => setScreen('workspace')} className="rounded-md border border-slate-200 px-3 py-1.5 hover:bg-slate-100">Back to {workspaceTitle || 'General'}</button></header>}
+        /> : <header className="flex h-11 shrink-0 items-center px-2 text-xs text-slate-500"><span>Project manager</span></header>}
         {envIssue && !envIssue.available && (
           <div role="alert" className="mb-2 rounded-md border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-800">
             <strong className="font-semibold">opencode was not found.</strong> Olympus runs the opencode agent, so it needs that installed first:{' '}
@@ -726,83 +624,12 @@ export default function App() {
           </div>
         )}
         {appError && <div role="alert" className="mb-2 flex items-start gap-3 rounded-md border border-rose-400/20 bg-rose-400/5 px-3 py-2 text-xs text-rose-600"><span className="flex-1">{appError}</span><button aria-label="Dismiss error" className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded hover:bg-slate-100" onClick={() => setAppError(null)}><svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg></button></div>}
-        {screen === 'projects' && <div className="workspace-center min-h-0 flex-1"><ProjectsPage projects={projects} activeId={hasProject && project?.exists ? spaceId : null} openAgentsByProject={openAgentsByProject} onProjectsChange={setProjects} onOpen={switchSpace} onAdd={() => void addProject(false)} onRemove={(id) => void removeProject(id)} /></div>}
+        {screen === 'projects' && <div className="workspace-center min-h-0 flex-1"><ProjectsPage projects={projects} activeId={hasProject && project?.exists ? spaceId : null} openAgentsByProject={openAgentsByProject} onProjectsChange={setProjects} onOpen={switchSpace} onAdd={() => void addProject(false)} /></div>}
         <div className="workspace-body" style={{ display: screen === 'workspace' ? 'flex' : 'none' }}>
           <div className="workspace-center flex min-w-0 flex-1 flex-col bg-slate-50">
             <div className="relative min-h-0 flex-1">
-              <div className="absolute inset-0 flex" style={{ display: workspaceView === 'chat' || workspaceView === 'thread' ? 'flex' : 'none' }}>
-            {/*
-              One conversation, scoped to whichever space is focused — General or a project.
-              This is the default landing view for every entry point (sidebar project list,
-              the folder chip, a project opened from the manager) so choosing a folder never
-              scatters a grid of agent windows across the screen.
-            */}
-            <ChatCanvas
-              spaceId={spaceId}
-              key={spaceId}
-              mode={workspaceView === 'thread' ? 'thread' : 'agent'}
-              projectName={project?.name ?? 'General'}
-              projectPath={project?.path}
-              sessions={sessionsBySpace[spaceId] ?? []}
-              activeSessionId={activeSessionId}
-              onSelectSession={selectSession}
-              onNewSession={newChat}
-              navigationLocked={navigationLocked}
-              messages={stream.messages}
-              busy={busy}
-              activity={describeActivity(stream)}
-              error={stream.error}
-              onDismissError={() => {
-                setAppError(null)
-                stream.clearError()
-              }}
-              permissions={stream.permissions}
-              onReviewEdits={openEditReview}
-              model={model}
-              variant={selectedVariant}
-              providers={providers}
-              onSelectModel={selectModel}
-              onSelectVariant={selectVariant}
-              onRescan={rescan}
-              rescanning={rescanning}
-              onAddEndpoint={async (name, baseURL) => {
-                await window.electronAPI.addEndpoint({ name, baseURL })
-                await rescan()
-              }}
-              onRemoveEndpoint={async (id) => {
-                await window.electronAPI.removeEndpoint(id)
-                await rescan()
-              }}
-              ready={running}
-              hasProject={hasProject}
-              hasModels={hasModels}
-               onChooseProject={() => openPicker('switch')}
-              onSend={send}
-              onAbort={abort}
-              queuedMessages={messageQueue.filter((item) => item.spaceId === spaceId).map(({ id, text, priority }) => ({ id, text, priority }))}
-              onRemoveQueued={(id) => setMessageQueue((current) => current.filter((item) => item.id !== id))}
-            />
-              </div>
-              <div className="absolute inset-0 flex" style={{ display: workspaceView === 'agents' ? 'flex' : 'none' }}>
-                {openProjectIds.map((id) => {
-                  const paneProject = projects.find((item) => item.id === id)
-                  return <div key={id} className="h-full min-w-0 flex-1" style={{ display: id === spaceId ? 'block' : 'none' }}>
-                    <AgentWorkspace spaceId={id} projectName={paneProject?.name ?? id} projectPath={paneProject?.path}
-                      ready={daemonBySpace[id]?.status === 'running'}
-                      daemonError={daemonBySpace[id]?.status === 'error' ? (daemonBySpace[id]?.error || 'The agent process failed to start.') : undefined}
-                      onRetry={() => retrySpace(id)}
-                      sessions={sessionsBySpace[id]} mode={workspaceView === 'thread' ? 'thread' : 'agent'}
-                      defaultModel={model} defaultVariant={selectedVariant}
-                      openIds={openIdsBySpace[id] ?? []} onOpenIdsChange={(ids) => setSpaceOpenIds(id, ids)}
-                      providers={providers} rescanning={rescanning} onRescan={rescan}
-                      onAddEndpoint={async (name, baseURL) => { await window.electronAPI.addEndpoint({ name, baseURL }); await rescan() }}
-                      onRemoveEndpoint={async (endpointId) => { await window.electronAPI.removeEndpoint(endpointId); await rescan() }}
-                      onSessionCreated={onSessionCreated} onSessionDeleted={onSessionDeleted} onReviewEdits={openEditReview} onOpenProjects={() => setScreen('projects')} goToProject={goToProject} />
-                  </div>
-                })}
-              </div>
               <div className="absolute inset-0" style={{ display: workspaceView === 'workspace' ? 'block' : 'none' }}>
-                <AllAgentsGrid entries={agentGridEntries} hasProjects={projects.some((item) => !item.hidden)} mode="agent"
+                <AllAgentsGrid conversations={savedConversations} onOpenConversation={openConversation} entries={agentGridEntries} hasProjects={projects.some((item) => !item.hidden)} mode="agent"
                   defaultModel={model} defaultVariant={selectedVariant} providers={providers} rescanning={rescanning} onRescan={rescan}
                   onAddEndpoint={async (name, baseURL) => { await window.electronAPI.addEndpoint({ name, baseURL }); await rescan() }}
                   onRemoveEndpoint={async (endpointId) => { await window.electronAPI.removeEndpoint(endpointId); await rescan() }}
@@ -812,7 +639,7 @@ export default function App() {
               </div>
               {workspaceView === 'edits' && <div className="absolute inset-0"><DiffViewer spaceId={spaceId} requests={editRequests} /></div>}
               <div className="absolute inset-0" style={{ display: workspaceView === 'code' ? 'block' : 'none' }}>
-                <EditorWorkspace projectKey={`${spaceId}:${daemon.cwd ?? ''}`} available={hasProject && running} onRun={() => void runProject()} runDisabled={!running} />
+                <EditorWorkspace spaceId={spaceId} visible={workspaceView === 'code'} switchGuardRef={editorSwitchGuard} projectKey={`${spaceId}:${daemon.cwd ?? ''}`} available={hasProject && running} onRun={() => void runProject()} runDisabled={!running} />
               </div>
             </div>
             <div className="h-[34%] min-h-[160px] shrink-0 border-t border-slate-200" style={{ display: terminalOpen ? 'block' : 'none' }}>
@@ -828,19 +655,22 @@ export default function App() {
       </div>
       {picker && (
         <ProjectPicker
-          spaces={pickerRows}
+          spaces={picker.purpose === 'pane' ? pickerRows.filter((row) => row.id !== GENERAL_SPACE) : pickerRows}
           currentId={picker.inId}
-          title={picker.purpose === 'agent' ? 'New agent' : 'Change project'}
+          title={picker.purpose === 'agent' ? 'New agent' : picker.purpose === 'pane' ? 'Change agent folder' : 'Change project'}
           hint={
             picker.purpose === 'agent'
               ? 'Pick the folder this agent works in. Each project runs its own agent, so this also decides which files it can see.'
+              : picker.purpose === 'pane'
+                ? 'Open this agent window in another folder. A new conversation starts there; the previous conversation stays saved in its original project.'
               : hasProject
-                ? 'Move this conversation to another project folder. That project’s agent is started if it isn’t already running.'
-                : 'Start this chat in a project folder. The agent for the folder you pick is started if it isn’t already running.'
+                ? 'Open another project folder. This conversation stays saved in its current folder; the selected project opens its own chats.'
+                : 'Open a project folder and its chats. The project’s agent starts if it is not already running.'
           }
           onPick={(id) => {
             setPicker(null)
             if (picker.purpose === 'agent') void startAgentInSpace(id)
+            else if (picker.purpose === 'pane' && picker.sessionId) void changePaneProject(picker.inId, picker.sessionId, id)
             else switchSpace(id)
           }}
           onAddFolder={() => void addFolderFromPicker()}

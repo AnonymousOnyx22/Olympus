@@ -1,3 +1,4 @@
+import { useDialogFocus } from './useDialogFocus'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ProjectInfo } from '../types/opencode'
 
@@ -14,11 +15,9 @@ interface ProjectsPageProps {
   onProjectsChange: (projects: ProjectInfo[]) => void
   onOpen: (id: string) => void
   onAdd: () => void
-  onRemove: (id: string) => void
 }
 
 type SortKey = 'recent' | 'modified' | 'name'
-type Filter = 'all' | 'pinned' | 'new' | 'hidden'
 type Layout = 'grid' | 'list'
 
 const PREFS_KEY = 'olympus.projects.view'
@@ -67,10 +66,9 @@ function Svg({ children, className = 'h-3.5 w-3.5', width = 1.9 }: { children: R
   return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={width} aria-hidden="true">{children}</svg>
 }
 
-export default function ProjectsPage({ projects, activeId, openAgentsByProject, onProjectsChange, onOpen, onAdd, onRemove }: ProjectsPageProps) {
+export default function ProjectsPage({ projects, activeId, openAgentsByProject, onProjectsChange, onOpen, onAdd }: ProjectsPageProps) {
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<Filter>('all')
-  const [location, setLocation] = useState<string>('all') // 'all' | 'manual' | a root path
+  const [showHidden, setShowHidden] = useState(false)
   const [{ sort, layout }, setPrefs] = useState(loadPrefs)
   const [roots, setRoots] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -116,7 +114,6 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
       const result = await window.electronAPI.removeProjectRoot(root)
       setRoots(result.roots)
       onProjectsChange(result.projects)
-      if (location === root) setLocation('all')
     })
 
   const togglePin = (project: ProjectInfo) =>
@@ -127,17 +124,11 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
   const unhide = (project: ProjectInfo) => run(async () => onProjectsChange(await window.electronAPI.unhideProject(project.id)))
 
   const hiddenCount = projects.filter((p) => p.hidden).length
-  const newCount = projects.filter((p) => !p.hidden && p.firstSeen).length
-  const pinnedCount = projects.filter((p) => !p.hidden && p.pinned).length
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = projects.filter((p) => {
-      if (filter === 'hidden' ? !p.hidden : p.hidden) return false
-      if (filter === 'pinned' && !p.pinned) return false
-      if (filter === 'new' && !p.firstSeen) return false
-      if (location === 'manual' && p.source !== 'manual') return false
-      if (location !== 'all' && location !== 'manual' && p.root !== location) return false
+      if (p.hidden && !showHidden) return false
       if (q && !`${p.name} ${p.path} ${p.stack.join(' ')} ${p.description ?? ''}`.toLowerCase().includes(q)) return false
       return true
     })
@@ -149,7 +140,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
         (b.lastOpened ?? 0) - (a.lastOpened ?? 0) || (b.modifiedAt ?? 0) - (a.modifiedAt ?? 0) || byName(a, b),
     }[sort]
     return list.sort((a, b) => Number(b.pinned) - Number(a.pinned) || compare(a, b))
-  }, [projects, query, filter, location, sort])
+  }, [projects, query, sort, showHidden])
 
   const countIn = (root: string) => projects.filter((p) => !p.hidden && p.root === root).length
 
@@ -163,6 +154,14 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
             <p className="mt-1 text-[12px] text-slate-500">
               {projects.length - hiddenCount} project{projects.length - hiddenCount === 1 ? '' : 's'}
               {roots.length > 0 && ` · watching ${roots.length} folder${roots.length === 1 ? '' : 's'}`}
+              {hiddenCount > 0 && (
+                <>
+                  {' · '}
+                  <button type="button" onClick={() => setShowHidden((v) => !v)} className="text-aether-600 hover:underline">
+                    {showHidden ? 'hide' : `show ${hiddenCount} hidden`}
+                  </button>
+                </>
+              )}
             </p>
           </div>
           <button type="button" onClick={onAdd} className="flex h-8 items-center gap-1.5 rounded-xl bg-white px-3 text-[11.5px] font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50 active:scale-[0.98]">
@@ -214,7 +213,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
 
         {/* toolbar */}
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl bg-white px-3 py-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-aether-400 sm:max-w-sm">
+          <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 sm:max-w-sm">
             <span className="text-slate-400"><Svg>{Icon.search}</Svg></span>
             <input
               type="search"
@@ -226,53 +225,6 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
               autoFocus
             />
           </div>
-
-          <div className="flex h-8 items-center rounded-xl bg-slate-50 p-0.5 ring-1 ring-slate-200" role="tablist" aria-label="Filter projects">
-            {([
-              ['all', 'All', null],
-              ['pinned', 'Pinned', pinnedCount],
-              ['new', 'New', newCount],
-              ['hidden', 'Hidden', hiddenCount],
-            ] as const).map(([key, label, count]) =>
-              key === 'hidden' && !hiddenCount && filter !== 'hidden' ? null : (
-                <button
-                  key={key}
-                  type="button"
-                  role="tab"
-                  aria-selected={filter === key}
-                  onClick={() => setFilter(key)}
-                  className={`flex h-full items-center gap-1 rounded-lg px-2.5 text-[11.5px] transition ${filter === key ? 'bg-white text-slate-900 shadow-aegean' : 'text-slate-500 hover:text-slate-900'}`}
-                >
-                  {label}
-                  {count ? <span className="font-mono text-[10px] text-slate-500">{count}</span> : null}
-                </button>
-              ),
-            )}
-          </div>
-
-          {(roots.length > 0 || location !== 'all') && (
-            <select
-              value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              aria-label="Location"
-              className="h-8 max-w-[180px] rounded-xl bg-white px-2 text-[11.5px] text-slate-700 outline-none ring-1 ring-slate-200"
-            >
-              <option value="all">All locations</option>
-              <option value="manual">Added individually</option>
-              {roots.map((root) => <option key={root} value={root}>{baseName(root)}</option>)}
-            </select>
-          )}
-
-          <select
-            value={sort}
-            onChange={(event) => updatePrefs({ sort: event.target.value as SortKey })}
-            aria-label="Sort by"
-            className="h-8 rounded-xl bg-white px-2 text-[11.5px] text-slate-700 outline-none ring-1 ring-slate-200"
-          >
-            <option value="recent">Recently opened</option>
-            <option value="modified">Last modified</option>
-            <option value="name">Name</option>
-          </select>
 
           <div className="ml-auto flex h-8 items-center rounded-xl bg-slate-50 p-0.5 ring-1 ring-slate-200">
             {(['grid', 'list'] as const).map((key) => (
@@ -303,7 +255,6 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
         onOpen={() => onOpen(project.id)}
                 onPin={() => void togglePin(project)}
                 onReveal={() => void reveal(project)}
-                onRemove={() => onRemove(project.id)}
                 onUnhide={() => void unhide(project)}
               />
             ))}
@@ -314,7 +265,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
               <Svg className="h-5 w-5" width={1.6}>{Icon.folder}</Svg>
             </div>
             <p className="mt-3 text-[12.5px] text-slate-500">
-              {projects.length === 0 ? 'No projects yet.' : filter === 'pinned' ? 'Nothing pinned yet.' : filter === 'new' ? 'No new folders detected.' : 'No matching projects.'}
+              {projects.length === 0 ? 'No projects yet.' : 'No matching projects.'}
             </p>
             {projects.length === 0 && (
               <p className="mt-1 text-[11.5px] text-slate-400">
@@ -330,7 +281,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
       {creating && (
         <NewProjectDialog
           roots={roots}
-          defaultRoot={location !== 'all' && location !== 'manual' ? location : roots[0]}
+          defaultRoot={roots[0]}
           onCancel={() => setCreating(false)}
           onCreate={async (root, name, open) => {
             const result = await window.electronAPI.createProject(root, name)
@@ -353,15 +304,12 @@ interface ProjectItemProps {
   onOpen: () => void
   onPin: () => void
   onReveal: () => void
-  onRemove: () => void
   onUnhide: () => void
 }
 
 const MAX_AGENT_CHIPS = 3
 
-function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onReveal, onRemove, onUnhide }: ProjectItemProps) {
-  const removeLabel = project.source === 'watched' ? 'Hide from projects (folder is kept)' : 'Remove from projects (folder is kept)'
-
+function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onReveal, onUnhide }: ProjectItemProps) {
   const shown = openAgents.slice(0, MAX_AGENT_CHIPS)
   const overflow = openAgents.length - shown.length
 
@@ -422,16 +370,15 @@ function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onRev
 
   const actions = (
     <div className="flex items-center gap-0.5">
-      {project.hidden ? (
-        <IconButton label="Show in projects again" onClick={onUnhide}>{Icon.eye}</IconButton>
-      ) : (
-        <>
-          <IconButton label={project.pinned ? 'Unpin' : 'Pin to top'} onClick={onPin} on={project.pinned}>{Icon.pin}</IconButton>
-          <IconButton label="Show in Explorer" onClick={onReveal} disabled={!project.exists}>{Icon.reveal}</IconButton>
-          <IconButton label={removeLabel} onClick={onRemove} danger>{Icon.close}</IconButton>
-        </>
-      )}
-    </div>
+          {project.hidden ? (
+            <IconButton label="Show in projects again" onClick={onUnhide}>{Icon.eye}</IconButton>
+          ) : (
+            <>
+              <IconButton label={project.pinned ? 'Unpin' : 'Pin to top'} onClick={onPin} on={project.pinned}>{Icon.pin}</IconButton>
+              <IconButton label="Show in Explorer" onClick={onReveal} disabled={!project.exists}>{Icon.reveal}</IconButton>
+            </>
+          )}
+        </div>
   )
 
   const openable = project.exists && !project.hidden
@@ -514,7 +461,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
   const [error, setError] = useState<string | null>(null)
   const input = useRef<HTMLInputElement>(null)
 
-  useEffect(() => input.current?.focus(), [])
+  const dialogRef = useDialogFocus<HTMLFormElement>()
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onCancel()
     window.addEventListener('keydown', onKey)
@@ -538,7 +485,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4" onMouseDown={(event) => event.target === event.currentTarget && onCancel()}>
-      <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-project-title" className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-aegean-lg">
+      <form ref={dialogRef} tabIndex={-1} onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-project-title" className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-aegean-lg">
         <h2 id="new-project-title" className="text-[14px] font-semibold text-slate-900">New project</h2>
         <p className="mt-1 text-[11.5px] text-slate-500">Creates an empty folder in a watched folder.</p>
 

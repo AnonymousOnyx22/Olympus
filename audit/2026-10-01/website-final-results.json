@@ -1,0 +1,51 @@
+{
+  "results": [
+    {
+      "file": "features.html",
+      "width": 1440,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "features.html",
+      "width": 390,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "features.html",
+      "width": 768,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    },
+    {
+      "file": "features.html",
+      "width": 320,
+      "overflow": false,
+      "broken": [],
+      "missing": [],
+      "csp": [],
+      "errors": [],
+      "axe": []
+    }
+  ],
+  "functions": {
+    "menu": "true",
+    "agent": "assets/showcase/agent-working.webp",
+    "plays": "true",
+    "pauses": "false",
+    "local": "This is a local preview. Signups will open on the published website."
+  }
+}

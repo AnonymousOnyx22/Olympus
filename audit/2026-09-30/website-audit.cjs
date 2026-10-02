@@ -73,10 +73,12 @@ const types = { '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg
   functions.tabKeyboard = await page.locator('#tab-thread').getAttribute('aria-selected') === 'true';
   await page.locator('.faq__item summary').first().click();
   functions.faq = await page.locator('.faq__item').first().getAttribute('open') !== null;
-  await page.locator('.discovery-button').click();
-  functions.discovery = await page.locator('.discovery-card').isVisible();
-  await page.keyboard.press('Escape');
-  functions.discoveryEscape = !await page.locator('.discovery-card').isVisible();
+  if (await page.locator('.discovery-button').count()) {
+    await page.locator('.discovery-button').click();
+    functions.discovery = await page.locator('.discovery-card').isVisible();
+    await page.keyboard.press('Escape');
+    functions.discoveryEscape = !await page.locator('.discovery-card').isVisible();
+  } else { functions.discovery = 'Not present in current page'; }
   fs.writeFileSync(path.join(__dirname, process.env.AUDIT_PAGES ? 'website-final-results.json' : 'website-results.json'), JSON.stringify({ results, functions }, null, 2));
   console.log('Interactions', functions);
   await browser.close(); server.close();

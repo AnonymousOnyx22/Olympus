@@ -3,6 +3,9 @@ import Editor from '@monaco-editor/react'
 import { ensureMonaco } from './monacoSetup'
 
 interface EditorWorkspaceProps {
+  spaceId: string
+  visible: boolean
+  switchGuardRef: React.MutableRefObject<(() => Promise<boolean>) | null>
   projectKey: string
   available: boolean
   onRun: () => void
@@ -30,10 +33,12 @@ const FILE_OVERSCAN = 12
 /** How many rows to keep mounted around the viewport. */
 const FILE_VIEWPORT_ROWS = 30
 
-export default function EditorWorkspace({ projectKey, available, onRun, runDisabled }: EditorWorkspaceProps) {
+export default function EditorWorkspace({ spaceId, visible, switchGuardRef, projectKey, available, onRun, runDisabled }: EditorWorkspaceProps) {
   const [explorerOpen, setExplorerOpen] = useState(() => localStorage.getItem('olympus.explorerCollapsed') !== 'true')
   const [files, setFiles] = useState<string[]>([])
   const [selected, setSelected] = useState<string | null>(null)
+  const [bufferSpaceId, setBufferSpaceId] = useState(spaceId)
+  const readSequence = useRef(0)
   const [content, setContent] = useState('')
   const [savedContent, setSavedContent] = useState('')
   const [query, setQuery] = useState('')
@@ -45,32 +50,33 @@ export default function EditorWorkspace({ projectKey, available, onRun, runDisab
 
   // Pull the editor in only once this view is actually on screen.
   useEffect(() => {
+    if (!visible) return
     let cancelled = false
     void ensureMonaco().then(() => {
       if (!cancelled) setMonacoReady(true)
     })
     return () => { cancelled = true }
-  }, [])
+  }, [visible])
 
   // The editor's save path is driven from several places at once (Ctrl+S, opening another
   // file, switching project) and all of them must observe the *latest* buffer. Reading state
   // through refs keeps `save` stable while still writing the newest text, and chaining saves
   // on one promise means a second save waits for the first instead of being dropped.
-  const latest = useRef({ selected, content, savedContent })
-  latest.current = { selected, content, savedContent }
+  const latest = useRef({ spaceId: bufferSpaceId, selected, content, savedContent })
+  latest.current = { spaceId: bufferSpaceId, selected, content, savedContent }
   const saveChain = useRef<Promise<boolean>>(Promise.resolve(true))
 
   const save = useCallback((): Promise<boolean> => {
+    const { spaceId: owner, selected: file, content: text, savedContent: onDisk } = latest.current
     const run = async (): Promise<boolean> => {
-      const { selected: file, content: text, savedContent: onDisk } = latest.current
       if (file === null || text === onDisk) return true
       setSaving(true)
       setError(null)
       try {
-        const ok = await window.electronAPI.writeProjectFile(file, text)
+        const ok = await window.electronAPI.writeProjectFile(owner, file, text)
         if (!ok) throw new Error('The file could not be saved.')
         // Only mark clean if nothing was typed while the write was in flight.
-        if (latest.current.content === text) setSavedContent(text)
+        if (latest.current.spaceId === owner && latest.current.selected === file && latest.current.content === text) setSavedContent(text)
         return true
       } catch (reason) {
         setError(reason instanceof Error ? reason.message : String(reason))
@@ -83,47 +89,55 @@ export default function EditorWorkspace({ projectKey, available, onRun, runDisab
     return saveChain.current
   }, [])
 
-  /** Asks before throwing away unsaved edits. Returns true when it is safe to proceed. */
-  const confirmDiscard = useCallback((): boolean => {
-    if (latest.current.selected === null) return true
-    if (latest.current.content === latest.current.savedContent) return true
-    return window.confirm(`${latest.current.selected} has unsaved changes. Discard them?`)
-  }, [])
+  useEffect(() => {
+    switchGuardRef.current = async () => {
+      if (!latest.current.selected || latest.current.content === latest.current.savedContent) return true
+      const answer = await window.electronAPI.confirmProjectSwitch(latest.current.selected)
+      if (answer === 'save') return save()
+      return answer === 'discard'
+    }
+    return () => { switchGuardRef.current = null }
+  }, [save, switchGuardRef])
 
   const openFile = useCallback(
     async (file: string) => {
       if (file === latest.current.selected) return
-      if (!(await save())) return
+      const sequence = ++readSequence.current
+      if (!(await save()) || sequence !== readSequence.current) return
       setLoading(true)
       setError(null)
       try {
-        const text = await window.electronAPI.readProjectFile(file)
+        const text = await window.electronAPI.readProjectFile(spaceId, file)
+        if (sequence !== readSequence.current) return
+        setBufferSpaceId(spaceId)
         if (text === null) throw new Error('This file cannot be opened as text.')
         setSelected(file)
         setContent(text)
         setSavedContent(text)
       } catch (reason) {
-        setError(reason instanceof Error ? reason.message : String(reason))
+        if (sequence === readSequence.current) setError(reason instanceof Error ? reason.message : String(reason))
       } finally {
-        setLoading(false)
+        if (sequence === readSequence.current) setLoading(false)
       }
     },
-    [save],
+    [save, spaceId],
   )
 
   useEffect(() => {
+    ++readSequence.current
+    setBufferSpaceId(spaceId)
+    setSelected(null)
+    setContent('')
+    setSavedContent('')
     if (!available) return
     let cancelled = false
-    // Switching project used to blank the buffer outright, so any unsaved edit was gone
-    // with no warning. Ask first; cancelling keeps the previous file open.
-    if (!confirmDiscard()) return
     setLoading(true)
     setError(null)
     setFiles([])
     setSelected(null)
     setContent('')
     setSavedContent('')
-    window.electronAPI.listProjectFiles().then(async (list) => {
+    window.electronAPI.listProjectFiles(spaceId).then(async (list) => {
       if (cancelled) return
       setFiles(list)
       const first = list.find((file) => /^readme(\.|$)/i.test(basename(file))) ?? list.find((file) => basename(file) === 'package.json') ?? list[0]
@@ -131,7 +145,7 @@ export default function EditorWorkspace({ projectKey, available, onRun, runDisab
         setLoading(false)
         return
       }
-      const text = await window.electronAPI.readProjectFile(first)
+      const text = await window.electronAPI.readProjectFile(spaceId, first)
       if (cancelled) return
       if (text === null) setError('The first project file could not be opened as text.')
       else {
@@ -146,8 +160,8 @@ export default function EditorWorkspace({ projectKey, available, onRun, runDisab
         setLoading(false)
       }
     })
-    return () => { cancelled = true }
-  }, [available, projectKey, confirmDiscard])
+    return () => { cancelled = true; ++readSequence.current }
+  }, [available, projectKey, spaceId])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {

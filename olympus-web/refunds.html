@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Refunds | Olympus</title>
-<meta name="description" content="A stated refund window from purchase, no questions asked, no form. How to ask, how long it takes, and the two situations where a refund is not the right answer.">
+<meta name="description" content="Olympus is in development. There is no public release or product for sale.">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#eaf2f6">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, follow">
 
 <!-- Every entity, contact, URL and artifact value on this page is injected at
      build time from site.config.json. tools/build-site.mjs refuses to build while
@@ -16,7 +16,7 @@
 <link rel="canonical" href="{{urls.site}}/refunds.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Refunds | Olympus">
-<meta property="og:description" content="A stated refund window from purchase, no questions asked, no form. How to ask, how long it takes, and the two situations where a refund is not the right answer.">
+<meta property="og:description" content="Olympus is in development. There is no public release or product for sale.">
 <meta property="og:url" content="{{urls.site}}/refunds.html">
 <meta property="og:site_name" content="Olympus">
 <meta property="og:locale" content="en_US">
@@ -35,7 +35,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;650;700;800&amp;family=Bree+Serif&amp;display=swap">
     <link rel="stylesheet" href="olympus.css" />
 <link rel="stylesheet" href="illustrations.css">
+<link rel="stylesheet" href="showcase.css">
 
+<link rel="stylesheet" href="showcase.css">
+<link rel="stylesheet" href="page-styles.css">
 </head>
 <body class="page-document">
 <div class="cloud-curtain" aria-hidden="true">
@@ -50,91 +53,20 @@
 </div>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site" id="site-bar"><div class="wrap site__row"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a>
-<nav class="nav" aria-label="Primary">
-      <a href="app.html">The window</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav>
-<div class="site__actions"><a class="btn btn--primary btn--sm" href="{{urls.waitlist}}">Join the waitlist <span aria-hidden="true">↓</span></a>
+<nav class="nav" aria-label="Primary"><div class="nav__item"><a class="nav__top nav__trigger" href="features.html">Product <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="features.html"><strong>Features</strong><small>Every part of the workspace, explained</small></a><a class="nav__menu-item" href="how-it-works.html"><strong>How it works</strong><small>Agents, approvals, and previews, step by step</small></a></div></div><a class="nav__top" href="pricing.html">Availability</a><div class="nav__item"><a class="nav__top nav__trigger" href="faq.html">Resources <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="faq.html"><strong>FAQ</strong><small>Every answer in one place</small></a><a class="nav__menu-item" href="requirements.html"><strong>Requirements</strong><small>What your computer needs to run it</small></a><a class="nav__menu-item" href="changelog.html"><strong>Changelog</strong><small>What shipped, and when</small></a></div></div><div class="nav__item"><a class="nav__top nav__trigger" href="security.html">Legal <svg class="nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6"/></svg></a><div class="nav__menu"><a class="nav__menu-item" href="security.html"><strong>Security</strong><small>Threat model &amp; practices</small></a><a class="nav__menu-item" href="privacy.html"><strong>Privacy</strong><small>What we collect (and do not)</small></a><a class="nav__menu-item" href="terms.html"><strong>Terms</strong><small>Terms of Service</small></a></div></div><a class="nav__top" href="about.html">About</a></nav>
+<div class="site__actions"><a class="btn btn--primary btn--sm" href="waitlist.html">Join the waitlist <span aria-hidden="true">↓</span></a>
 <button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="navtoggle__open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="navtoggle__close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
-<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Pricing</a><a href="security.html">Security</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="faq.html">FAQ</a><a href="about.html">About</a></nav></div></header>
-<main id="main">
-
-  <div class="pagehead pagehead--refunds">
-    <div class="wrap">
-      <p class="eyebrow">The small print</p>
-      <h1>Refunds</h1>
-      <p class="lede" style="--d:.12s">A stated refund window. No questions, no form, no retention script. This is the shortest page on the site because there is not much to say.</p>
-      <p class="pagehead__crumbs"><a href="index.html">Home</a> <span>/</span> <span>Refunds</span></p>
-    </div>
-  </div>
-
-  <section class="section section--tint" id="refunds" aria-labelledby="refunds-h">
-    <div class="wrap">
-      <div class="sec__head sec__head--fill">
-        <p class="eyebrow">The promise</p>
-        <h2 id="refunds-h">Ask within 14 days, get your money back</h2>
-        <p class="lede" style="--d:.12s">One condition: you bought it. Nothing else is required, and we will not ask you to justify it.</p>
-      </div>
-
-      <div class="cards cards--2">
-        <article class="card-lg card-lg--gold">
-          <h3>What you get</h3>
-          <ul class="ticks price__list">
-            <li><strong>All of it back.</strong> The full amount paid, not a pro-rated remainder, not a credit.</li>
-            <li><strong>No reason needed.</strong> You will not be asked what went wrong.</li>
-            <li><strong>No form.</strong> One email is the entire process.</li>
-            <li><strong>Back to the original method.</strong> Card, bank transfer, whatever you paid with.</li>
-            <li><strong>Your licence ends</strong> and you stop using the software. We do not mind, and we do not follow up to find out why.</li>
-          </ul>
-        </article>
-        <article class="card-lg">
-          <h3>How to ask</h3>
-          <p>Email <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a> from the address you bought with, put &ldquo;refund&rdquo; in the subject, and say which purchase. That is the whole thing.</p>
-          <ul class="ticks price__list">
-            <li>We acknowledge within <strong>three working days</strong>.</li>
-            <li>The refund is issued within <strong>five working days</strong> of that.</li>
-            <li>It then takes your bank as long as it takes, which is outside our control and is the only part of this you may have to wait for.</li>
-          </ul>
-        </article>
-      </div>
-
-      <div class="prose" style="margin-top:clamp(38px,4.4vw,54px)">
-        <h2>What the 14 days are for</h2>
-        <p>The 14-day window gives you time to try Olympus with your projects and chosen tools. If it is not a fit, you can request a full refund within that period.</p>
-        <p>It is also enough time to notice that the app is not something you want, which is a perfectly good reason on its own.</p>
-
-        <h2>What is not refundable</h2>
-        <ul>
-          <li><strong>After 14 days.</strong> Past the window we cannot refund a purchase. We would rather say that plainly than leave it implied.</li>
-          <li><strong>Any build we release.</strong> It was never paid for, so there is nothing to return.</li>
-          <li><strong>Third-party costs.</strong> Agent subscriptions, model services, provider usage charges, and hardware costs are separate purchases and cannot be refunded by us.</li>
-        </ul>
-
-        <h2>What happens after 14 days</h2>
-        <p>Two things, and it is better to know about both before you buy.</p>
-        <ul>
-          <li><strong>If the software is broken.</strong> Email <a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a>. A defect that makes the software unusable is not a matter of taste and we will treat it as one. We cannot commit in advance to how many of these there will be, and we would rather not write a promise we cannot keep.</li>
-          <li><strong>If development stops.</strong> Your licence remains valid for the releases it covers. Compatibility with third-party tools may change as those tools are updated.</li>
-        </ul>
-
-        <h2>Where refunds are not the right answer</h2>
-        <p>If you want a different operating system build, or a licence for a colleague, or a major-version upgrade when one exists, that is a new purchase rather than a refund. <a href="pricing.html">See pricing</a>, and email if the situation does not fit any of the cases on it.</p>
-        <p>Volume purchases of two or more licences are refundable on the same 14-day terms, all of them together or none of them. Splitting a purchase to keep some seats and return others is not a thing we will do.</p>
-
-        <h2>Statutory rights</h2>
-        <p>Nothing on this page limits any right you have under the consumer law that applies to you, and where such a right gives you more than 14 days, it still applies. Where the law requires a mandatory notice or a prescribed form, that takes precedence over this page. [PLACEHOLDER: a consumer-facing app sold direct to individuals in the EU, UK, Australia or California will have statutory cooling-off and disclosure duties that this draft does not yet satisfy. Have this section reviewed for the selling jurisdiction before launch.]</p>
-
-        <h2>Contact</h2>
-        <p><a href="mailto:{{contact.supportEmail}}">{{contact.supportEmail}}</a>. {{entity.legalName}}, {{entity.registeredAddress}}.</p>
-      </div>
-    </div>
-  </section>
-
-</main>
+<div class="mobilenav" id="mobile-nav" data-open="false"><nav aria-label="Mobile"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How it works</a><a href="pricing.html">Availability</a><a href="faq.html">FAQ</a><a href="requirements.html">Requirements</a><a href="changelog.html">Changelog</a><a href="security.html">Security</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="about.html">About</a></nav></div></header>
+<main id="main"><div class="pagehead"><div class="wrap"><p class="eyebrow">In development</p><h1>Refunds</h1><p class="lede">Olympus is in development. There is no public download and nothing for sale.</p></div></div><section class="section"><div class="wrap prose"><h2>Before a public release</h2><p>Pricing, licence terms, and any applicable purchase and refund policies have not been announced. They will be published before sales open.</p><p>You can join the waitlist without payment details. Joining does not create a purchase or grant access to a build.</p><p><a class="btn btn--primary" href="waitlist.html">Join the waitlist</a></p><p><a href="privacy.html">Read about privacy</a></p></div></section></main>
 <footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>
-<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="pricing.html#buy">Downloads</a></li></ul></nav>
+<nav class="foot__col" aria-label="Product"><p class="foot__colh">The workspace</p><ul><li><a href="features.html">Features</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="pricing.html">Availability</a></li><li><a href="waitlist.html">Waitlist</a></li></ul></nav>
 <nav class="foot__col" aria-label="Resources"><p class="foot__colh">Good to know</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="security.html">Security</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="faq.html">FAQ</a></li><li><a href="about.html">About</a></li><li><a href="mailto:{{contact.supportEmail}}">Contact support</a></li></ul></nav>
-<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="license.html">Licence</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms of sale</a></li><li><a href="refunds.html">Refunds</a></li></ul></nav></div>
-<div class="wrap foot__legal"><p>© 2026 Olympus. Independent software, made for your machine.</p><p>Independent by design. No activity tracking.</p></div></footer>
+<nav class="foot__col" aria-label="Legal"><p class="foot__colh">The details</p><ul><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li><li><a href="security.html">Security</a></li></ul></nav></div>
+<div class="wrap foot__legal"><p>© {{product.copyrightYear}} {{entity.tradingAs}}</p></div></footer>
 <script src="site.js"></script>
 <script src="motion.js"></script>
+
+
+<script src="refunds-page.js"></script>
 </body>
 </html>
