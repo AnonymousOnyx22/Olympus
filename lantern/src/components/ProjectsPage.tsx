@@ -325,14 +325,14 @@ function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onRev
           {shown.map((title) => (
             <span
               key={title}
-              className="flex min-w-0 max-w-[190px] items-center gap-1.5 rounded-md bg-emerald-50 px-1.5 py-px text-[9.5px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200"
+              className="flex min-w-0 max-w-[190px] items-center gap-1.5 rounded-md bg-amber-400 px-1.5 py-px text-[9.5px] font-semibold text-midnight"
             >
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
               <span className="truncate">{title}</span>
             </span>
           ))}
           {overflow > 0 && (
-            <span className="rounded-md bg-emerald-50 px-1.5 py-px text-[9.5px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">
+            <span className="rounded-md bg-amber-400 px-1.5 py-px text-[9.5px] font-semibold text-midnight">
               +{overflow}
             </span>
           )}
@@ -356,7 +356,7 @@ function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onRev
   const meta = (
     <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1 text-[10.5px] text-slate-500">
       {project.stack.map((tech) => (
-        <span key={tech} className="rounded-md bg-slate-50 px-1.5 py-px text-slate-500 ring-1 ring-inset ring-slate-200">{tech}</span>
+        <span key={tech} className="rounded-md bg-aether-100 px-1.5 py-px text-aether-700 ring-1 ring-inset ring-aether-500/30">{tech}</span>
       ))}
       {project.gitBranch && (
         <span className="flex items-center gap-1 font-mono" title="Git branch">
@@ -484,7 +484,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
   const sep = root.includes('\\') ? '\\' : '/'
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4" onMouseDown={(event) => event.target === event.currentTarget && onCancel()}>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-midnight/70 p-4" onMouseDown={(event) => event.target === event.currentTarget && onCancel()}>
       <form ref={dialogRef} tabIndex={-1} onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-project-title" className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-aegean-lg">
         <h2 id="new-project-title" className="text-[14px] font-semibold text-slate-900">New project</h2>
         <p className="mt-1 text-[11.5px] text-slate-500">Creates an empty folder in a watched folder.</p>

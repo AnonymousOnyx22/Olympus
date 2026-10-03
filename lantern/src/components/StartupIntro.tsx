@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import OlympusLogo from './OlympusLogo'
 
 const PARTICLES = Array.from({ length: 12 }, (_, index) => ({
   angle: index * 30,
@@ -65,27 +64,35 @@ export default function StartupIntro() {
           transition={{ duration: 1.45, ease: 'easeOut' }}
         />
         <motion.div
-          className="relative text-slate-900 drop-shadow-[0_0_28px_rgba(129,140,248,0.5)]"
-          initial={{ opacity: 0, filter: 'blur(10px)' }}
-          animate={{ opacity: 1, filter: 'blur(0px)' }}
-          transition={{ duration: 0.35 }}
+          className="relative overflow-hidden rounded-[22px] shadow-[0_24px_70px_-24px_rgba(30,64,175,0.45)] ring-1 ring-slate-900/10"
+          initial={{ opacity: 0, scale: 0.86, filter: 'blur(10px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
         >
-          <OlympusLogo size={82} animated />
-          {[
-            '-left-7 -top-5 border-l border-t',
-            '-right-7 -top-5 border-r border-t',
-            '-bottom-5 -left-7 border-b border-l',
-            '-bottom-5 -right-7 border-b border-r',
-          ].map((position) => (
-            <motion.span
-              key={position}
-              className={`absolute h-5 w-5 border-aether-400/55 ${position}`}
-              initial={{ opacity: 0, scale: 1.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.55, duration: 0.45, ease: 'easeOut' }}
-            />
-          ))}
+          {/* The mark, square, as it appears everywhere else in the product. */}
+          <img
+            src="/olympus-mark.webp"
+            alt=""
+            width={132}
+            height={132}
+            className="block h-[132px] w-[132px] object-cover"
+            draggable={false}
+          />
         </motion.div>
+        {[
+          '-left-7 -top-5 border-l border-t',
+          '-right-7 -top-5 border-r border-t',
+          '-bottom-5 -left-7 border-b border-l',
+          '-bottom-5 -right-7 border-b border-r',
+        ].map((position) => (
+          <motion.span
+            key={position}
+            className={`pointer-events-none absolute h-5 w-5 border-aether-400/55 ${position}`}
+            initial={{ opacity: 0, scale: 1.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.55, duration: 0.45, ease: 'easeOut' }}
+          />
+        ))}
 
         <motion.div
           initial={{ opacity: 0, y: 9, letterSpacing: '0.22em', filter: 'blur(5px)' }}

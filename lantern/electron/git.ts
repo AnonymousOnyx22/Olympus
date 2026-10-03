@@ -47,8 +47,8 @@ export async function gitAction(cwd: string, action: unknown, message: unknown):
       if (typeof message !== 'string' || !message.trim()) throw new Error('Enter a commit message.')
       if (!status.files.length) throw new Error('There are no saved changes to commit.')
       // Stage only the files the user was already shown, by path. `git add --all` would also
-      // sweep in anything untracked it decides to include — a .env, a key file, a build
-      // artifact — and it does that invisibly, at the moment the user clicked Commit.
+      // sweep in anything untracked it decides to include - a .env, a key file, a build
+      // artifact - and it does that invisibly, at the moment the user clicked Commit.
       const paths = [...new Set(status.files.map(String))]
       if (paths.length) await runGit(cwd, ['add', '--', ...paths])
       // Anything the user had already staged by hand stays staged; that is their intent.

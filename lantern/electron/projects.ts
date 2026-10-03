@@ -43,7 +43,7 @@ function readJson(file: string): Record<string, unknown> | null {
   }
 }
 
-/** Cheap, marker-file based stack detection — reads at most package.json. */
+/** Cheap, marker-file based stack detection - reads at most package.json. */
 function detect(dir: string): Pick<ProjectInfo, 'stack' | 'gitBranch' | 'description' | 'modifiedAt'> {
   let names: string[] = []
   let modifiedAt: number | null = null
@@ -125,6 +125,7 @@ export function listProjects(): ProjectInfo[] {
     const existing = byKey.get(key)
     byKey.set(key, { path: proj.path, source: 'manual', root: existing?.root ?? null, name: proj.name })
   }
+  for (const store of settings.stores) byKey.delete(projectKey(store.path))
 
   // Record first sighting of newly detected folders so they can get a "New" badge, and
   // forget folders that are no longer part of the picture. Without the prune, pointing the
@@ -179,7 +180,7 @@ const seededRoots = new Set<string>()
  * Resolves one project without scanning anything.
  *
  * This used to call `listProjects()`, which walks every folder under every watched root and
- * runs filesystem detection on each one — so asking "what is this project's path?" (which
+ * runs filesystem detection on each one - so asking "what is this project's path?" (which
  * `git:status` does on every refresh) cost a full rescan, and could even write to settings
  * as a side effect. A project is either one you added by hand, or a direct child of a watched
  * root, so both cases are answerable from settings alone.
@@ -191,6 +192,9 @@ export function findProject(id: string): ProjectInfo | undefined {
 
   const manual = settings.projects.find((p) => p.id === id || projectKey(p.path) === key)
   if (manual) return describeProject(manual.id, manual.name, manual.path, 'manual', null, settings)
+
+  const store = settings.stores.find((p) => p.id === id || projectKey(p.path) === key)
+  if (store) return describeProject(store.id, store.name, store.path, 'manual', null, settings)
 
   const root = settings.projectRoots.find((candidate) => projectKey(path.dirname(target)) === projectKey(candidate))
   if (root) return describeProject(key, path.basename(target) || target, target, 'watched', root, settings)
@@ -295,6 +299,55 @@ export function createProject(root: string, rawName: string): { id: string; proj
   const settings = getSettings()
   updateSettings({ projectMeta: { ...settings.projectMeta, [key]: { firstSeen: Date.now() } } })
   return { id: key, projects: listProjects() }
+}
+
+export function listStores(): ProjectInfo[] {
+  const settings = getSettings()
+  return settings.stores.map((store) => ({
+    ...describeProject(store.id, store.name, store.path, 'manual', null, settings),
+    ...(isDir(store.path) ? detect(store.path) : {}),
+  }))
+}
+
+/** Creates a Store workspace beside a watched Projects root, never inside it. */
+export function createStore(projectRoot: string, rawName: string, displayName?: string): { id: string; stores: ProjectInfo[] } {
+  const name = String(rawName ?? '').trim()
+  if (!name || name === '.' || name === '..' || name.length > 120 || INVALID_NAME.test(name) || RESERVED_NAME.test(name) || /[. ]$/.test(name)) {
+    throw new Error('Use a simple store folder name without \\ / : * ? " < > |')
+  }
+  const settings = getSettings()
+  const known = settings.projectRoots.find((root) => projectKey(root) === projectKey(projectRoot))
+  if (!known) throw new Error('Choose a watched Projects folder first')
+  const storesRoot = path.join(path.dirname(known), 'Stores')
+  if (projectKey(storesRoot) === projectKey(known)) throw new Error('Choose a Projects folder beside Stores')
+  fs.mkdirSync(storesRoot, { recursive: true })
+  const target = path.join(storesRoot, name)
+  if (fs.existsSync(target)) throw new Error(`"${name}" already exists in Stores`)
+  fs.mkdirSync(target)
+  const id = projectKey(target)
+  updateSettings({ stores: [...settings.stores, { id, name: displayName?.trim().slice(0, 120) || name, path: target }] })
+  return { id, stores: listStores() }
+}
+
+/**
+ * Unlists a store. With `deleteFiles`, its folder is also removed from disk - unlike a regular
+ * project (which may be a folder the user already had elsewhere), a store only ever exists
+ * because Olympus created it inside the Stores folder, so deleting it for real is a reasonable
+ * option here, not just a hide. Best-effort: an unlist always happens even if the delete fails
+ * (e.g. a file is locked), so the store never gets stuck half-removed.
+ */
+export function removeStore(id: string, deleteFiles: boolean): ProjectInfo[] {
+  const settings = getSettings()
+  const store = settings.stores.find((s) => s.id === id)
+  updateSettings({ stores: settings.stores.filter((s) => s.id !== id) })
+  if (deleteFiles && store && isDir(store.path)) {
+    try {
+      fs.rmSync(store.path, { recursive: true, force: true })
+    } catch {
+      // Unlisted either way; the folder can be cleaned up by hand if it's locked.
+    }
+  }
+  return listStores()
 }
 
 export function addRoot(dir: string): string[] {

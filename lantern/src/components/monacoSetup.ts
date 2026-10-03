@@ -8,8 +8,8 @@ import HtmlWorker from 'monaco-editor/language/html/html.worker?worker'
 /**
  * Monaco is loaded on demand rather than at startup.
  *
- * It was previously imported eagerly, which pulled the whole editor — every language
- * grammar it ships with — into the initial bundle. That dominated the renderer bundle and
+ * It was previously imported eagerly, which pulled the whole editor - every language
+ * grammar it ships with - into the initial bundle. That dominated the renderer bundle and
  * was paid on every cold start whether or not the user ever opened the Code view.
  */
 let pending: Promise<void> | null = null
@@ -33,24 +33,31 @@ export function ensureMonaco(): Promise<void> {
 
     loader.config({ monaco })
 
+    // Still registered as 'olympus-light' because editors reference the theme by that name;
+    // it is the dark Aegean-night palette now.
     monaco.editor.defineTheme('olympus-light', {
-      base: 'vs',
+      base: 'vs-dark',
       inherit: true,
       rules: [],
       colors: {
-        'editor.background': '#faf3e3',
-        // Literal accent hexes: Monaco resolves this theme object into canvas colours, so
-        // `var(--accent-500)` has no way to reach it. Mirrors the --accent-* triplets in index.css.
-        'editor.lineHighlightBackground': '#2563eb08',
-        'editorLineNumber.foreground': '#94a3b8',
-        'editorLineNumber.activeForeground': '#1e40af',
-        'diffEditor.insertedTextBackground': '#10b98126',
-        'diffEditor.removedTextBackground': '#f43f5e26',
-        'diffEditor.insertedLineBackground': '#10b98114',
-        'diffEditor.removedLineBackground': '#f43f5e14',
-        'editorGutter.background': '#faf3e3',
-        'scrollbarSlider.background': '#0f172a14',
-        'scrollbarSlider.hoverBackground': '#0f172a22',
+        // Literal hexes: Monaco resolves this theme object into canvas colours, so CSS custom
+        // properties cannot reach it. Mirrors the palette in tailwind.config.js / index.css.
+        'editor.background': '#0f172a',
+        'editor.foreground': '#e2e8f0',
+        'editor.lineHighlightBackground': '#1e293b',
+        'editor.selectionBackground': '#3b82f655',
+        'editorCursor.foreground': '#facc15',
+        'editorLineNumber.foreground': '#475569',
+        'editorLineNumber.activeForeground': '#facc15',
+        'diffEditor.insertedTextBackground': '#10b98133',
+        'diffEditor.removedTextBackground': '#f43f5e33',
+        'diffEditor.insertedLineBackground': '#10b9811a',
+        'diffEditor.removedLineBackground': '#f43f5e1a',
+        'editorGutter.background': '#0f172a',
+        'editorWidget.background': '#1e293b',
+        'editorWidget.border': '#334155',
+        'scrollbarSlider.background': '#94a3b833',
+        'scrollbarSlider.hoverBackground': '#94a3b855',
       },
     })
   })()

@@ -60,7 +60,7 @@ export function buildOpencodeConfig(providers: LocalProvider[], selected: ModelR
       ? `${usable[0].id}/${usable[0].models[0]}`
       : undefined
 
-  // NOTE: no `enabled_providers` — that would hide providers the user set up through the
+  // NOTE: no `enabled_providers` - that would hide providers the user set up through the
   // opencode CLI (e.g. authenticated OpenCode Zen). We only *add* local endpoints here.
   return {
     $schema: 'https://opencode.ai/config.json',
@@ -154,10 +154,14 @@ export function detectOpencodeVersion(): string | null {
  * even when the response is unreadable). Sharing/autoupdate stay off, and web access is
  * denied in the config the daemon is handed.
  */
-function daemonEnv(config: object | null, credentials: DaemonCredentials): NodeJS.ProcessEnv {
+function daemonEnv(config: object | null, credentials: DaemonCredentials, connectionEnv: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   return {
     ...process.env,
     ...(config ? { OPENCODE_CONFIG_CONTENT: JSON.stringify(config) } : {}),
+    // A connected project's real API keys (Stripe, Shopify, ...), decrypted only here and
+    // inherited by every process this daemon's own bash tool spawns. Last, so nothing above
+    // can shadow a key a project was actually given access to.
+    ...connectionEnv,
     OPENCODE_SERVER_PASSWORD: credentials.password,
     OPENCODE_SERVER_USERNAME: credentials.username,
     OPENCODE_DISABLE_AUTOUPDATE: '1',
@@ -180,7 +184,7 @@ function isPortFree(port: number): Promise<boolean> {
 // Several spaces can start their daemons at nearly the same instant (e.g. on boot, when
 // multiple projects have open Workspace-hub windows), and `isPortFree`'s check-then-listen
 // has a gap: two concurrent callers can both see the same port as free before either one
-// has actually claimed it, and both then try to bind it — one wins, the other crashes
+// has actually claimed it, and both then try to bind it - one wins, the other crashes
 // immediately. `reservedPorts` closes that gap: a port is added to it *synchronously*
 // (no `await` in between), so no two concurrent calls can ever claim the same number,
 // regardless of how their underlying OS-level checks interleave.
@@ -235,7 +239,7 @@ export class DaemonManager extends EventEmitter {
     this.emit('log', line)
   }
 
-  async start(cwd: string, config: object): Promise<DaemonState> {
+  async start(cwd: string, config: object, connectionEnv: NodeJS.ProcessEnv = {}): Promise<DaemonState> {
     const token = ++this.startToken
     await this.stop()
     if (token !== this.startToken) return this.getState()
@@ -248,11 +252,11 @@ export class DaemonManager extends EventEmitter {
     const { command, shell } = resolveOpencodeBinary()
     const credentials = newCredentials()
     this.credentials = credentials
-    const env = daemonEnv(config, credentials)
+    const env = daemonEnv(config, credentials, connectionEnv)
 
     // One retry with a fresh port: the port we picked can lose a tiny race between our
-    // free-port check and opencode actually binding it (another process — even another
-    // space's own daemon starting at the same instant — grabs it first). That shows up as
+    // free-port check and opencode actually binding it (another process - even another
+    // space's own daemon starting at the same instant - grabs it first). That shows up as
     // an immediate crash, not a real config problem, so retrying once is worth it before
     // surfacing an error.
     let attempt = 0
@@ -273,7 +277,7 @@ export class DaemonManager extends EventEmitter {
       const startedAt = Date.now()
 
       // Keeps the last few lines of output so a crash-on-start error can show *why*,
-      // not just that it happened — this is otherwise invisible to the UI.
+      // not just that it happened - this is otherwise invisible to the UI.
       const recentOutput: string[] = []
       const pipeLines = (stream: NodeJS.ReadableStream | null) => {
         let buffer = ''
@@ -300,7 +304,7 @@ export class DaemonManager extends EventEmitter {
         const code = (err as NodeJS.ErrnoException).code
         const hint =
           code === 'ENOENT'
-            ? ' — opencode is not installed or not on your PATH. Install it with "npm i -g opencode-ai", or set OLYMPUS_OPENCODE_BIN to its full path.'
+            ? ' - opencode is not installed or not on your PATH. Install it with "npm i -g opencode-ai", or set OLYMPUS_OPENCODE_BIN to its full path.'
             : ''
         this.log(`[olympus] failed to start opencode: ${err.message}${hint}`)
         this.setState({ status: 'error', error: err.message + hint })
@@ -424,7 +428,7 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms))
  * the user configured through the opencode CLI (e.g. an authenticated OpenCode Zen account),
  * so models can be shown before any project is opened. The daemon is killed once read.
  *
- * This daemon is protected by basic auth exactly like a project daemon — a throwaway
+ * This daemon is protected by basic auth exactly like a project daemon - a throwaway
  * unauthenticated server would reintroduce exactly the exposure the project daemons avoid.
  * It runs in a scratch directory rather than the user's home so it cannot pick up a project.
  */
@@ -445,7 +449,7 @@ export async function probeInstalledProviders(): Promise<
     cwd: scratch,
     // No OPENCODE_CONFIG_CONTENT here on purpose: this probe exists to read the providers
     // the user configured through the opencode CLI.
-    env: daemonEnv(null, credentials),
+    env: daemonEnv(null, credentials, {}),
     shell,
     windowsHide: true,
     stdio: 'ignore',

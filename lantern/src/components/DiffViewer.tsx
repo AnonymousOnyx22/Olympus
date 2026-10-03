@@ -185,7 +185,7 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
           <div className="flex h-full items-center justify-center text-xs text-slate-500">Preparing diff…</div>
         )}
         {file?.approximate && (
-          <div className="pointer-events-none absolute bottom-2 left-3 rounded-xl bg-slate-900/80 px-2 py-0.5 text-[10px] text-slate-100">
+          <div className="pointer-events-none absolute bottom-2 left-3 rounded-xl bg-midnight/85 px-2 py-0.5 text-[10px] text-slate-700">
             {file.reviewable ? 'Showing changed regions only' : 'Preview unavailable, raw agent output shown'}
           </div>
         )}

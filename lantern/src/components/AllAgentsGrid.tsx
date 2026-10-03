@@ -9,6 +9,9 @@ export interface AgentGridEntry {
   projectName: string
   projectPath?: string
   ready: boolean
+  /** Why this project's agent could not start, if it failed; replaces an endless "Connecting". */
+  startError?: string
+  onRetryStart?: () => void
 }
 
 interface Conversation {
@@ -26,7 +29,7 @@ interface Props extends AgentPaneShared {
   hasProjects: boolean
   onClose: (spaceId: string, sessionId: string) => void
   onDelete: (spaceId: string, sessionId: string) => Promise<void>
-  /** Always opens the project picker — never guesses which project you meant. */
+  /** Always opens the project picker - never guesses which project you meant. */
   onRequestAddAgent: () => void
   onOpenProjects: () => void
 }
@@ -97,6 +100,8 @@ export default function AllAgentsGrid({ entries, hasProjects, conversations, onO
               projectName={entry.projectName}
               projectPath={entry.projectPath}
               ready={entry.ready}
+              startError={entry.startError}
+              onRetryStart={entry.onRetryStart}
               onClose={() => onClose(entry.spaceId, entry.sessionId)}
               onDelete={() => void deleteAgent(entry.spaceId, entry.sessionId)}
               deleting={deletingKey === `${entry.spaceId}:${entry.sessionId}`}
@@ -121,7 +126,7 @@ function ConversationPicker({ conversations, onPick, onClose }: {
     return () => window.removeEventListener('keydown', escape)
   }, [onClose])
   const matches = conversations.filter((entry) => `${entry.projectName} ${entry.title}`.toLowerCase().includes(query.toLowerCase()))
-  return <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4" onClick={onClose}>
+  return <div className="fixed inset-0 z-50 flex items-center justify-center bg-midnight/70 p-4" onClick={onClose}>
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="conversation-title" tabIndex={-1} onClick={(event) => event.stopPropagation()} className="flex max-h-[80vh] w-full max-w-xl flex-col rounded-2xl bg-white p-5 shadow-aegean-lg">
       <h2 id="conversation-title" className="text-lg font-medium">Open conversation</h2>
       <p className="mt-1 text-xs text-slate-500">Reopen a saved conversation alongside your other agents. Open a project to load its saved conversations.</p>

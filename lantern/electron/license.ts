@@ -1,17 +1,17 @@
 // =============================================================================
-// Olympus — commercial licence gate (self-hosted, not DRM)
+// Olympus - commercial licence gate (self-hosted, not DRM)
 //
 // WHAT THIS IS, HONESTLY
 //   This is a signed-token check. A key is issued per seat, stored as JSON in
 //   the user's own data directory, and verified with a keyed HMAC-SHA256. That
 //   buys the vendor three real things:
 //
-//     1. AUDIT   — a record of who bought a seat and when, checkable later.
-//     2. REVOKE  — because the token carries an email + activation timestamp,
+//     1. AUDIT   - a record of who bought a seat and when, checkable later.
+//     2. REVOKE  - because the token carries an email + activation timestamp,
 //                  a vendor-side list of revoked keys is possible: simply
 //                  refusing to issue new keys to a given address, and adding
 //                  their token to a deny list at the licensing service.
-//     3. TAMPER EVIDENCE — editing activatedAt or the email invalidates the
+//     3. TAMPER EVIDENCE - editing activatedAt or the email invalidates the
 //                  signature, so casual tampering is detectable.
 //
 //   WHAT IT IS NOT, and what no local-only scheme can be:
@@ -71,7 +71,7 @@
 //
 //   3. Expose read-only state to the renderer through the existing IPC bridge in
 //      registerIpc() (electron/main.ts, the `ipcMain.handle(...)` block). Add
-//      one handler and nothing else — never expose the secret or the raw key:
+//      one handler and nothing else - never expose the secret or the raw key:
 //
 //          ipcMain.handle('license:summary', () => licenseSummary())
 //
@@ -147,7 +147,7 @@ const trialPath = (): string => path.join(app.getPath('userData'), 'trial.json')
 /**
  * The signed payload is `email|activatedAt|product`, pipe-separated, in that
  * exact order. Pipe is chosen because it cannot appear in a well-formed email
- * address or ISO timestamp, so the fields are unambiguous — a separator that
+ * address or ISO timestamp, so the fields are unambiguous - a separator that
  * could also appear inside a field would let someone move text across the
  * boundary and still produce a valid signature.
  */
@@ -200,7 +200,7 @@ function verify(record: LicenseRecord, secret = signingSecret()): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Disk I/O — every function here is total: it returns a value and never throws.
+// Disk I/O - every function here is total: it returns a value and never throws.
 // A licence check that can crash the app is strictly worse than no check at all.
 // ---------------------------------------------------------------------------
 
@@ -251,7 +251,7 @@ export function recordActivation(key: string, email: string): LicenseState {
  * First-launch timestamp, persisted on first call.
  *
  * Stored as its own file next to license.json rather than inside settings.json.
- * The reason is concrete: `normalize()` in ./settings.ts is a WHITELIST — it
+ * The reason is concrete: `normalize()` in ./settings.ts is a WHITELIST - it
  * rebuilds the object from known fields only, so any key this module added
  * would be silently dropped the next time anything else saved a setting. A
  * trial clock that resets itself is worse than one in its own file.

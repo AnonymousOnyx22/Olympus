@@ -178,7 +178,7 @@ export class OpencodeBridge {
     this.sockets.get(ptyID)?.close()
 
     // Credentials as URL userinfo relies on the client turning it into a Basic-Auth header,
-    // which the platform WebSocket does not do — the request would go out unauthenticated.
+    // which the platform WebSocket does not do - the request would go out unauthenticated.
     // `ws` (unlike the global WebSocket) takes a real `headers` option, so send it there.
     const host = this.baseUrl.replace(/^http/, 'ws')
     const ws = new NodeWebSocket(`${host}/pty/${ptyID}/connect`, {

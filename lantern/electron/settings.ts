@@ -8,6 +8,7 @@ const DEFAULTS: OlympusSettings = {
   selectedModel: null,
   customEndpoints: [],
   projects: [],
+  stores: [],
   projectRoots: [],
   hiddenProjects: [],
   projectMeta: {},
@@ -20,16 +21,18 @@ const DEFAULTS: OlympusSettings = {
  * Bumped whenever the on-disk shape changes, so `migrateSettings` knows which steps to run.
  * Version 0 means "no version field", i.e. every settings file written before this existed.
  */
-export const SETTINGS_SCHEMA_VERSION = 1
+export const SETTINGS_SCHEMA_VERSION = 2
 
 /**
  * Ordered, additive migrations: step N takes the object at version N and returns it at N+1.
- * Never renumber or edit a step that has shipped — append a new one instead, or users who
+ * Never renumber or edit a step that has shipped - append a new one instead, or users who
  * already ran the old build lose their project list.
  */
 const MIGRATIONS: ((raw: Record<string, unknown>) => Record<string, unknown>)[] = [
   // 0 -> 1: adopt an explicit schema version so future steps know where they start.
   (raw) => raw,
+  // 1 -> 2: Station stores have their own registry, separate from projects.
+  (raw) => ({ ...raw, stores: Array.isArray(raw.stores) ? raw.stores : [] }),
 ]
 
 export function migrateSettings(raw: Record<string, unknown>): Record<string, unknown> {
@@ -111,6 +114,9 @@ function normalize(value: unknown): OlympusSettings {
     projects: Array.isArray(raw.projects)
       ? raw.projects.map(project).filter((item): item is ProjectRef => item !== null)
       : [],
+    stores: Array.isArray(raw.stores)
+      ? raw.stores.map(project).filter((item): item is ProjectRef => item !== null)
+      : [],
     projectRoots: strings(raw.projectRoots),
     hiddenProjects: strings(raw.hiddenProjects),
     projectMeta: projectMeta(raw.projectMeta),
@@ -163,7 +169,7 @@ function recoverFromBackup(): Record<string, unknown> | null {
 /**
  * Writes atomically. A crash or power loss mid-write used to leave a truncated settings.json
  * and take every saved project with it. Write a temp file, keep the previous good copy as a
- * backup, then rename over the target — rename is atomic on every platform Olympus ships on.
+ * backup, then rename over the target - rename is atomic on every platform Olympus ships on.
  */
 function persist(settings: OlympusSettings): void {
   const target = settingsPath()

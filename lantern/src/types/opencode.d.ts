@@ -200,8 +200,44 @@ export interface ProjectRef {
 export interface ProjectMeta {
   pinned?: boolean
   lastOpened?: number
-  /** When Olympus first noticed this folder — drives the "New" badge. */
+  /** When Olympus first noticed this folder - drives the "New" badge. */
   firstSeen?: number
+}
+
+/** One field a connection asks for, e.g. Stripe's secret key. */
+export interface ConnectionField {
+  /** Also the environment variable name an agent's code reads it from, e.g. STRIPE_SECRET_KEY. */
+  key: string
+  label: string
+  secret: boolean
+  placeholder?: string
+}
+
+/** A real API/service a store's agent can be given access to - never through the chat. */
+export interface ConnectionProvider {
+  id: string
+  name: string
+  /** Groups providers in the library view, e.g. "Payments", "Marketplaces". */
+  category: string
+  description: string
+  fields: ConnectionField[]
+}
+
+/** What the renderer is allowed to know about a connection: never the decrypted values. */
+export interface ConnectionStatus {
+  id: string
+  name: string
+  category: string
+  description: string
+  fields: ConnectionField[]
+  /** Field keys that currently have a saved value. */
+  configuredFields: string[]
+  /** True for providers where "Sign in" (a real logged-in browser session) is offered as an
+   * alternative to an API key - currently Pinterest and Etsy, whose app-approval process is
+   * slow enough that most people never get an API key at all. */
+  supportsBrowserSignIn: boolean
+  /** Whether a signed-in browser session is currently saved for this provider. */
+  browserSessionConnected: boolean
 }
 
 /** A project as shown in the manager: saved or detected, plus facts read from disk. */
@@ -234,6 +270,8 @@ export interface OlympusSettings {
   selectedModel: ModelRef | null
   customEndpoints: LocalEndpoint[]
   projects: ProjectRef[]
+  /** Store workspaces live beside project roots and are managed only by Station. */
+  stores: ProjectRef[]
   /** Folders whose immediate subfolders are each treated as a project. */
   projectRoots: string[]
   /** Detected project paths the user chose to hide. */
@@ -281,6 +319,25 @@ export interface ElectronAPI {
   startSpace(spaceId: string, force?: boolean): Promise<StartDaemonResult>
   /** Starts a space's daemon in the background, without changing which space is focused. */
   openSpace(spaceId: string): Promise<StartDaemonResult>
+  /** Spaces with open agent windows; the daemon pool never evicts these. */
+  setPinnedSpaces(spaceIds: string[]): Promise<void>
+
+  /** Every known connection provider and which of its fields currently have a saved value.
+   * Never includes a decrypted secret - those stay in the main process. */
+  listConnections(): Promise<ConnectionStatus[]>
+  /** Saves (or, for an empty string, clears) field values for one connection, encrypted at rest. */
+  setConnection(providerId: string, values: Record<string, string>): Promise<ConnectionStatus[]>
+  /** Deletes every saved value for one connection. */
+  clearConnection(providerId: string): Promise<ConnectionStatus[]>
+
+  /**
+   * Opens a real, visible browser window on the provider's own login page (Pinterest, Etsy).
+   * Olympus never sees the password - only the resulting session, which the user ends by
+   * closing the window. Resolves once that session has been captured for later use.
+   */
+  openConnectionSignIn(providerId: string): Promise<ConnectionStatus[]>
+  /** Forgets a saved browser session for a provider (cookies and the exported session file). */
+  forgetConnectionSignIn(providerId: string): Promise<ConnectionStatus[]>
   /** Stops a background space's daemon, e.g. when its multi-project tab is closed. */
   closeSpace(spaceId: string): Promise<void>
   listProjects(): Promise<ProjectInfo[]>
@@ -291,6 +348,10 @@ export interface ElectronAPI {
   pinProject(id: string, pinned: boolean): Promise<ProjectInfo[]>
   /** Creates a new, empty folder inside a watched projects folder. Returns the new project's id. */
   createProject(root: string, name: string): Promise<{ id: string; projects: ProjectInfo[] }>
+  createStore(projectRoot: string, folderName: string, displayName?: string): Promise<{ id: string; stores: ProjectInfo[] }>
+  listStores(): Promise<ProjectInfo[]>
+  /** Stops the store's agent, unlists it, and - if `deleteFiles` is true - deletes its folder from disk. */
+  removeStore(id: string, deleteFiles: boolean): Promise<ProjectInfo[]>
   revealProject(id: string): Promise<void>
   listProjectRoots(): Promise<string[]>
   addProjectRoot(path: string): Promise<{ roots: string[]; projects: ProjectInfo[] }>
@@ -313,6 +374,7 @@ export interface ElectronAPI {
   /** Reads a UTF-8 file inside the open project. Returns null if missing or outside the project. */
   confirmProjectSwitch(file: string): Promise<'save' | 'discard' | 'cancel'>
   readProjectFile(spaceId: string, path: string): Promise<string | null>
+  readProjectImage(spaceId: string, path: string): Promise<string | null>
   /** Lists files inside the active project, excluding dependency and build folders. */
   listProjectFiles(spaceId: string): Promise<string[]>
   /** Saves an existing UTF-8 file inside the active project. */

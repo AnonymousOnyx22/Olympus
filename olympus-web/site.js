@@ -130,7 +130,7 @@
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const link = event.target.closest('a[href]');
     // [data-download]/[data-dlset] links trigger a file download (Content-Disposition:
-    // attachment), not a navigation — the document never unloads, so `navigating` would
+    // attachment), not a navigation - the document never unloads, so `navigating` would
     // never reset and the curtain would stay closed over the whole site until a reload.
     if (!link || (link.target && link.target !== '_self') || link.hasAttribute('download')) return;
     if (link.hasAttribute('data-download') || link.closest('[data-dlset]')) return;
@@ -156,7 +156,7 @@
     location.assign(url.href);
     // Safety valve: if the document is still here shortly after (a link that triggers a
     // download or otherwise never unloads, rather than navigating), don't leave the curtain
-    // covering the whole site until a manual reload — reopen it and let clicks work again.
+    // covering the whole site until a manual reload - reopen it and let clicks work again.
     setTimeout(() => {
       if (!navigating) return;
       navigating = false;
@@ -172,7 +172,7 @@
   });
 
   // faq.html's live search: filters the plain <details> list client-side. With JS off the
-  // input simply isn't there (it's injected by nothing — it's static markup) so every
+  // input simply isn't there (it's injected by nothing - it's static markup) so every
   // question is already visible; this only ever hides, never requires itself to be useful.
   const faqSearch = document.querySelector('[data-faq-search]');
   const faqList = document.querySelector('[data-faq-list]');

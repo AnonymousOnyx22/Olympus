@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { api } from './api'
 import type {
   MessageInfo,
@@ -8,6 +8,7 @@ import type {
   PermissionRequest,
   SessionStatus,
   ToolPart,
+  Session,
 } from '../types/opencode'
 
 // ---------------------------------------------------------------------------
@@ -20,7 +21,7 @@ const terminalListeners = new Set<TerminalListener>()
 /**
  * How much of each bash tool call has already been written to the agent terminal, keyed by
  * part id. The keys are needed to stay idempotent (a completed part must never re-pipe its
- * output), so this cannot simply be cleared — but it must be bounded, or a long session
+ * output), so this cannot simply be cleared - but it must be bounded, or a long session
  * grows the map without limit. Oldest entries are dropped first.
  */
 const MAX_TRACKED_OUTPUT_PARTS = 2000
@@ -90,10 +91,11 @@ export interface StreamState {
   /** Pending permission requests for every session in the project (sub-agents included). */
   permissions: PermissionRequest[]
   error: string | null
+  sessions?: Session[]
 }
 
 type Action =
-  | { type: 'reset'; sessionID: string | null; messages: MessageWithParts[]; permissions: PermissionRequest[]; status: SessionStatus }
+  | { type: 'reset'; sessionID: string | null; messages: MessageWithParts[]; permissions: PermissionRequest[]; status: SessionStatus; sessions?: Session[] }
   | { type: 'event'; event: OpencodeEvent }
   | { type: 'clearError' }
 
@@ -130,6 +132,7 @@ function reduce(state: StreamState, action: Action): StreamState {
       permissions: action.permissions,
       status: action.status,
       error: null,
+      sessions: action.sessions ?? [],
     }
   }
   if (action.type === 'clearError') return { ...state, error: null }
@@ -137,8 +140,13 @@ function reduce(state: StreamState, action: Action): StreamState {
   const ev = action.event
   const active = state.sessionID
   switch (ev.type) {
+    case 'session.created':
+    case 'session.updated':
+      return { ...state, sessions: [...(state.sessions ?? []).filter((s) => s.id !== ev.properties.info.id), ev.properties.info] }
+    case 'session.deleted':
+      return { ...state, sessions: (state.sessions ?? []).filter((s) => s.id !== ev.properties.info.id) }
     case 'message.updated': {
-      if (ev.properties.sessionID !== active) return state
+      if ((ev.properties.sessionID ?? ev.properties.info.sessionID) !== active) return state
       const info = ev.properties.info
       const i = state.messages.findIndex((m) => m.info.id === info.id)
       const messages =
@@ -232,9 +240,20 @@ export function useSessionStream(spaceId: string, sessionID: string | null, conn
   const adopted = useRef<string | null>(null)
   const [loaded, setLoaded] = useState(false)
   const pendingEvents = useRef<OpencodeEvent[] | null>([])
+  const revision = useRef(0)
+  const lastProgress = useRef(Date.now())
+  const [quietSeconds, setQuietSeconds] = useState(0)
+  const [refreshing, setRefreshing] = useState(false)
+  const [syncError, setSyncError] = useState<string | null>(null)
+  const refreshRef = useRef<() => Promise<void>>(async () => {})
+  const family = useMemo(() => sessionFamily(state.sessions ?? [], sessionID), [state.sessions, sessionID])
+  const familyRef = useRef(family)
+  useEffect(() => { familyRef.current = family }, [family])
 
   useEffect(() => {
     setLoaded(false)
+    lastProgress.current = Date.now()
+    setQuietSeconds(0)
     pendingEvents.current = []
     if (!connected) {
       dispatch({ type: 'reset', sessionID, messages: [], permissions: [], status: { type: 'idle' } })
@@ -249,14 +268,15 @@ export function useSessionStream(spaceId: string, sessionID: string | null, conn
     }
     let cancelled = false
     const load = async () => {
-      const [messages, permissions, statuses] = await Promise.all([
+      const [messages, permissions, statuses, sessions] = await Promise.all([
         sessionID ? api.messages(spaceId, sessionID) : Promise.resolve([]),
         api.listPermissions(spaceId).catch(() => []),
         api.sessionStatus(spaceId).catch(() => ({}) as Record<string, SessionStatus>),
+        api.listSessions(spaceId),
       ])
       if (cancelled) return
       const status = (sessionID && statuses[sessionID]) || { type: 'idle' as const }
-      dispatch({ type: 'reset', sessionID, messages, permissions, status })
+      dispatch({ type: 'reset', sessionID, messages, permissions, status, sessions })
       pendingEvents.current?.forEach((event) => dispatch({ type: 'event', event }))
       pendingEvents.current = null
       setLoaded(true)
@@ -274,13 +294,63 @@ export function useSessionStream(spaceId: string, sessionID: string | null, conn
     if (!connected) return
     return window.electronAPI.onEvent((eventSpaceId, event) => {
       if (eventSpaceId !== spaceId) return
+      const eventSession = event.type === 'message.updated' ? event.properties.info.sessionID : 'part' in event.properties ? event.properties.part.sessionID
+        : 'sessionID' in event.properties ? event.properties.sessionID
+        : 'info' in event.properties ? event.properties.info.id : undefined
+      if (eventSession === sessionID || event.type.startsWith('permission.') || ['session.created', 'session.updated', 'session.deleted'].includes(event.type) || (event.type === 'session.error' && !eventSession)) revision.current += 1
+      if (eventSession && familyRef.current.has(eventSession) && event.type !== 'session.status' && event.type !== 'session.idle') {
+        lastProgress.current = Date.now()
+      }
       if (event.type === 'message.part.updated' && event.properties.part.type === 'tool') {
         pipeBashPart(event.properties.part as ToolPart)
       }
       if (pendingEvents.current) pendingEvents.current.push(event)
       else dispatch({ type: 'event', event })
     })
-  }, [spaceId, connected])
+  }, [spaceId, sessionID, connected])
+
+  // SSE is the fast path, not the only source of truth. Recover a missed completion,
+  // approval or transcript after reconnecting, and while a connection silently stalls.
+  useEffect(() => {
+    if (!connected || !loaded) return
+    let cancelled = false
+    let inFlight = false
+    let previousSnapshot = ''
+    const refresh = async () => {
+      if (inFlight || cancelled) return
+      inFlight = true
+      setRefreshing(true)
+      const startedAt = revision.current
+      try {
+        const [messages, permissions, statuses, sessions] = await Promise.all([
+          sessionID ? api.messages(spaceId, sessionID) : Promise.resolve([]),
+          api.listPermissions(spaceId), api.sessionStatus(spaceId), api.listSessions(spaceId),
+        ])
+        if (cancelled) return
+        setSyncError(null)
+        // A streamed event newer than this read wins; don't overwrite fresh tokens or
+        // replay deltas already included in the snapshot (which duplicates text).
+        if (startedAt !== revision.current) return
+        const snapshot = JSON.stringify(messages)
+        if (previousSnapshot && snapshot !== previousSnapshot) lastProgress.current = Date.now()
+        previousSnapshot = snapshot
+        dispatch({ type: 'reset', sessionID, messages, permissions, sessions, status: (sessionID && statuses[sessionID]) || { type: 'idle' } })
+      } catch (reason) {
+        if (!cancelled) setSyncError(`Could not check agent status: ${reason instanceof Error ? reason.message : String(reason)}`)
+      } finally {
+        inFlight = false
+        if (!cancelled) setRefreshing(false)
+      }
+    }
+    refreshRef.current = refresh
+    setSyncError(null)
+    const off = api.onResync((id) => { if (id === spaceId) void refresh() })
+    const interval = window.setInterval(() => {
+      setQuietSeconds(Math.floor((Date.now() - lastProgress.current) / 1000))
+      void refresh()
+    }, 15_000)
+    return () => { cancelled = true; off(); window.clearInterval(interval); refreshRef.current = async () => {} }
+  }, [spaceId, sessionID, connected, loaded])
 
   const clearError = useCallback(() => dispatch({ type: 'clearError' }), [])
 
@@ -288,15 +358,39 @@ export function useSessionStream(spaceId: string, sessionID: string | null, conn
   const adoptNew = useCallback(
     (id: string) => {
       adopted.current = id
-      dispatch({ type: 'reset', sessionID: id, messages: [], permissions: state.permissions, status: { type: 'busy' } })
+      dispatch({ type: 'reset', sessionID: id, messages: [], permissions: state.permissions, sessions: state.sessions, status: { type: 'busy' } })
     },
-    [state.permissions],
+    [state.permissions, state.sessions],
   )
 
-  const markBusy = useCallback(() => { if (sessionID) dispatch({ type: 'event', event: { type: 'session.status', properties: { sessionID, status: { type: 'busy' } } } }) }, [sessionID])
-  const markIdle = useCallback(() => { if (sessionID) dispatch({ type: 'event', event: { type: 'session.idle', properties: { sessionID } } }) }, [sessionID])
+  const markBusy = useCallback(() => { revision.current += 1; lastProgress.current = Date.now(); setQuietSeconds(0); if (sessionID) dispatch({ type: 'event', event: { type: 'session.status', properties: { sessionID, status: { type: 'busy' } } } }) }, [sessionID])
+  const markIdle = useCallback(() => { revision.current += 1; if (sessionID) dispatch({ type: 'event', event: { type: 'session.idle', properties: { sessionID } } }) }, [sessionID])
 
-  return { ...state, loaded, clearError, adoptNew, markBusy, markIdle }
+  const refresh = useCallback(() => refreshRef.current(), [])
+  return { ...state, loaded, clearError, adoptNew, markBusy, markIdle, sessionIDs: family, quietSeconds, refreshing, syncError, refresh }
+}
+
+/** Only this chat and its descendants may surface approvals here, never sibling chats. */
+export function sessionFamily(sessions: Session[], root: string | null): Set<string> {
+  const ids = new Set<string>(root ? [root] : [])
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const session of sessions) {
+      if (session.parentID && ids.has(session.parentID) && !ids.has(session.id)) { ids.add(session.id); changed = true }
+    }
+  }
+  return ids
+}
+
+export function sessionOutcome(messages: MessageEntry[]): 'stopped' | 'failed' | null {
+  const last = messages[messages.length - 1]
+  if (!last || last.info.role !== 'assistant') return null
+  if (last.info.error?.name === 'MessageAbortedError') return 'stopped'
+  if (last.info.error) return 'failed'
+  const meaningful = last.parts.filter((p) => p.type === 'text' || p.type === 'tool')
+  const tail = meaningful[meaningful.length - 1]
+  return tail?.type === 'tool' && tail.state.status === 'error' ? 'failed' : null
 }
 
 // ---------------------------------------------------------------------------

@@ -7,6 +7,8 @@ import { sameDirectory, sessionsInDirectory } from './sessionScope'
 import { discoverProviders, fetchDaemonProviders, mergeProviders, isChatModel, modelAccess, slugifyProviderId, BUILTIN_ENDPOINTS } from './modelDiscovery'
 import { getSettings, updateSettings } from './settings'
 import * as projects from './projects'
+import * as connections from './connections'
+import * as browserSignIn from './browserSignIn'
 import { gitStatus, gitAction } from './git'
 import type { OlympusSettings, LocalProvider, StartDaemonResult } from '../src/types/opencode'
 
@@ -89,8 +91,8 @@ async function listAllProviders(spaceId: string): Promise<LocalProvider[]> {
   const base = pool.baseUrl(spaceId)
   if (base) {
     const creds = pool.credentials(spaceId)
-    // Independent of each other — one probes local ports, the other asks the daemon over
-    // HTTP — so run them concurrently rather than paying both timeouts back to back.
+    // Independent of each other - one probes local ports, the other asks the daemon over
+    // HTTP - so run them concurrently rather than paying both timeouts back to back.
     const [local, fromDaemon] = await Promise.all([
       discoverProviders(getSettings().customEndpoints),
       fetchDaemonProviders(base, creds ? basicAuthHeader(creds) : undefined),
@@ -98,7 +100,7 @@ async function listAllProviders(spaceId: string): Promise<LocalProvider[]> {
     return mergeProviders(fromDaemon, local)
   }
   const local = await discoverProviders(getSettings().customEndpoints)
-  // No project daemon yet — spin up a throwaway one so models configured via the
+  // No project daemon yet - spin up a throwaway one so models configured via the
   // opencode CLI still show on the welcome screen (before any folder is opened).
   const installed = await probeInstalledProviders()
   const normalized: LocalProvider[] = installed
@@ -130,7 +132,7 @@ async function listAllProviders(spaceId: string): Promise<LocalProvider[]> {
 
 /**
  * Starts (or reuses) the given space's own daemon. Spaces that are already running with
- * the same directory and permission mode are left alone — this is what lets you switch
+ * the same directory and permission mode are left alone - this is what lets you switch
  * between several open projects, or send a message to a background one, without tearing
  * down anyone else's agent.
  */
@@ -149,9 +151,13 @@ async function startForProject(spaceId: string, dir: string, force = false): Pro
     spaceId,
     online.length
       ? `[olympus] local model servers: ${online.map((p) => `${p.name} (${p.models.length})`).join(', ')}`
-      : '[olympus] no local model servers found — will still load models configured via the opencode CLI.',
+      : '[olympus] no local model servers found - will still load models configured via the opencode CLI.',
   )
-  const state = await pool.start(spaceId, resolved, buildOpencodeConfig(local, settings.selectedModel, settings.permissionMode))
+  // Every saved connection is available to every project automatically - nothing to opt into
+  // per store, just somewhere to check what's there (Station's "Connections" button).
+  const allConnectionIds = connections.CONNECTION_PROVIDERS.map((p) => p.id)
+  const connectionEnv = { ...connections.envForConnections(allConnectionIds), ...browserSignIn.sessionEnv(allConnectionIds) }
+  const state = await pool.start(spaceId, resolved, buildOpencodeConfig(local, settings.selectedModel, settings.permissionMode), connectionEnv)
   // Once the daemon is up, fold in the providers it knows (e.g. authenticated OpenCode Zen).
   const providers = await listAllProviders(spaceId)
   const daemonOnly = providers.filter((p) => p.source === 'opencode' && p.models.length)
@@ -194,6 +200,23 @@ function readProjectFile(spaceId: string, requested: string): string | null {
   } catch {
     return null
   }
+}
+
+/** Preview a small generated raster image from this project's own files. */
+function readProjectImage(spaceId: string, requested: string): string | null {
+  const root = pool.state(spaceId).cwd
+  if (!root || typeof requested !== 'string') return null
+  const mime: Record<string, string> = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif' }
+  try {
+    const realRoot = fs.realpathSync(root)
+    const realTarget = fs.realpathSync(path.resolve(root, requested))
+    const rel = path.relative(realRoot, realTarget)
+    const type = mime[path.extname(realTarget).toLowerCase()]
+    if (!type || rel.startsWith('..') || path.isAbsolute(rel)) return null
+    const stat = fs.statSync(realTarget)
+    if (!stat.isFile() || stat.size > 2 * 1024 * 1024) return null
+    return `data:${type};base64,${fs.readFileSync(realTarget).toString('base64')}`
+  } catch { return null }
 }
 
 /** Lists ordinary files without walking generated/vendor folders or following symlinks. */
@@ -323,6 +346,10 @@ function registerIpc() {
     return startForProject(id, resolveSpaceDir(id))
   })
   handle('space:close', (_e, spaceId: unknown) => pool.stop(normSpaceId(spaceId)))
+  handle('space:setPinned', (_e, spaceIds: unknown) => {
+    if (!Array.isArray(spaceIds)) throw new Error('Expected a list of spaces')
+    pool.setPinned(spaceIds.filter((id): id is string => typeof id === 'string').map(normSpaceId))
+  })
   handle('daemon:state', (_e, spaceId: unknown) => pool.state(normSpaceId(spaceId)))
   const gitProjectPath = (id: unknown) => {
     if (typeof id !== 'string') throw new Error('Select a project first.')
@@ -342,6 +369,28 @@ function registerIpc() {
   handle('projects:unhide', (_e, id: unknown) => projects.unhideProject(String(id)))
   handle('projects:pin', (_e, id: unknown, pinned: unknown) => projects.pinProject(String(id), pinned === true))
   handle('projects:create', (_e, root: unknown, name: unknown) => projects.createProject(String(root), String(name)))
+  handle('connections:list', () => connections.listConnectionStatus())
+  handle('connections:set', (_e, providerId: unknown, values: unknown) => {
+    if (typeof providerId !== 'string' || !values || typeof values !== 'object') throw new Error('Invalid connection values')
+    const entries = Object.entries(values as Record<string, unknown>).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+    return connections.setConnectionValues(providerId, Object.fromEntries(entries))
+  })
+  handle('connections:clear', (_e, providerId: unknown) => connections.clearConnection(String(providerId)))
+  handle('connections:openSignIn', async (_e, providerId: unknown) => {
+    await browserSignIn.openSignIn(String(providerId))
+    return connections.listConnectionStatus()
+  })
+  handle('connections:forgetSignIn', (_e, providerId: unknown) => {
+    browserSignIn.forgetSession(String(providerId))
+    return connections.listConnectionStatus()
+  })
+  handle('stores:list', () => projects.listStores())
+  handle('stores:create', (_e, root: unknown, name: unknown, displayName: unknown) => projects.createStore(String(root), String(name), typeof displayName === 'string' ? displayName : undefined))
+  handle('stores:remove', async (_e, id: unknown, deleteFiles: unknown) => {
+    const storeId = String(id)
+    await pool.stop(storeId).catch(() => {})
+    return projects.removeStore(storeId, deleteFiles === true)
+  })
   handle('projects:reveal', async (_e, id: unknown) => {
     const proj = projects.findProject(String(id))
     if (!proj?.exists) throw new Error('That folder no longer exists')
@@ -437,6 +486,7 @@ function registerIpc() {
     return ['save', 'discard', 'cancel'][result.response]
   })
   handle('fs:readProjectFile', (_e, id: unknown, p: unknown) => readProjectFile(String(id), String(p)))
+  handle('fs:readProjectImage', (_e, id: unknown, p: unknown) => readProjectImage(String(id), String(p)))
   handle('fs:listProjectFiles', (_e, id: unknown) => listProjectFiles(String(id)))
   handle('fs:writeProjectFile', (_e, id: unknown, p: unknown, content: unknown) => {
     if (typeof p !== 'string' || typeof content !== 'string') return false
@@ -485,7 +535,7 @@ function registerIpc() {
    * blocking the window here would contradict what the site promises and would break every
    * install whose signing secret has not been set yet. Enforcement is a product decision
    * that belongs in a later release, deliberately left off until it is made. The secret
-   * and the raw key never cross this boundary — only the summary does.
+   * and the raw key never cross this boundary - only the summary does.
    */
   handle('license:state', () => ({ product: 'Olympus', model: 'Beta ? no public release', valid: true, trial: false, expired: false, daysLeft: 0, email: null }))
 
@@ -534,10 +584,10 @@ let closePending = false
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1560,
-    height: 940,
-    minWidth: 1100,
-    minHeight: 640,
+    width: 1360,
+    height: 860,
+    minWidth: 940,
+    minHeight: 600,
     title: 'Olympus',
     icon: APP_ICON,
     backgroundColor: '#0f1115',
@@ -576,6 +626,14 @@ function createWindow() {
 // Never let the renderer navigate away, spawn new Electron windows, or gain new device access.
 app.on('web-contents-created', (_e, contents) => {
   lockDownPermissions(contents.session)
+
+  if (browserSignIn.isSignInSession(contents.session)) {
+    // A real sign-in window: it must be free to navigate the provider's own site (and any
+    // OAuth popups it opens), but still gets no camera/mic/etc access from lockDownPermissions
+    // above.
+    contents.setWindowOpenHandler(() => ({ action: 'allow' }))
+    return
+  }
 
   contents.on('did-fail-load', (_event, code, description, url, isMainFrame) => {
     if (!isMainFrame && code !== -3) send('preview:error', url, description)

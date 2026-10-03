@@ -8,7 +8,7 @@ interface Props {
 }
 
 // Preview-only panel. It opens itself when a run starts (dev server) and
-// closes from here or with Ctrl/⌘ B — project meta lives in the manager.
+// closes from here or with Ctrl/⌘ B - project meta lives in the manager.
 export default function ContextPanel({ projectId, onClose, children }: Props) {
   return <>
     <header className="flex h-10 shrink-0 items-center gap-1 border-b border-slate-200 bg-slate-50 px-2">

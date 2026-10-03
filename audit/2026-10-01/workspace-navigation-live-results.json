@@ -1,0 +1,14 @@
+{
+  "scratch": "C:\\Users\\Nick\\AppData\\Local\\Temp\\olympus-folder-audit-t5gkcX",
+  "checks": [
+    "startup restores shared Workspace",
+    "no single-chat or project-only chat tabs",
+    "first agent keeps position after folder change",
+    "unrelated draft preserved",
+    "New agent preserves existing windows",
+    "Add agent across projects appends only new window",
+    "saved conversation reopens in Workspace",
+    "window order persists after reload",
+    "project navigation returns to shared Workspace"
+  ]
+}

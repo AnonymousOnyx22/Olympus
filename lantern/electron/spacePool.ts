@@ -27,6 +27,15 @@ const pool = new Map<string, SpaceEntry>()
 const MAX_RUNNING_DAEMONS = 4
 
 let focusedSpaceId: string | null = null
+/**
+ * Spaces with an agent window open in the renderer. These are never evicted: stopping one
+ * strands its windows on "Connecting", the renderer restarts it, and that restart evicts the
+ * next idle space, so with more open projects than the cap they evict each other in a loop.
+ */
+let pinnedSpaceIds = new Set<string>()
+export function setPinned(spaceIds: string[]) {
+  pinnedSpaceIds = new Set(spaceIds)
+}
 /** Stops asking a daemon about its sessions until this timestamp. */
 let busyCheckThrottledUntil = 0
 const busyCache = new Map<string, { at: number; busy: boolean }>()
@@ -117,7 +126,7 @@ export async function enforceBudget(): Promise<void> {
   const candidates = [...pool.entries()]
     .filter(([id, entry]) => {
       const status = entry.daemon.getState().status
-      return id !== focusedSpaceId && (status === 'running' || status === 'starting')
+      return id !== focusedSpaceId && !pinnedSpaceIds.has(id) && (status === 'running' || status === 'starting')
     })
     .sort((a, b) => a[1].lastUsed - b[1].lastUsed)
 
@@ -128,8 +137,8 @@ export async function enforceBudget(): Promise<void> {
   }
 }
 
-export async function start(spaceId: string, dir: string, config: object): Promise<DaemonState> {
-  const state = await ensure(spaceId).daemon.start(dir, config)
+export async function start(spaceId: string, dir: string, config: object, connectionEnv: NodeJS.ProcessEnv = {}): Promise<DaemonState> {
+  const state = await ensure(spaceId).daemon.start(dir, config, connectionEnv)
   // Opening one more project is when the ceiling can be crossed.
   void enforceBudget()
   return state

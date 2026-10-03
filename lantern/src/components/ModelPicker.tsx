@@ -15,6 +15,8 @@ interface ModelPickerProps {
   onRemoveEndpoint: (id: string) => Promise<void>
   /** 'up' opens the menu above the button (for a bottom composer). */
   direction?: 'up' | 'down'
+  /** Keep the menu in the viewport when this picker sits inside a scrolling card. */
+  anchored?: boolean
 }
 
 interface Row {
@@ -91,7 +93,7 @@ const familyRank = (name: string) => {
 
 // ---- Favorites --------------------------------------------------------------
 // A per-viewer preference, not app data, so it lives in localStorage exactly like the
-// workspace/context panel toggles elsewhere in this app — every ModelPicker instance
+// workspace/context panel toggles elsewhere in this app - every ModelPicker instance
 // (the main composer, every agent pane) reads and writes the same key, so favoriting a
 // model in one place shows it pinned everywhere else too.
 const FAVORITES_KEY = 'olympus.favoriteModels'
@@ -105,7 +107,7 @@ function loadFavorites(): string[] {
 }
 
 function saveFavorites(favorites: string[]) {
-  try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites)) } catch { /* private mode, etc. — favorites just won't persist */ }
+  try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites)) } catch { /* private mode, etc. - favorites just won't persist */ }
 }
 
 /** Filled gold when favorited; a faint outlined "holo" ring otherwise, so the affordance still
@@ -141,7 +143,7 @@ function StarButton({ favorite, onClick, label }: { favorite: boolean; onClick: 
 
 /**
  * `onEscape` defaults to `onClose` but can be overridden to also return focus to whatever
- * opened the popover — appropriate for a keyboard dismissal, but not for an outside click,
+ * opened the popover - appropriate for a keyboard dismissal, but not for an outside click,
  * which already moves focus to wherever the user clicked.
  */
 function useOutsideClose(ref: React.RefObject<HTMLElement | null>, onClose: () => void, open: boolean, onEscape: () => void = onClose) {
@@ -251,7 +253,7 @@ function AddEndpoint({ onAddEndpoint, onDone }: { onAddEndpoint: ModelPickerProp
   )
 }
 
-export default function ModelPicker({ providers, selected, variant, onSelect, onSelectVariant, onRescan, rescanning, onAddEndpoint, onRemoveEndpoint, direction = 'up' }: ModelPickerProps) {
+export default function ModelPicker({ providers, selected, variant, onSelect, onSelectVariant, onRescan, rescanning, onAddEndpoint, onRemoveEndpoint, direction = 'up', anchored = false }: ModelPickerProps) {
   const [open, setOpen] = useState(false)
   const [variantOpen, setVariantOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -266,6 +268,11 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
   }
   const ref = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const [anchor, setAnchor] = useState({ left: 8, bottom: 8 })
+  const positionMenu = () => {
+    const box = triggerRef.current?.getBoundingClientRect()
+    if (box) setAnchor({ left: Math.max(8, Math.min(box.left, window.innerWidth - 328)), bottom: window.innerHeight - box.top + 8 })
+  }
   useOutsideClose(ref, () => {
     setOpen(false)
     setVariantOpen(false)
@@ -299,7 +306,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
     return [...canonical.values()]
   }, [providers, selected])
   // Favorites are pinned above everything else, in the order they were favorited (then however
-  // the user has dragged them since). Only shown while browsing, not mid-search — a query already
+  // the user has dragged them since). Only shown while browsing, not mid-search - a query already
   // narrows the list to what's relevant, and duplicating a favorite there would just be noise.
   const favoriteRows = useMemo(
     () => favoriteKeys.map((key) => rows.find((row) => rowKey(row) === key)).filter((row): row is Row => !!row),
@@ -360,11 +367,12 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
   const customEndpoints = providers.filter((p) => p.custom)
 
   return (
-    <div ref={ref} className="relative flex items-center gap-0.5">
+    <div ref={ref} className="relative flex min-w-0 items-center gap-0.5">
       {variants.length > 0 && (
         <button
           type="button"
           onClick={() => {
+            if (anchored) positionMenu()
             setOpen(false)
             setVariantOpen((value) => !value)
           }}
@@ -387,11 +395,13 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
 
       <button
         ref={triggerRef}
+        type="button"
         onClick={() => {
+          if (anchored) positionMenu()
           setVariantOpen(false)
           setOpen((value) => !value)
         }}
-        className="flex max-w-[280px] items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-left ring-1 ring-slate-200 transition hover:bg-slate-50 active:scale-[0.98]"
+        className="flex min-w-0 max-w-[280px] items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-left ring-1 ring-slate-200 transition hover:bg-slate-50 active:scale-[0.98]"
         title="Choose a model"
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -415,9 +425,9 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: direction === 'up' ? 4 : -4 }}
             transition={{ type: 'spring', stiffness: 520, damping: 36 }}
-            style={{ transformOrigin: direction === 'up' ? 'bottom right' : 'top right' }}
-            className={`absolute right-0 z-40 w-60 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-aegean-lg ${
-              direction === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
+            style={{ transformOrigin: direction === 'up' ? 'bottom left' : 'top left', ...(anchored ? { left: anchor.left, bottom: anchor.bottom, maxWidth: 'calc(100vw - 16px)' } : {}) }}
+            className={`${anchored ? 'fixed' : 'absolute right-0'} z-40 w-60 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-aegean-lg ${
+              anchored ? '' : direction === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
             }`}
           >
             <div className="px-2 pb-1.5 pt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500">
@@ -463,9 +473,9 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: direction === 'up' ? 6 : -6 }}
             transition={{ type: 'spring', stiffness: 500, damping: 34 }}
-            style={{ transformOrigin: direction === 'up' ? 'bottom right' : 'top right' }}
-            className={`absolute z-30 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean-lg ${
-              direction === 'up' ? 'bottom-full right-0 mb-2' : 'top-full right-0 mt-2'
+            style={{ transformOrigin: direction === 'up' ? 'bottom left' : 'top left', ...(anchored ? { left: anchor.left, bottom: anchor.bottom, maxWidth: 'calc(100vw - 16px)' } : {}) }}
+            className={`${anchored ? 'fixed' : 'absolute'} z-30 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean-lg ${
+              anchored ? '' : direction === 'up' ? 'bottom-full right-0 mb-2' : 'top-full right-0 mt-2'
             }`}
           >
             {adding ? (
@@ -611,6 +621,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
 
                 <div className="flex items-center gap-1 border-t border-slate-200 p-1.5">
                   <button
+                    type="button"
                     onClick={onRescan}
                     disabled={rescanning}
                     className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50"
@@ -618,7 +629,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                     <svg className={`h-3.5 w-3.5 ${rescanning ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" /></svg>
                     {rescanning ? 'Scanning…' : 'Rescan'}
                   </button>
-                  <button onClick={() => setAdding(true)} className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">
+                  <button type="button" onClick={() => setAdding(true)} className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">
                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                     Add endpoint
                   </button>

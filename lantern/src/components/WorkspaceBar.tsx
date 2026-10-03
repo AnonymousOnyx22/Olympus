@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { PermissionMode } from '../types/opencode'
 
 // Every conversation lives in the shared Workspace. Code and edits are tools.
-export type WorkspaceView = 'code' | 'edits' | 'workspace'
+export type WorkspaceView = 'code' | 'edits' | 'workspace' | 'station'
 
 interface WorkspaceBarProps {
   projectId: string | null
@@ -39,8 +39,8 @@ export default function WorkspaceBar(props: WorkspaceBarProps) {
 
   const current = approvalModes.find((m) => m.id === props.permissionMode)
 
-  // Picking "Full access" from this menu is already the deliberate act — its own row already
-  // spells out "Unrestricted access to files and commands" — so choosing it is the acceptance.
+  // Picking "Full access" from this menu is already the deliberate act - its own row already
+  // spells out "Unrestricted access to files and commands" - so choosing it is the acceptance.
   // No extra confirm dialog on top of the menu the user just opened and read.
   const selectMode = (mode: PermissionMode) => {
     props.onPermissionModeChange(mode)
@@ -49,14 +49,14 @@ export default function WorkspaceBar(props: WorkspaceBarProps) {
 
   return <header className="flex min-h-11 shrink-0 flex-wrap items-center gap-x-2 gap-y-1 pb-1">
     <div className="workspace-title min-w-0 flex-1 truncate pl-1 text-xs text-slate-500" title={props.title}>{props.title || 'General'}</div>
-    {(props.editCount > 0 || props.view === 'edits') && <button onClick={() => props.onChange(props.view === 'edits' ? 'workspace' : 'edits')} className="flex h-7 shrink-0 items-center gap-1.5 rounded-xl bg-amber-400/10 px-2 text-[11px] font-medium text-amber-700 ring-1 ring-amber-400/30 transition hover:bg-amber-400/20">{props.view === 'edits' ? 'Back to Workspace' : `Pending edits ${props.editCount}`}</button>}
-    <nav aria-label="Workspace mode" className="flex rounded-xl bg-slate-50 p-0.5 ring-1 ring-slate-200">
+    {props.view !== 'station' && (props.editCount > 0 || props.view === 'edits') && <button onClick={() => props.onChange(props.view === 'edits' ? 'workspace' : 'edits')} className="flex h-7 shrink-0 items-center gap-1.5 rounded-xl bg-amber-400/10 px-2 text-[11px] font-medium text-amber-700 ring-1 ring-amber-400/30 transition hover:bg-amber-400/20">{props.view === 'edits' ? 'Back to Workspace' : `Pending edits ${props.editCount}`}</button>}
+    {props.view !== 'station' && <nav aria-label="Workspace mode" className="flex rounded-xl bg-slate-50 p-0.5 ring-1 ring-slate-200">
       {([
         ['workspace', 'Workspace', false],
         ['code', 'Code', !props.projectId],
       ] as const).map(([view, label, unavailable]) => <button key={view} onClick={() => props.onChange(view)} aria-pressed={props.view === view} disabled={unavailable} title={view === 'workspace' ? 'All agent windows from every project, side by side' : undefined} className={`rounded-lg px-4 py-1 text-xs capitalize transition disabled:opacity-40 ${props.view === view ? 'bg-white text-slate-900 shadow-aegean font-medium' : 'text-slate-500 hover:text-slate-800'}`}>{label}</button>)}
-    </nav>
-    <div className="relative shrink-0" ref={approvalRef}>
+    </nav>}
+    {props.view !== 'station' && <div className="relative shrink-0" ref={approvalRef}>
       <button onClick={() => setApprovalsOpen((v) => !v)} disabled={props.permissionDisabled} aria-expanded={approvalsOpen} title="Agent approvals" className={`flex h-7 items-center gap-1 rounded-xl px-2.5 text-[11px] transition hover:bg-slate-100 disabled:opacity-40 ${props.permissionMode === 'bypass' ? 'text-amber-600' : 'text-slate-600 hover:text-slate-900'}`}>
         {current?.short}<span aria-hidden="true"> &#8964;</span>
       </button>
@@ -79,6 +79,6 @@ export default function WorkspaceBar(props: WorkspaceBarProps) {
         })}
         <p className="px-2 py-2 text-[10px] text-slate-500">Changing this restarts the agent.</p>
       </div>}
-    </div>
+    </div>}
   </header>
 }

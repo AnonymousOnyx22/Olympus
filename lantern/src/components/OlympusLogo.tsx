@@ -9,8 +9,8 @@ interface OlympusLogoProps {
 
 /**
  * The Olympus mark: a painted profile portrait, crowned with a wheat leaf, on a sky-blue
- * ground. A raster image rather than a drawn glyph — this one has real brushwork and
- * can't be redrawn in strokes — so it reads the same in the sidebar, the boot screen, and
+ * ground. A raster image rather than a drawn glyph - this one has real brushwork and
+ * can't be redrawn in strokes - so it reads the same in the sidebar, the boot screen, and
  * the packaged app icon (`build/icon.svg` is generated from this same source image).
  */
 export default function OlympusLogo({ size = 24, animated = false, className }: OlympusLogoProps) {

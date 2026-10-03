@@ -106,7 +106,7 @@ ul{padding-left:22px} li+li{margin-top:9px} [hidden]{display:none!important}
 .pager{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden}.pager a{padding:22px 26px;text-decoration:none;transition:background .2s}.pager a:first-child{border-right:1px solid var(--line)}.pager a:hover{background:var(--cloud)}.pager small{display:block;color:var(--muted);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}.pager small::before{content:'← '}.pager .is-next small::before{content:none}.pager .is-next small::after{content:' →'}.pager strong{display:block;font-size:16px;font-weight:600}.pager .is-next{text-align:right}
 .pager:has(> :only-child){grid-template-columns:1fr}
 /* A real illustration of the thing that actually sets Olympus apart: several projects,
-   each with its own running agent, visible together — not another decorative scene. */
+   each with its own running agent, visible together - not another decorative scene. */
 .workspace-mock{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:32px 0}
 .workspace-mock__pane{border:1px solid var(--line);border-radius:10px;background:#fff;padding:16px}
 .workspace-mock__name{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;margin-bottom:12px;color:var(--ink)}
@@ -127,7 +127,7 @@ ul{padding-left:22px} li+li{margin-top:9px} [hidden]{display:none!important}
 .stat__label{display:block;margin-top:6px;font-size:11px;line-height:1.5;color:var(--muted)}
 @media(max-width:700px){.stat-strip{grid-template-columns:repeat(2,1fr);gap:24px 14px}}
 /* Live FAQ search, faq.html only: the match count and empty-state text live here so the
-   plain-HTML <details> list still works with JS off — search.js just hides/shows items. */
+   plain-HTML <details> list still works with JS off - search.js just hides/shows items. */
 .faq-search{display:flex;align-items:center;gap:10px;max-width:420px;margin:0 0 24px;padding:11px 16px;border:2px solid var(--ink);border-radius:12px;background:#fffdf5}
 .faq-search input{flex:1;border:0;background:none;font:inherit;font-size:14px;color:var(--ink);outline:none}
 .faq-search input::placeholder{color:var(--muted)}
@@ -148,7 +148,7 @@ ul{padding-left:22px} li+li{margin-top:9px} [hidden]{display:none!important}
    purely on specificity, regardless of source order. */
 #watch{padding:48px 0}
 #watch .sec__head{margin-bottom:24px}
-#watch .demo__body{min-height:0;height:min(560px,calc(100vh - 200px))}
+#watch .demo__body{min-height:0;height:660px}
 #watch .demo__body>*{min-height:0;overflow:auto}
 #watch .demo__center{overflow:hidden}
 #watch .demo__panel{overflow:auto}
@@ -170,3 +170,9 @@ ul{padding-left:22px} li+li{margin-top:9px} [hidden]{display:none!important}
 #watch .thread-message{padding:10px;margin-top:10px}
 #watch .demo-caption{padding-top:10px}
 #watch .workflow-grid{margin-top:22px;gap:20px}
+
+/* The homepage's last section (#multi-project) and the ship CTA right after it each carry
+   their own ~85px of padding; stacked back to back that reads as one large dead gap rather
+   than two sections. Only #multi-project's bottom is trimmed here, so the rhythm between it
+   and the section ABOVE it is untouched. */
+#multi-project{padding-bottom:32px}

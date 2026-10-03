@@ -8,7 +8,7 @@ import { onAgentTerminal } from '../services/streamHandler'
 interface TerminalPanelProps {
   /** Daemon is up; the interactive shell is only available while it runs. */
   connected: boolean
-  /** The focused space's id — the shell always belongs to whichever project has focus. */
+  /** The focused space's id - the shell always belongs to whichever project has focus. */
   spaceId: string
   /** Changes whenever the daemon restarts so a fresh shell is created. */
   daemonKey: string
@@ -26,25 +26,25 @@ interface TerminalPanelProps {
  * step with the `--accent-*` triplets in index.css.
  */
 const THEME: ITheme = {
-  background: '#f8fafc',
-  foreground: '#334155',
-  cursor: '#2563eb',
-  cursorAccent: '#ffffff',
-  selectionBackground: 'rgba(37,99,235,0.18)',
+  background: '#0f172a',
+  foreground: '#e2e8f0',
+  cursor: '#facc15',
+  cursorAccent: '#0f172a',
+  selectionBackground: 'rgba(59,130,246,0.35)',
   black: '#1e293b',
   brightBlack: '#64748b',
-  blue: '#1e40af',
-  brightBlue: '#2563eb',
-  cyan: '#0891b2',
-  brightCyan: '#06b6d4',
-  green: '#059669',
-  brightGreen: '#10b981',
-  magenta: '#c026d3',
-  brightMagenta: '#d946ef',
-  red: '#e11d48',
-  brightRed: '#f43f5e',
-  yellow: '#d97706',
-  brightYellow: '#f59e0b',
+  blue: '#3b82f6',
+  brightBlue: '#60a5fa',
+  cyan: '#22d3ee',
+  brightCyan: '#67e8f9',
+  green: '#34d399',
+  brightGreen: '#6ee7b7',
+  magenta: '#e879f9',
+  brightMagenta: '#f0abfc',
+  red: '#fb7185',
+  brightRed: '#fda4af',
+  yellow: '#facc15',
+  brightYellow: '#fde047',
   white: '#e2e8f0',
   brightWhite: '#f8fafc',
 }

@@ -40,10 +40,10 @@ const officialLogo = (icon: { path: string; title: string }) => (p: LogoProps) =
   </svg>
 )
 
-// Google — the four-point Gemini spark
+// Google - the four-point Gemini spark
 const Google = officialLogo(siGooglegemini)
 const Claude = officialLogo(siClaude)
-// Microsoft — four squares
+// Microsoft - four squares
 const Microsoft = svg(
   <>
     <rect x="3" y="3" width="8" height="8" rx="0.5" />
@@ -53,51 +53,51 @@ const Microsoft = svg(
   </>,
   { fill: true },
 )
-// Meta — the ribbon / infinity wave
+// Meta - the ribbon / infinity wave
 const Meta = officialLogo(siMetaai)
-// Hugging Face — the smiley
+// Hugging Face - the smiley
 const HuggingFace = officialLogo(siHuggingface)
-// OpenAI — the interlocking knot (simplified hexafoil)
+// OpenAI - the interlocking knot (simplified hexafoil)
 const OpenAI = svg(
   <path d="M12 3.2 18.6 7v7L12 17.8 5.4 14V7L12 3.2ZM12 3.2v7M12 10.2 5.4 7M12 10.2 18.6 7M12 10.2v7M12 10.2 5.4 14M12 10.2 18.6 14" strokeWidth={1.6} />,
 )
-// IBM — stacked bars
+// IBM - stacked bars
 const IBM = svg(
   <>
     <path d="M3 5h18M3 9h18M3 13h18M3 17h18" strokeWidth={2.2} />
   </>,
 )
-// xAI — the X
+// xAI - the X
 const xAI = svg(<path d="M4 4l16 16M20 4 4 20" />)
-// Mistral — bold letter-mark from bands
+// Mistral - bold letter-mark from bands
 const Mistral = officialLogo(siMistralai)
-// DeepSeek — stylized wave/whale
+// DeepSeek - stylized wave/whale
 const DeepSeek = officialLogo(siDeepseek)
-// Qwen — hexagon core
+// Qwen - hexagon core
 const Qwen = officialLogo(siQwen)
-// Cohere — concentric arcs
+// Cohere - concentric arcs
 const Cohere = svg(
   <>
     <path d="M7 9.5c2-1 8-1 10 0M6 14.5c2.5 1.2 9.5 1.2 12 0" />
     <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
   </>,
 )
-// Zhipu / GLM — stacked chevrons
+// Zhipu / GLM - stacked chevrons
 const Zhipu = svg(<path d="M5 7l7 4 7-4M5 12l7 4 7-4M5 17l7 4 7-4" strokeWidth={1.8} />)
-// 01.AI (Yi) — stylized 0/1
+// 01.AI (Yi) - stylized 0/1
 const Yi = svg(
   <>
     <rect x="4" y="4" width="7" height="16" rx="3.5" />
     <path d="M17 4v16" />
   </>,
 )
-// Nvidia — stylized eye/swirl
+// Nvidia - stylized eye/swirl
 const Nvidia = officialLogo(siNvidia)
-// Nous / community fine-tunes — a compass rose
+// Nous / community fine-tunes - a compass rose
 const Nous = svg(<path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z" strokeWidth={1.6} />)
-// Anthropic — the starburst
+// Anthropic - the starburst
 const Anthropic = officialLogo(siAnthropic)
-// Generic local model — a chip
+// Generic local model - a chip
 const Chip = svg(
   <>
     <rect x="6" y="6" width="12" height="12" rx="2" />
@@ -178,7 +178,7 @@ export function prettyModelName(modelId: string): string {
   let s = modelId.split(/[\\/]/).pop() ?? modelId
   s = s.replace(/\.(gguf|bin|safetensors|pt)$/i, '')
 
-  // Ollama-style tag after ":" — keep it only if it encodes a size.
+  // Ollama-style tag after ":" - keep it only if it encodes a size.
   let sizeTag = ''
   const colon = s.indexOf(':')
   if (colon >= 0) {

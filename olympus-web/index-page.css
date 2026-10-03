@@ -22,3 +22,19 @@
   .faq__item.is-animating[open] > .faq__answer,
   .faq__item.is-animating[open] > p { opacity: 1; }
 }
+
+
+/* ── Closing plate ──────────────────────────────────────────────────────
+   The image carries the ending, so it needs height, but not the field of
+   empty sky it had: one button floating in 600px of image read as a gap
+   rather than a composition. Shorter plate, and the section above it no
+   longer doubles its bottom padding against the top of the picture. */
+.closing--plate {
+  min-height: clamp(300px, 40vh, 440px);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
+}
+.plate-bleed { margin-top: calc(var(--sec-pad) * -0.45); }
+.closing--plate .closing__cta { position: relative; z-index: 2; margin: 0; font-size: 14px; padding: 15px 28px; }

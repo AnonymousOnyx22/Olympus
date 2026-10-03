@@ -16,9 +16,13 @@ interface ChatCanvasProps {
   mode: 'agent' | 'thread'
   projectName: string
   projectPath?: string
+  projectLocked?: boolean
+  welcomeTitle?: string
+  welcomeDescription?: string
+  composerPlaceholder?: string
   onNewSession: () => void
   /**
-   * This space's chats, newest first. Omitted in compact (agent pane) mode — a pane owns a
+   * This space's chats, newest first. Omitted in compact (agent pane) mode - a pane owns a
    * single session, so a switcher there would be a lie.
    */
   sessions?: Session[]
@@ -32,6 +36,8 @@ interface ChatCanvasProps {
   onDismissError: () => void
   permissions: PermissionRequest[]
   onReviewEdits: () => void
+  /** False when the plan is shown elsewhere instead (Station puts it in its own side panel). */
+  showInlineTodos?: boolean
 
   model: ModelRef | null
   variant: string | null
@@ -46,7 +52,7 @@ interface ChatCanvasProps {
   ready: boolean
   hasProject: boolean
   hasModels: boolean
-  /** Opens the project/folder picker — either from the composer's folder chip or the empty state. */
+  /** Opens the project/folder picker - either from the composer's folder chip or the empty state. */
   onChooseProject: () => void
   onSend: (text: string, priority?: boolean) => Promise<void>
   onAbort: () => void
@@ -79,7 +85,7 @@ const Reasoning = memo(function Reasoning({ part }: { part: ReasoningPart }) {
     <div className="group/reasoning relative py-0.5 pl-5">
       <span
         aria-hidden="true"
-        className={`absolute left-0 top-px select-none text-[13px] leading-5 transition-colors ${streaming ? 'text-aether-500' : 'text-slate-300'}`}
+        className={`absolute left-0 top-px select-none text-[13px] leading-5 transition-colors ${streaming ? 'text-aether-500' : 'text-slate-400'}`}
       >
         →
       </span>
@@ -88,7 +94,7 @@ const Reasoning = memo(function Reasoning({ part }: { part: ReasoningPart }) {
         {streaming && <span className="ml-0.5 inline-block h-3 w-[2px] translate-y-[2px] animate-pulse bg-aether-400 align-middle" />}
       </p>
       {secs !== null && (
-        <span className="mt-0.5 block text-[10px] tabular-nums text-slate-300 opacity-0 transition-opacity group-hover/reasoning:opacity-100">
+        <span className="mt-0.5 block text-[10px] tabular-nums text-slate-500 opacity-0 transition-opacity group-hover/reasoning:opacity-100">
           thought for {secs}s
         </span>
       )}
@@ -164,15 +170,15 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
         <span className="shrink-0 text-[11px] font-medium text-slate-400">{TOOL_LABEL[part.tool] ?? part.tool}</span>
         {subtitle && (
           <>
-            <span aria-hidden="true" className="shrink-0 text-[11px] text-slate-300">·</span>
+            <span aria-hidden="true" className="shrink-0 text-[11px] text-slate-400">·</span>
             <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-slate-600">{subtitle}</span>
           </>
         )}
         {!subtitle && <span className="flex-1" />}
         {diag && Object.keys(diag).length > 0 && <span className="shrink-0 rounded bg-amber-400/10 px-1.5 text-[10px] text-amber-600">LSP</span>}
         {s.status === 'error' && <span className="shrink-0 text-[10px] text-rose-600">failed</span>}
-        {running && <span className="shrink-0 animate-pulse text-[10px] text-aether-600">running</span>}
-        {!running && duration && <span className="shrink-0 text-[10px] tabular-nums text-slate-300">{duration}s</span>}
+        {running && <span className="text-gloss shrink-0 text-[10px] font-medium">running</span>}
+        {!running && duration && <span className="shrink-0 text-[10px] tabular-nums text-slate-500">{duration}s</span>}
         {hasDetail && (
           <motion.svg
             aria-hidden="true"
@@ -185,7 +191,7 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
             strokeLinecap="round"
             strokeLinejoin="round"
             animate={{ rotate: open ? 90 : 0 }}
-            className="shrink-0 text-slate-300 transition-colors group-hover:text-slate-500"
+            className="shrink-0 text-slate-400 transition-colors group-hover:text-slate-500"
           >
             <path d="m9 6 6 6-6 6" />
           </motion.svg>
@@ -311,7 +317,7 @@ const MessageView = memo(function MessageView({ entry, mode }: { entry: MessageE
   )
 })
 
-interface ComposerProps extends Pick<ChatCanvasProps, 'model' | 'variant' | 'providers' | 'onSelectModel' | 'onSelectVariant' | 'onRescan' | 'rescanning' | 'onAddEndpoint' | 'onRemoveEndpoint' | 'projectName' | 'hasProject' | 'hasModels' | 'ready' | 'busy' | 'onChooseProject' | 'onAbort'> {
+interface ComposerProps extends Pick<ChatCanvasProps, 'model' | 'variant' | 'providers' | 'onSelectModel' | 'onSelectVariant' | 'onRescan' | 'rescanning' | 'onAddEndpoint' | 'onRemoveEndpoint' | 'projectName' | 'projectLocked' | 'composerPlaceholder' | 'hasProject' | 'hasModels' | 'ready' | 'busy' | 'onChooseProject' | 'onAbort'> {
   onSubmit: (text: string, priority?: boolean) => Promise<void>
   autoFocus?: boolean
 }
@@ -362,7 +368,7 @@ function Composer(props: ComposerProps) {
           autoFocus={props.autoFocus}
           disabled={!props.ready}
           aria-label="Message agent"
-          placeholder={!props.hasModels ? 'Connect a model to start' : props.busy ? 'Type another message to queue it' : !props.hasProject ? 'Ask anything, or add a project for code' : 'Give the agent a task...'}
+          placeholder={!props.hasModels ? 'Connect a model to start' : props.busy ? 'Type another message to queue it' : props.composerPlaceholder ?? (!props.hasProject ? 'Ask anything, or add a project for code' : 'Give the agent a task...')}
           className="max-h-[220px] min-h-[26px] flex-1 resize-none bg-transparent py-1.5 text-[14px] leading-6 text-slate-900 placeholder-slate-400 outline-none disabled:cursor-not-allowed"
         />
         {props.busy ? (
@@ -381,12 +387,15 @@ function Composer(props: ComposerProps) {
         <p className="px-2 pb-1 pt-1 text-[10.5px] text-slate-500">Enter queues · Ctrl/⌘+Enter sends next</p>
       )}
 
-      {/* controls row — project on the left, model picker on the right (like the reference GUI) */}
+      {/* controls row - project on the left, model picker on the right (like the reference GUI) */}
       <div className="mt-1 flex items-center justify-between gap-2">
-        <button onClick={props.onChooseProject} className="flex max-w-[45%] items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]" title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
+        {props.projectLocked ? <span className="flex max-w-[45%] items-center gap-1.5 px-2 py-1.5 text-[12px] text-slate-500" title={props.projectName}>
+          <svg className="h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
+          <span className="truncate">{props.projectName}</span>
+        </span> : <button onClick={props.onChooseProject} className="flex max-w-[45%] items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]" title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
           <svg className="h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
           <span className="truncate">{props.hasProject ? props.projectName : 'Choose project'}</span>
-        </button>
+        </button>}
         <ModelPicker
           providers={props.providers}
           selected={props.model}
@@ -445,7 +454,7 @@ function ChatSwitcher({ spaceName, sessions, activeSessionId, onSelect, onNew }:
           <path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" />
         </svg>
         <span className="truncate">{active?.title ?? 'New chat'}</span>
-        <span aria-hidden="true" className="shrink-0 text-[9px] text-slate-300">▼</span>
+        <span aria-hidden="true" className="shrink-0 text-[9px] text-slate-400">▼</span>
       </button>
       {open && (
         <div role="menu" className="absolute right-0 top-full z-50 mt-2 max-h-72 w-72 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-aegean-lg">
@@ -503,6 +512,8 @@ export default function ChatCanvas(props: ChatCanvasProps) {
 
   const composerProps: ComposerProps = {
     projectName: props.projectName,
+    projectLocked: props.projectLocked,
+    composerPlaceholder: props.composerPlaceholder,
     model: props.model,
     variant: props.variant,
     providers: props.providers,
@@ -541,15 +552,15 @@ export default function ChatCanvas(props: ChatCanvasProps) {
             <p className="mt-1 truncate font-mono text-[11px] text-slate-500" title={props.projectPath}>{props.projectPath ?? 'General workspace'}</p>
           </div>}
           {showWelcome && <div className="max-w-lg space-y-3 py-4">
-            <h2 className="text-base font-medium text-slate-900">{props.compact ? 'Give this agent a task' : props.hasProject ? 'What are we working on?' : 'Your next project starts here.'}</h2>
-            <p className="text-xs leading-relaxed text-slate-500">{props.hasProject ? 'Give the agent a task. Follow its commands, file edits, and results here while you work.' : 'Open a project to work with files, run commands, and preview your app. Or start a conversation in General.'}</p>
+            <h2 className="text-base font-medium text-slate-900">{props.welcomeTitle ?? (props.compact ? 'Give this agent a task' : props.hasProject ? 'What are we working on?' : 'Your next project starts here.')}</h2>
+            <p className="text-xs leading-relaxed text-slate-500">{props.welcomeDescription ?? (props.hasProject ? 'Give the agent a task. Follow its commands, file edits, and results here while you work.' : 'Open a project to work with files, run commands, and preview your app. Or start a conversation in General.')}</p>
             {!props.hasProject && <button onClick={props.onChooseProject} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 transition hover:bg-slate-50">Choose a project</button>}
             {!props.hasModels && <p className="border-l border-slate-200 pl-3 text-xs leading-relaxed text-slate-500">Start a local model server or connect a provider in OpenCode, then select a model below.</p>}
           </div>}
           {props.messages.map((entry) => <MessageView key={entry.info.id} entry={entry} mode={props.mode} />)}
           <AnimatePresence>{props.permissions.map((request) => <PermissionCard key={request.id} spaceId={props.spaceId} request={request} onReviewEdits={props.onReviewEdits} />)}</AnimatePresence>
           {props.error && <div role="alert" className="flex items-start gap-2 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-600 ring-1 ring-rose-200"><span className="flex-1">{props.error}</span><button aria-label="Dismiss agent error" className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded hover:bg-rose-100" onClick={props.onDismissError}><svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg></button></div>}
-          {todos && todos.length > 0 && <TodoPanel todos={todos} />}
+          {props.showInlineTodos !== false && todos && todos.length > 0 && <TodoPanel todos={todos} />}
           {props.busy && <AgentStatus label={props.activity} />}
         </div>
       </div>

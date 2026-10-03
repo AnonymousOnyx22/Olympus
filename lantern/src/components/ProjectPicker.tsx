@@ -50,7 +50,7 @@ function Glyph({ path, className = 'h-4 w-4', width = 1.7 }: { path: string; cla
  * folder it works in) and moving an existing chat to a different project.
  *
  * It is a dialog rather than a dropdown because picking a space means starting a daemon for
- * it — too slow and too consequential to trigger from a hover. The space you're already in
+ * it - too slow and too consequential to trigger from a hover. The space you're already in
  * is still selectable: "New agent" means a new agent *here* if that's the folder you meant.
  */
 export default function ProjectPicker({ spaces, currentId, initialQuery, title, hint, onPick, onAddFolder, onClose }: ProjectPickerProps) {
@@ -71,7 +71,7 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
     return spaces
       .filter((space) => !needle || `${space.name} ${space.path ?? ''} ${(space.stack ?? []).join(' ')}`.toLowerCase().includes(needle))
       .sort((a, b) => {
-        // Keep the space you're in on top — it's the one you most often mean to stay on.
+        // Keep the space you're in on top - it's the one you most often mean to stay on.
         if (a.id === currentId) return -1
         if (b.id === currentId) return 1
         return b.agentCount - a.agentCount || a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true })
@@ -84,7 +84,7 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-slate-900/40 p-4 pt-[12vh] backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-midnight/70 p-4 pt-[12vh] backdrop-blur-[2px]"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
       <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} className="flex max-h-[70vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean-lg">
@@ -118,7 +118,7 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
                     type="button"
                     onClick={select}
                     disabled={!space.available}
-                    title={space.available ? (space.path ? `${space.name} — ${space.path}` : space.name) : 'This folder is missing'}
+                    title={space.available ? (space.path ? `${space.name} - ${space.path}` : space.name) : 'This folder is missing'}
                     className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2.5 py-2.5 text-left disabled:cursor-default disabled:opacity-50"
                   >
                     <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl text-[12px] font-semibold uppercase ${isCurrent ? 'bg-aether-100 text-aether-700' : 'bg-slate-100 text-slate-500'}`}>
@@ -178,7 +178,7 @@ export function pickerSpaces(projects: ProjectInfo[], opts: { busyBySpace: Recor
   const general: PickerSpace = {
     id: GENERAL_SPACE,
     name: 'General',
-    // General is a scratch workspace, so it is always selectable — picking it just starts
+    // General is a scratch workspace, so it is always selectable - picking it just starts
     // its daemon, which is cheap and loses nothing if it was already up.
     available: true,
     busy: !!opts.busyBySpace[GENERAL_SPACE],

@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
   /*
-   * Aether Blue — the app's one accent, and the single place it is defined.
+   * Aether Blue - the app's one accent, and the single place it is defined.
    *
    * These are bare RGB channel triplets (not hex) precisely so the two consumers can
    * compose an alpha: tailwind.config.js wraps them as `rgb(var(--accent-N) / <alpha-value>)`
@@ -14,14 +14,16 @@
    * renders to a canvas or a plain string instead of a stylesheet (xterm, Monaco, the app
    * icon) cannot read custom properties and repeats the hex deliberately.
    */
-  --accent-50: 239 246 255;
-  --accent-100: 219 234 254;
-  --accent-200: 191 219 254;
-  --accent-300: 147 197 253;
-  --accent-400: 59 130 246;
-  --accent-500: 37 99 235;
-  --accent-600: 29 78 216;
-  --accent-700: 30 64 175;
+  /* Dark theme ramp: 50–200 are deep cobalt washes for selected/active surfaces, 400–600 are
+     Soft Cobalt (#3B82F6) for buttons, rings and hover, 700 is light type on those washes. */
+  --accent-50: 23 37 84;
+  --accent-100: 30 50 105;
+  --accent-200: 37 70 150;
+  --accent-300: 59 130 246;
+  --accent-400: 96 165 250;
+  --accent-500: 96 165 250;
+  --accent-600: 59 130 246;
+  --accent-700: 147 197 253;
 }
 
 html,
@@ -32,7 +34,7 @@ body,
 
 body {
   @apply font-sans text-slate-900 antialiased;
-  background-color: rgb(var(--accent-200));
+  background-color: #0f172a;
   overflow: hidden;
   user-select: none;
 }
@@ -46,7 +48,7 @@ code,
 }
 
 ::selection {
-  background: rgb(var(--accent-500) / 0.18);
+  background: rgb(59 130 246 / 0.35);
 }
 
 ::-webkit-scrollbar {
@@ -54,13 +56,13 @@ code,
   height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(15, 23, 42, 0.12);
+  background: rgba(148, 163, 184, 0.22);
   border-radius: 8px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(15, 23, 42, 0.2);
+  background-color: rgba(148, 163, 184, 0.38);
 }
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-corner {
@@ -169,17 +171,17 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus
   outline-offset: 2px;
 }
 .workspace-body { display: flex; min-height: 0; flex: 1; gap: 10px; position: relative; }
-.workspace-center { border: 1px solid rgb(var(--accent-100)); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgb(var(--accent-500) / 0.06); }
-.context-panel { width: 350px; min-width: 280px; max-width: 42%; flex-shrink: 0; border: 1px solid rgb(var(--accent-100)); border-radius: 16px; overflow: hidden; background: #f8fafc; box-shadow: 0 8px 30px rgb(var(--accent-500) / 0.06); }
+.workspace-center { border: 1px solid rgb(59 130 246 / 0.14); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgb(2 6 23 / 0.45); }
+.context-panel { width: 350px; min-width: 280px; max-width: 42%; flex-shrink: 0; border: 1px solid rgb(59 130 246 / 0.14); border-radius: 16px; overflow: hidden; background: #1e293b; box-shadow: 0 8px 30px rgb(2 6 23 / 0.45); }
 .agent-transcript .md { font-size: 13px; line-height: 1.7; }
 .agent-transcript .md > * + * { margin-top: 8px; }
 .agent-transcript .tool-row { border-radius: 0; background: transparent; box-shadow: none; }
 .agent-transcript .tool-row > button { padding: 3px 6px; }
-.agent-transcript .prompt-line { justify-content: flex-start; border-block: 1px solid #e2e8f0; background: #f8fafc; padding: 7px 10px; }
+.agent-transcript .prompt-line { justify-content: flex-start; border-block: 1px solid #334155; background: #172235; padding: 7px 10px; }
 .agent-transcript .prompt-line > div { max-width: 100%; border-radius: 0; padding: 0; background: none; box-shadow: none; font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; }
 .agent-transcript .prompt-line > div::before { content: '\203a '; color: #94a3b8; }
 @media (max-width: 1100px) {
-  .context-panel { position: absolute; z-index: 30; right: 0; top: 0; bottom: 0; max-width: calc(100% - 16px); width: 360px; box-shadow: -20px 0 50px rgb(15 23 42 / 0.12); }
+  .context-panel { position: absolute; z-index: 30; right: 0; top: 0; bottom: 0; max-width: calc(100% - 16px); width: 360px; box-shadow: -20px 0 50px rgb(2 6 23 / 0.6); }
 }
 @media (max-width: 700px) {
   .workspace-shell { padding: 6px; }
@@ -188,7 +190,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus
 }
 
 /* Each project owns a grid of independent, scrollable agent conversations. */
-.agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); grid-auto-rows: minmax(400px, 1fr); gap: 8px; }
+.agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); grid-auto-rows: minmax(400px, 1fr); gap: 8px; }
 .agent-grid-cell { display: flex; min-width: 0; min-height: 0; }
 
 /* Status orb: a radar ping while a daemon boots, an orbiting ring while an agent thinks. */
@@ -200,6 +202,21 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus
   .status-orb * { animation: none !important; }
 }
 
+/* A light sweeping across text instead of the whole label blinking in and out. */
+@keyframes olympus-gloss { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.text-gloss {
+  background-image: linear-gradient(100deg, rgb(var(--accent-600)) 35%, rgb(var(--accent-300)) 50%, rgb(var(--accent-600)) 65%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: olympus-gloss 1.8s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .text-gloss { animation: none; background: none; -webkit-background-clip: unset; background-clip: unset; -webkit-text-fill-color: unset; color: rgb(var(--accent-600)); }
+}
+
 /* The plan's in-progress todo gets a slow, lit-up glow. */
 @keyframes olympus-todo-glow { 0%, 100% { box-shadow: 0 0 0 0 rgb(var(--accent-500) / 0); } 50% { box-shadow: 0 0 14px 1px rgb(var(--accent-500) / 0.35); } }
 .todo-active { animation: olympus-todo-glow 2.2s ease-in-out infinite; }
@@ -207,10 +224,25 @@ button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus
   .todo-active { animation: none; }
 }
 
-/* Readable secondary text; icons can still use softer border colors. */
-.text-slate-400{color:#64748b}
-.placeholder\:text-slate-400::placeholder{color:#64748b}
-:focus-visible{outline:2px solid #1d4ed8;outline-offset:2px}
+/* Secondary text on the dark theme: Cool Muted Slate. */
+.text-slate-400{color:#94a3b8}
+.placeholder\:text-slate-400::placeholder{color:#7d8ca3}
+/* `white` is the card colour in tailwind.config.js; type set in "white" stays crisp white. */
+.text-white,.hover\:text-white:hover{color:#f8fafc}
 
-.workspace-title{color:#64748b}
-.text-slate-300{color:#64748b}
+/*
+ * A bare global `:focus-visible` outline painted a hard blue box around every text field on
+ * screen, including search inputs the moment you clicked them. Chromium matches
+ * `:focus-visible` on text inputs even for a mouse click, so it was unavoidable in use and
+ * read as a bug rather than a focus indicator. It is gone. Buttons, links, summaries and tabs
+ * keep their ring from the rule above, which is where a keyboard user actually needs it;
+ * text fields get their position from the caret and the field's own border.
+ */
+input:focus-visible,
+textarea:focus-visible,
+[contenteditable]:focus-visible {
+  outline: none;
+}
+
+.workspace-title{color:#94a3b8}
+.text-slate-300{color:#7d8ca3}

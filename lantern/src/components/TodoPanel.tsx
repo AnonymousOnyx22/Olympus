@@ -35,8 +35,8 @@ export function extractTodos(messages: MessageEntry[]): Todo[] | null {
 
 /**
  * The agent's live plan. Each item's strikethrough draws across on a CSS transition
- * (not a remount), so it only animates the moment a todo actually flips to completed —
- * not on every re-render — and the in-progress item gets a slow Aether glow.
+ * (not a remount), so it only animates the moment a todo actually flips to completed -
+ * not on every re-render - and the in-progress item gets a slow Aether glow.
  */
 export default function TodoPanel({ todos }: { todos: Todo[] }) {
   const done = todos.filter((t) => t.status === 'completed').length

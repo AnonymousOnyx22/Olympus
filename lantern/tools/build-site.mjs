@@ -76,7 +76,7 @@ console.log('olympus site build')
 console.log(`  config: site.config.json (${Object.keys(T).length} tokens)`)
 
 if (missing.length) {
-  console.log(`\n  REFUSING TO BUILD — ${missing.length} required value(s) still TODO:`)
+  console.log(`\n  REFUSING TO BUILD - ${missing.length} required value(s) still TODO:`)
   for (const k of missing) console.log(`     ${k.padEnd(28)} = ${T[k]}`)
   console.log('\n  Fill these in site.config.json and re-run. A site that names no seller and')
   console.log('  points its download buttons at a host that does not exist is worse than unbuilt,')
