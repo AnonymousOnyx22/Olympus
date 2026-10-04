@@ -442,7 +442,7 @@ export function describeActivity(state: StreamState): string {
   if (running) return describeTool(running)
 
   const tail = last.parts[last.parts.length - 1]
-  if (!tail || tail.type === 'step-start') return 'Starting'
+  if (!tail || tail.type === 'step-start') return 'Waiting for model response'
   if (tail.type === 'reasoning') return 'Reasoning'
   if (tail.type === 'text') return 'Composing reply'
   if (tail.type === 'tool') return 'Reviewing results'

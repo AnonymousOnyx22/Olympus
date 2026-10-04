@@ -1,0 +1,5 @@
+Error: UNKNOWN: unknown error, open 'C:\Users\Nick\Downloads\Project - Copy\audit\2026-10-04\fresh-run\latest.png'
+    at async open (node:internal/fs/promises:697:25)
+    at async Object.writeFile (node:internal/fs/promises:1317:14)
+    at async _Page.screenshot (C:\Users\Nick\AppData\Local\npm-cache\_npx\420ff84f11983ee5\node_modules\playwright-core\lib\coreBundle.js:61797:11)
+    at async C:\Users\Nick\Downloads\Project - Copy\audit\2026-10-04\observe-fresh-store.cjs:39:4

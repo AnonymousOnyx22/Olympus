@@ -289,14 +289,14 @@ function projectRunCommand(spaceId = focusedSpaceId): string | null {
  * Probed concurrently rather than one at a time: probing sequentially meant up to fourteen
  * 450ms timeouts back to back, blocking the main process for seconds on every attempt.
  */
-async function discoverPreview(): Promise<string | null> {
+async function discoverPreview(): Promise<string[]> {
   let olympusDevPort = -1
   try {
     olympusDevPort = Number(new URL(process.env.VITE_DEV_SERVER_URL ?? '').port)
   } catch {
     // Packaged builds do not have a Vite development URL.
   }
-  const ports = [5173, 5174, 5175, 5176, 5177, 5178, 5179, 5180, 3000, 3001, 4173, 8080, 8000, 4200]
+  const ports = [5173, 5174, 5175, 5176, 5177, 5178, 5179, 5180, 3000, 3001, 4173, 4321, 8080, 8000, 4200]
   const results = await Promise.all(
     ports
       .filter((candidate) => candidate !== olympusDevPort)
@@ -305,15 +305,15 @@ async function discoverPreview(): Promise<string | null> {
         try {
           const response = await fetch(url, { signal: AbortSignal.timeout(450) })
           await response.body?.cancel()
-          return response.status < 500 ? url : null
+          return response.ok ? url : null
         } catch {
           return null
         }
       }),
   )
-  // Keep the conventional-port preference order rather than whichever probe won the race.
-  for (const url of results) if (url) return url
-  return null
+  // An open port cannot establish project ownership. Let the user choose, then remember it
+  // per project instead of silently showing another project's server (or a 404).
+  return results.filter((url): url is string => url !== null)
 }
 
 const notifyProjects = (list: ReturnType<typeof projects.listProjects>) => send('projects:changed', list)

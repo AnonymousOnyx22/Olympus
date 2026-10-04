@@ -301,7 +301,7 @@ const MessageView = memo(function MessageView({ entry, mode }: { entry: MessageE
     if (!text) return null
     return (
       <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="prompt-line flex justify-end">
-        <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-aether-50 px-4 py-2.5 text-[13.5px] leading-relaxed text-slate-900 ring-1 ring-aether-100">{text}</div>
+        <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-aether-50 px-4 py-2.5 text-[13.5px] leading-relaxed text-slate-900 ring-1 ring-aether-100">{text.length > 1800 ? <details><summary className="cursor-pointer font-medium">{text.includes('You are the Station store manager.') ? 'Store request and build instructions' : 'Read full request'}</summary><div className="mt-2 max-h-80 overflow-y-auto">{text}</div></details> : text}</div>
       </motion.div>
     )
   }

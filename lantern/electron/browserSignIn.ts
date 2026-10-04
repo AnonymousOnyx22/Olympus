@@ -76,7 +76,14 @@ const sessionDir = () => path.join(app.getPath('userData'), 'connection-sessions
 export const sessionFilePath = (id: string) => path.join(sessionDir(), `${id}.json`)
 
 export function hasSession(id: string): boolean {
-  return fs.existsSync(sessionFilePath(id))
+  if (!providerById(id)) return false
+  try {
+    const saved = JSON.parse(fs.readFileSync(sessionFilePath(id), 'utf8')) as { cookies?: { name?: string; value?: string; domain?: string; expires?: number }[] }
+    return Array.isArray(saved.cookies) && saved.cookies.some((cookie) =>
+      cookie.name && cookie.value && cookie.domain &&
+      (cookie.expires === -1 || (typeof cookie.expires === 'number' && cookie.expires > Date.now() / 1000)),
+    )
+  } catch { return false }
 }
 
 /** Env vars for whichever of these connections have a saved browser session, for one
@@ -112,6 +119,9 @@ function toPlaywrightCookie(c: Electron.Cookie) {
 
 async function exportSession(id: string): Promise<void> {
   const cookies = await session.fromPartition(partitionName(id)).cookies.get({})
+  if (!cookies.some((cookie) => cookie.name && cookie.domain && cookie.value)) {
+    throw new Error('No browser session was saved. Complete sign-in before closing the window.')
+  }
   const storageState = {
     cookies: cookies.filter((c) => c.name && c.domain).map(toPlaywrightCookie),
     origins: [] as unknown[],
@@ -122,6 +132,7 @@ async function exportSession(id: string): Promise<void> {
 
 /** Clears the saved session: the partition's cookies and the exported file both go. */
 export function forgetSession(id: string): void {
+  if (!providerById(id)) throw new Error('Unknown sign-in provider')
   void session.fromPartition(partitionName(id)).clearStorageData()
   try {
     fs.unlinkSync(sessionFilePath(id))
@@ -147,18 +158,19 @@ export function openSignIn(id: string): Promise<void> {
     },
   })
   void win.loadURL(provider.url)
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let exported = false
+    let failure: unknown = null
     win.on('close', (event) => {
       if (exported) return
       event.preventDefault()
       void exportSession(id)
-        .catch(() => undefined)
+        .catch((error: unknown) => { failure = error })
         .then(() => {
           exported = true
           win.destroy()
         })
     })
-    win.on('closed', () => resolve())
+    win.on('closed', () => { if (failure) reject(failure); else resolve() })
   })
 }

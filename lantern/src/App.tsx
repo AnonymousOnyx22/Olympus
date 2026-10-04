@@ -215,7 +215,7 @@ export default function App() {
     setProviders(result.providers)
     startedWith.current = providersKey(result.providers)
     const settings = await window.electronAPI.getSettings()
-    setPermissionMode(settings.permissionMode)
+    setPermissionMode(result.state.permissionMode ?? settings.permissionMode)
     setSelectedVariants(settings.selectedVariants)
     const chosen = pickModel(result.providers, settings.selectedModel)
     setModel(chosen)

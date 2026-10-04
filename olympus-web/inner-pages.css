@@ -1,0 +1,13 @@
+/* Loaded only on inner pages. Homepage files, shared palette and app colours are unchanged. */
+.page-document .workflow-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;margin-top:48px}
+.page-document .workflow-list article{border-top:2px solid var(--ink);padding-top:22px}
+.page-document .workflow-list h3{margin:0 0 12px}
+.page-document .workflow-list p{line-height:1.75;color:var(--muted);max-width:64ch}
+.page-document .workflow-list a{display:inline-block;margin-top:10px;font-weight:700}
+.page-document .showcase__image{aspect-ratio:2139/1355}
+.page-document .showcase a:focus-visible{display:block;outline:4px solid var(--ink);outline-offset:4px}
+.page-document .steps{list-style:none;padding-left:0}
+.page-document .pagehead--about::after{background-image:url('assets/olympus-sky-library-v2.webp');background-size:cover;background-position:center;opacity:1}
+.page-document .prose{max-width:76ch}
+.page-document .waitlist-layout p{max-width:62ch}
+@media(max-width:760px){.page-document .workflow-list{grid-template-columns:1fr;gap:28px;margin-top:32px}.page-document .showcase figcaption{padding:16px;font-size:14px}.page-document .showcase figcaption a{display:block;margin:8px 0 0}.page-document .pagehead--about::after{background-image:url('assets/olympus-sky-library-v2-small.webp')}}

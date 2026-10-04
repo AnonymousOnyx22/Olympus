@@ -1,6 +1,6 @@
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const {_electron}=require('C:/Users/Nick/AppData/Local/npm-cache/_npx/420ff84f11983ee5/node_modules/playwright');
-const out=path.join(__dirname,'fresh-run');fs.mkdirSync(out,{recursive:true});
+const out=path.join(__dirname,process.env.OLYMPUS_AUDIT_RUN || 'fresh-run-2');fs.mkdirSync(out,{recursive:true});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
  const root=path.resolve(__dirname,'../../lantern');
@@ -36,7 +36,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
     return {at:new Date().toISOString(),statuses:s.data,messages:messages.length,assistantCount:assistants.length,lastAssistant:assistants.at(-1)?.parts.filter(p=>p.type==='text').map(p=>p.text).join('\n'),error:assistants.at(-1)?.info.error,tools:messages.flatMap(m=>m.parts.filter(p=>p.type==='tool').map(p=>({tool:p.tool,status:p.state?.status,title:p.state?.title,time:p.state?.time}))).slice(-8),sessions:(list.data||[]).map(s=>({id:s.id,parentID:s.parentID,title:s.title})),ui:document.body.innerText.slice(-2200)};
    },target);
    fs.writeFileSync(path.join(out,'latest.json'),JSON.stringify(observation,null,2));fs.appendFileSync(path.join(out,'timeline.jsonl'),JSON.stringify(observation)+'\n');
-   await page.screenshot({path:path.join(out,'latest.png')});
+   await page.screenshot({path:path.join(out,`frame-${tick}.png`),timeout:10000}).catch(e=>console.log('Screenshot skipped:',e.message.split('\n')[0]));
    console.log(JSON.stringify({at:observation.at,messages:observation.messages,statuses:observation.statuses,tools:observation.tools.slice(-2).map(t=>({tool:t.tool,status:t.status,title:t.title})),error:observation.error}));
    const running=Object.values(observation.statuses||{}).some(s=>s.type==='busy'||s.type==='retry');
    idle=!running&&observation.assistantCount>0?idle+1:0;

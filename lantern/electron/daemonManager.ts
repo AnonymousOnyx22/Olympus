@@ -40,7 +40,7 @@ export function basicAuthHeader(credentials: DaemonCredentials): string {
  */
 export function buildOpencodeConfig(providers: LocalProvider[], selected: ModelRef | null, permissionMode: PermissionMode = 'ask') {
   const usable = providers.filter((p) => p.online && p.models.length > 0)
-  const provider = Object.fromEntries(
+  const provider: Record<string, { npm?: string; name?: string; options: Record<string, unknown>; models?: Record<string, { name: string; tool_call: boolean }> }> = Object.fromEntries(
     usable.map((p) => [
       p.id,
       {
@@ -51,6 +51,12 @@ export function buildOpencodeConfig(providers: LocalProvider[], selected: ModelR
       },
     ]),
   )
+
+  // Bound silent cloud requests without imposing a short generation limit on local models.
+  // OpenCode merges this with the provider's existing authentication and endpoint settings.
+  if (selected && !provider[selected.providerID]) {
+    provider[selected.providerID] = { options: { timeout: 180_000, chunkTimeout: 60_000 } }
+  }
 
   // Trust an explicit selection (it may be an opencode-configured provider we didn't probe);
   // otherwise default to the first usable local model, if any.
@@ -243,6 +249,9 @@ export class DaemonManager extends EventEmitter {
     const token = ++this.startToken
     await this.stop()
     if (token !== this.startToken) return this.getState()
+
+    const permissions = (config as { permission?: { edit?: string; bash?: string } }).permission
+    this.setState({ permissionMode: permissions?.bash === 'allow' ? 'bypass' : permissions?.edit === 'allow' ? 'edit' : 'ask' })
 
     if (!fs.existsSync(cwd) || !fs.statSync(cwd).isDirectory()) {
       this.setState({ status: 'error', cwd, port: null, error: `Not a directory: ${cwd}` })

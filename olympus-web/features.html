@@ -39,6 +39,7 @@
 
 <link rel="stylesheet" href="page-styles.css">
 <link rel="stylesheet" href="showcase.css">
+<link rel="stylesheet" href="inner-pages.css">
 </head>
 <body class="page-document">
 <div class="cloud-curtain" aria-hidden="true">
@@ -68,78 +69,19 @@
     </div>
   </div>
 
-  <section class="section section--tint" id="features" aria-label="Features">
-    <div class="wrap">
-
-      <div class="cards cards--2">
-        <article class="card">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><path d="M12 3.8v3.4M12 16.8v3.4M3.8 12h3.4M16.8 12h3.4"/></svg>
-          </span>
-          <h3>Runs the models you already have</h3>
-          <p>Bring your choice of compatible agent and model provider. Olympus gives your work a shared home, with projects, conversations, and changes together.</p>
-        </article>
-        <article class="card">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.2" width="7.4" height="7.4" rx="2"/><rect x="13.4" y="12.4" width="7.4" height="7.4" rx="2"/><path d="M10.6 7.9h2.8a2 2 0 0 1 2 2v2.5"/></svg>
-          </span>
-          <h3>Keep every project moving</h3>
-          <p>Each project can keep working independently. Move to another project and see which agents are still busy.</p>
-        </article>
-        <article class="card">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.2" width="17.6" height="15.6" rx="2.4"/><path d="M9 4.2v15.6"/><path d="M12.4 10.2h5.2M12.4 13.6h5.2M12.4 17h3"/></svg>
-          </span>
-          <h3>Views for each kind of work</h3>
-          <p>Follow a task in Chat, see parallel sessions in Agents, explore files in Code, or read the conversation in Thread. Switch views without losing your place or your draft.</p>
-        </article>
-        <article class="card">
-          <span class="ico ico--gold" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.2v9.4"/><circle cx="12" cy="17.6" r="2.2"/><path d="M4.6 7.4h14.8"/></svg>
-          </span>
-          <h3>Reviewable edits</h3>
-          <p>Review proposed file edits before accepting them. Commands need separate approval because they can also change your files.</p>
-        </article>
-        <article class="card">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 5.6h15.2v12.8H4.4z"/><path d="M7.6 9.6h4.2M7.6 12.4h6.6M7.6 15.2h3.4"/></svg>
-          </span>
-          <h3>See the work as it happens</h3>
-          <p>See what your agent is doing, inspect its changes, and open more detail when you need it.</p>
-        </article>
-        <article class="card">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.4 6.6h6l2 2h9.2v10.8H3.4z"/><path d="M3.4 6.6V4.4h5l2 2"/></svg>
-          </span>
-          <h3>Project library</h3>
-          <p>Find, organise, and pin your projects. Open a folder quickly and see when a project has moved or is no longer available.</p>
-        </article>
-        <article class="card">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.4" cy="6.4" r="2.4"/><circle cx="7.4" cy="17.6" r="2.4"/><circle cx="16.6" cy="9.4" r="2.4"/><path d="M7.4 8.8v6.4M9.6 7.2l4.9 1.7"/></svg>
-          </span>
-          <h3>Keep track of changes</h3>
-          <p>See what has changed in your project. Saving a version and publishing it are separate actions that you choose.</p>
-        </article>
-        <article class="card">
-          <span class="ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="4.6" width="17.6" height="12.4" rx="2.2"/><path d="M9.4 20.2h5.2M12 17v3.2"/><path d="M10.6 9.2l-1.8 2 1.8 2M13.4 9.2l1.8 2-1.8 2"/></svg>
-          </span>
-          <h3>Run and live preview</h3>
-          <p>Run your project and see the result alongside the agent working on it.</p>
-        </article>
-      </div>
-
-<!-- ── Showcase ───────────────────────────────────────────────────────
-       The eight cards above say what Olympus has. These show it. Each
-       panel is the real component: the tool rows open, the tabs swap the
-       view, the approval is a real button that answers the question. -->
-  <section class="section" id="showcase" aria-labelledby="showcase-h"><div class="wrap"><div class="showcase-intro"><h2 id="showcase-h">See it in the running app.</h2><p>A Windows development build, captured with a sample project open in Code and Live Preview.</p></div><figure class="showcase"><img class="showcase__image" src="assets/showcase/code-preview.webp" width="1418" height="884" alt="Olympus editing a README alongside the running Aegean journal preview." loading="lazy"><figcaption>Real app capture.</figcaption></figure></div></section>
-
-
-      <p class="note">Keep your projects, conversations, and changes together. <a href="index.html#watch">Explore the workspace</a>.</p>
+  <section class="section" aria-labelledby="workflows-heading"><div class="wrap">
+    <div class="sec__head"><h2 id="workflows-heading">A place for the project, and the work happening inside it.</h2><p class="lede">Move from your project library to active agents, files and a local preview. Each project keeps its own conversation.</p></div>
+    <figure class="showcase"><a href="assets/showcase/projects-current.png" target="_blank" rel="noopener" aria-label="Open the Olympus project library screenshot at full size"><img class="showcase__image" src="assets/showcase/projects-current.png" width="2139" height="1355" alt="Olympus in its dark navy theme, with Projects, Workspace, Station and Connections navigation and controls to add a project folder." loading="eager"></a><figcaption>The project library in a Windows development build. <a href="assets/showcase/projects-current.png" target="_blank" rel="noopener">View full-size screenshot</a></figcaption></figure>
+    <div class="workflow-list">
+      <article><h3>Follow active work</h3><p>Keep multiple project conversations open. See tool activity, approvals, errors and quiet runs without losing your place when you switch projects.</p><a href="how-it-works.html">Walk through setup</a></article>
+      <article><h3>Choose your level of control</h3><p>Ask mode pauses for edits and commands. Auto edit allows file changes; Full access also allows commands. Review changes and choose when to save a Git version.</p><a href="security.html">Understand permissions</a></article>
+      <article><h3>Check the result</h3><p>Run your project, choose its localhost address and inspect it in Preview. A successful agent reply is the starting point for checking the actual result.</p><a href="requirements.html">Check requirements</a></article>
     </div>
-  </section>
+  </div></section>
+  <section class="section section--tint" id="features"><div class="wrap"><div class="sec__head"><h2>Store building has its own space.</h2><p class="lede">Station keeps each store in a separate folder and conversation. Describe the products and sales channel, then follow the build.</p></div><div class="cards cards--2">
+    <article class="card"><h3>Station</h3><p>Create a store, inspect its artwork and follow the agent's activity. Pause or continue the conversation without restarting Olympus. Test checkout and review the result before publishing.</p></article>
+    <article class="card"><h3>Connections</h3><p>Save service keys or browser sessions for store agents. Saved access is not proof of a working integration; the agent still needs to verify the connection. Restart agents when access changes.</p></article>
+  </div><p class="note">Olympus is in development. <a href="pricing.html">Check availability</a> or <a href="waitlist.html">join the waitlist</a>.</p></div></section>
 
 </main>
 <footer class="foot"><div class="wrap foot__grid"><div class="foot__brand"><a class="lockup" href="index.html" aria-label="Olympus, home"><img src="assets/olympus-mark.png" width="35" height="35" alt=""><span class="lockup__word">OLYMPUS</span></a><p class="foot__intro">A higher place to build.<br>Local agents, a clear workspace, and the freedom to make it yours.</p></div>

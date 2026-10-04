@@ -24,7 +24,7 @@ const CATEGORY_TINT: Record<string, string> = {
 
 /** Up to two letters from the brand's own name, which is what a real monogram would use. */
 function monogram(name: string, id: string): string {
-  const words = name.split(/[\s-]+/).filter(Boolean)
+  const words = name.match(/[A-Za-z0-9]+/g) ?? []
   if (words.length > 1) return words.slice(0, 2).map((w) => w[0]).join('').toUpperCase()
   return name.slice(0, 2).toUpperCase() || id.slice(0, 2).toUpperCase()
 }
@@ -91,6 +91,7 @@ export default function ConnectionsSettings() {
   const [connections, setConnections] = useState<ConnectionStatus[] | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const [savedOnly, setSavedOnly] = useState(false)
   const [drafts, setDrafts] = useState<Record<string, Record<string, string>>>({})
   const [busyId, setBusyId] = useState<string | null>(null)
   const [error, setError] = useState('')
@@ -100,9 +101,10 @@ export default function ConnectionsSettings() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return connections ?? []
-    return (connections ?? []).filter((provider) => `${provider.name} ${provider.description} ${provider.category}`.toLowerCase().includes(q))
-  }, [connections, search])
+    return (connections ?? []).filter((provider) =>
+      (!savedOnly || provider.configuredFields.length > 0 || provider.browserSessionConnected) &&
+      (!q || `${provider.name} ${provider.description} ${provider.category}`.toLowerCase().includes(q)))
+  }, [connections, search, savedOnly])
 
   const grouped = useMemo(() => {
     const groups = new Map<string, ConnectionStatus[]>()
@@ -174,12 +176,12 @@ export default function ConnectionsSettings() {
 
   return (
     <main className="h-full overflow-y-auto bg-white">
-      <div className="mx-auto w-full max-w-4xl px-8 py-8">
+      <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-8 sm:py-8">
         <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">Connections</h1>
         <p className="mt-1 max-w-lg text-[12px] text-slate-500">
-          Real API access for the stores your agents build. A key or sign-in you save here is encrypted by this
-          computer's own secret storage and automatically available to every store's agent - nothing to switch on
-          per store. It is never sent to a model or shown in any chat.
+          Saved API keys are encrypted by this computer. Browser sessions are stored locally for your agents.
+          Saved access is shared with every store; saving it does not verify that a service accepts it.
+          Restart running agents after adding, changing or removing access so their connections are up to date.
         </p>
 
         {connections && <ProviderTicker connections={connections} />}
@@ -213,7 +215,7 @@ export default function ConnectionsSettings() {
                   </div>
                 </div>
                 {(selected.configuredFields.length > 0 || selected.browserSessionConnected) && (
-                  <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-200">Connected</span>
+                  <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-200">Saved ? unverified</span>
                 )}
               </div>
 
@@ -222,7 +224,7 @@ export default function ConnectionsSettings() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-[11.5px] font-medium text-slate-700">
-                        Or sign in directly{selected.browserSessionConnected && <span className="ml-1.5 font-normal text-emerald-600">signed in</span>}
+                        Or sign in directly{selected.browserSessionConnected && <span className="ml-1.5 font-normal text-emerald-600">session saved ? unverified</span>}
                       </p>
                       <p className="mt-0.5 text-[10.5px] leading-snug text-slate-500">
                         Opens a real {selected.name} login window - Olympus never sees the password, only the session.
@@ -296,6 +298,10 @@ export default function ConnectionsSettings() {
           </div>
         ) : (
           <div className="mt-6">
+            <div className="mb-3 flex gap-2" aria-label="Connection filters">
+              <button type="button" aria-pressed={!savedOnly} onClick={() => setSavedOnly(false)} className="rounded-lg border border-slate-200 px-3 py-2 text-[12px] text-slate-700">All providers</button>
+              <button type="button" aria-pressed={savedOnly} onClick={() => setSavedOnly(true)} className="rounded-lg border border-slate-200 px-3 py-2 text-[12px] text-slate-700">Saved connections</button>
+            </div>
             <div className="relative">
               <svg className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
               <input

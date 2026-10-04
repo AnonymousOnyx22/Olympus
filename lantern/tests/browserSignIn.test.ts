@@ -73,10 +73,20 @@ describe('browserSignIn', () => {
     expect(sessionEnv(['pinterest', 'etsy'])).toEqual({})
   })
 
+  it('does not treat empty, malformed or expired cookies as a saved session', async () => {
+    const { hasSession, sessionFilePath } = await import('../electron/browserSignIn')
+    fs.mkdirSync(path.dirname(sessionFilePath('pinterest')), { recursive: true })
+    for (const contents of ['bad JSON', '{"cookies":[]}', JSON.stringify({ cookies: [{ name: 'session', value: 'test', domain: '.pinterest.com', expires: 1 }] })]) {
+      fs.writeFileSync(sessionFilePath('pinterest'), contents)
+      expect(hasSession('pinterest')).toBe(false)
+    }
+    expect(hasSession('../settings')).toBe(false)
+  })
+
   it('exposes a saved session as an env var scoped to that provider only', async () => {
     const { sessionFilePath, sessionEnv } = await import('../electron/browserSignIn')
     fs.mkdirSync(path.dirname(sessionFilePath('pinterest')), { recursive: true })
-    fs.writeFileSync(sessionFilePath('pinterest'), JSON.stringify({ cookies: [], origins: [] }))
+    fs.writeFileSync(sessionFilePath('pinterest'), JSON.stringify({ cookies: [{ name: 'session', value: 'test-only', domain: '.pinterest.com', expires: -1 }], origins: [] }))
 
     expect(sessionEnv(['pinterest'])).toEqual({ PINTEREST_SESSION_FILE: sessionFilePath('pinterest') })
     // A provider that wasn't enabled for this project contributes nothing, even with a saved session.
@@ -88,7 +98,7 @@ describe('browserSignIn', () => {
   it('forgetSession clears the partition and deletes the exported file', async () => {
     const { sessionFilePath, hasSession, forgetSession } = await import('../electron/browserSignIn')
     fs.mkdirSync(path.dirname(sessionFilePath('pinterest')), { recursive: true })
-    fs.writeFileSync(sessionFilePath('pinterest'), JSON.stringify({ cookies: [], origins: [] }))
+    fs.writeFileSync(sessionFilePath('pinterest'), JSON.stringify({ cookies: [{ name: 'session', value: 'test-only', domain: '.pinterest.com', expires: -1 }], origins: [] }))
     expect(hasSession('pinterest')).toBe(true)
 
     forgetSession('pinterest')

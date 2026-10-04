@@ -216,7 +216,7 @@ export function AgentPane(props: AgentPaneProps) {
   return <article aria-label={`Agent chat: ${props.title}`} data-session-id={props.sessionID} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-aegean">
     <header className="flex h-9 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3">
       <StatusOrb kind={orbKind} size={13} />
-      <span className="min-w-0 flex-1 truncate text-xs font-medium text-slate-900" title={`${props.projectName} · ${props.title}`}>{props.projectName} · {props.title}</span>
+      <span className="min-w-0 flex-1 truncate text-xs font-medium text-slate-900" title={`${props.projectName} · ${props.title}`}>{props.projectName === props.title ? props.title : `${props.projectName} · ${props.title}`}</span>
       <span role="status" className={`max-w-[160px] shrink-0 truncate text-[10px] ${failed ? 'text-rose-600' : permissions.length ? 'text-amber-600' : busy ? 'text-aether-600' : 'text-slate-400'}`} title={busy ? activity : undefined}>{statusLabel}</span>
       {!props.stationMode && <button onClick={props.onDelete} disabled={!canClose || props.deleting} aria-label={`Delete ${props.title}`} title={canClose ? 'Permanently delete this chat' : 'Stop this agent and clear its queue or approvals before deleting'} className="grid h-6 w-6 place-items-center rounded text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-25">
         <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13" /></svg>

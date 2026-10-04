@@ -186,6 +186,8 @@ export interface DaemonState {
   status: DaemonStatus
   port: number | null
   cwd: string | null
+  /** Effective mode of this process, independent of the default for new spaces. */
+  permissionMode?: PermissionMode
   error?: string
 }
 
@@ -382,7 +384,7 @@ export interface ElectronAPI {
   /** Returns a detected package run command, if the project declares one. */
   getRunCommand(): Promise<string | null>
   /** Finds a conventional localhost development server. */
-  discoverPreview(): Promise<string | null>
+  discoverPreview(): Promise<string[]>
   /**
    * Called when the daemon's event stream reconnects after a gap. Anything derived from
    * events (busy state, message lists) must be re-read from the daemon, because events

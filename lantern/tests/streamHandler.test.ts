@@ -134,7 +134,7 @@ describe('describeActivity', () => {
 
     expect(describeActivity(tail('reasoning'))).toBe('Reasoning')
     expect(describeActivity(tail('text'))).toBe('Composing reply')
-    expect(describeActivity(tail('step-start'))).toBe('Starting')
+    expect(describeActivity(tail('step-start'))).toBe('Waiting for model response')
     expect(describeActivity(tail('step-finish'))).toBe('Thinking')
   })
 
@@ -162,7 +162,7 @@ describe('describeActivity', () => {
   it('never throws on an empty message, which a partial stream can produce', () => {
     const s = state({ messages: [message([])] })
     expect(() => describeActivity(s)).not.toThrow()
-    expect(describeActivity(s)).toBe('Starting')
+    expect(describeActivity(s)).toBe('Waiting for model response')
   })
 })
 

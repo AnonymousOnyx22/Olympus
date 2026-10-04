@@ -9,7 +9,7 @@ interface PreviewPanelProps {
 function normalizeLocalUrl(value: string): string | null {
   try {
     const url = new URL(/^https?:\/\//i.test(value) ? value : `http://${value}`)
-    if (!['localhost', '127.0.0.1'].includes(url.hostname)) return null
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return null
     return url.toString().replace(/\/$/, '')
   } catch {
     return null
@@ -17,8 +17,25 @@ function normalizeLocalUrl(value: string): string | null {
 }
 
 export default function PreviewPanel({ projectKey, available, visible }: PreviewPanelProps) {
-  const [url, setUrl] = useState<string | null>(null)
-  const [draft, setDraft] = useState('')
+  return <ProjectPreview key={projectKey} projectKey={projectKey} available={available} visible={visible} />
+}
+
+function savedPreview(projectKey: string): string | null {
+  try { const saved = localStorage.getItem(`olympus.preview.${projectKey}`); return saved ? normalizeLocalUrl(saved) : null } catch { return null }
+}
+
+function ProjectPreview({ projectKey, available, visible }: PreviewPanelProps) {
+  const [url, setUrl] = useState<string | null>(() => savedPreview(projectKey))
+  const [draft, setDraft] = useState(() => savedPreview(projectKey) ?? '')
+  const [candidates, setCandidates] = useState<string[]>([])
+  const alive = useRef(true)
+  useEffect(() => { alive.current = true; return () => { alive.current = false } }, [])
+  const choose = (address: string) => {
+    setUrl(address)
+    setDraft(address)
+    setError(null)
+    try { localStorage.setItem(`olympus.preview.${projectKey}`, address) } catch { /* storage unavailable */ }
+  }
   const [checking, setChecking] = useState(false)
   const loadTimer = useRef<number | undefined>(undefined)
   const [frameLoading, setFrameLoading] = useState(false)
@@ -49,36 +66,20 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
     setError(null)
     try {
       const found = await window.electronAPI.discoverPreview()
-      if (found) {
-        setUrl(found)
-        setDraft(found)
-      }
+      if (!alive.current) return []
+      setCandidates(found)
       return found
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason))
-      return null
+      if (alive.current) setError(reason instanceof Error ? reason.message : String(reason))
+      return []
     } finally {
-      setChecking(false)
+      if (alive.current) setChecking(false)
     }
   }, [])
 
   useEffect(() => {
-    setUrl(null)
-    setDraft('')
-  }, [projectKey])
-
-  useEffect(() => {
     if (!visible || !available || url) return
-    let cancelled = false
-    let tries = 0
-    const look = async () => {
-      if (cancelled) return
-      const found = await discover()
-      tries += 1
-      if (!cancelled && !found && tries < 10) window.setTimeout(() => void look(), 1200)
-    }
-    void look()
-    return () => { cancelled = true }
+    void discover()
   }, [available, discover, projectKey, url, visible])
 
   const openDraft = () => {
@@ -87,9 +88,7 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
       setError('Preview only opens localhost addresses.')
       return
     }
-    setError(null)
-    setUrl(normalized)
-    setDraft(normalized)
+    choose(normalized)
   }
 
   if (!available) return <div className="grid h-full place-items-center text-xs text-slate-500">Open a saved project to start Live Preview.</div>
@@ -104,7 +103,7 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
           <input value={draft} onChange={(event) => setDraft(event.target.value)} aria-label="Local preview address" placeholder="localhost:5173" className="h-7 w-full rounded-xl bg-slate-50 px-3 font-mono text-[10.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-aether-400" />
         </form>
         <button type="button" onClick={() => void discover()} disabled={checking} className="h-7 rounded-lg px-2.5 text-[10.5px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40">
-          {checking ? 'Finding…' : 'Auto-find'}
+          {checking ? 'Finding…' : 'Find servers'}
         </button>
       </div>
       <div className="relative min-h-0 flex-1">
@@ -116,12 +115,13 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
               <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M3 5h18v14H3V5Z" /><path d="M3 9h18M7 7h.01M10 7h.01" /></svg>
             </div>
             <div>
-              <p className="text-[13px] text-slate-500">Waiting for a local preview</p>
-              <p className="mt-1 text-[11px] text-slate-400">Run the project and Olympus will connect automatically.</p>
+              <p className="text-[13px] text-slate-500">Choose this project's preview</p>
+              <p className="mt-1 max-w-sm px-4 text-[12px] text-slate-400">Run your project, then choose its address. Olympus remembers your choice for this project.</p>
             </div>
+            {candidates.length > 0 && <ul className="space-y-2" aria-label="Available local servers">{candidates.map((address) => <li key={address}><button type="button" onClick={() => choose(address)} className="rounded-lg border border-slate-200 px-4 py-2 font-mono text-xs text-slate-700 hover:bg-slate-50">{address}</button></li>)}</ul>}
           </div>
         )}
-        {frameLoading && <div role="status" className="absolute left-3 top-3 rounded-lg bg-white px-3 py-2 text-xs text-slate-600 shadow">Loading preview?</div>}
+        {frameLoading && <div role="status" className="absolute left-3 top-3 rounded-lg bg-white px-3 py-2 text-xs text-slate-600 shadow">Loading preview…</div>}
         {error && <div role="alert" className="absolute inset-x-3 bottom-3 rounded-xl bg-rose-50 px-3 py-2 text-[11px] text-rose-700 ring-1 ring-rose-200">{error}</div>}
       </div>
     </div>
