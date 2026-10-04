@@ -1,0 +1,37 @@
+[
+  {
+    "route": "/",
+    "status": 200,
+    "text": "FIVE CITIES. ONE UNBROKEN LINE.\n\nFive cities.\nOne unbroken line.\n\nFive cities drawn as a single unbroken line, wrapped around a mug you will actually use every day.\n\nSHOP THE FIVE CITIES\nREAD THE STORY\nSERIES\nFive mugs\nFROM\n$28.00\nSHIPS\n2–4 business days\n\nEvery city in the series is drawn as a single continuous line at identical weight.\n\nTHE SERIES\n\nFive cities, five mugs\n\nSame mug. Same glaze. One line through every place we have lived long enough to draw properly.\n\nTOKYO\n\nTokyo — Shibuya Crossing\n\n$28.00\n\nADD TO CART\n\nPARIS\n\nParis — Eiffel Tower\n\n$28.00\n\nADD TO CART\n\nNEW YORK CITY\n\nNew York — Brooklyn Bridge\n\n$28.00\n\nADD TO CART\n\nLISBON\n\nLisbon — Tram 28\n\n$28.00\n\nADD TO CART\n\nMARRAKECH\n\nMarrakech — Koutoubia\n\n$28.00\n\nADD TO CART\n\nTHE LINE\n\nOne stroke, no lifts\n\nMost souvenir mugs are a photograph shrunk onto a cylinder. These are not photographs. Each city is drawn by hand as a single ",
+    "broken": [
+      "/assets/logo.png",
+      "/assets/mug-tokyo.png"
+    ]
+  },
+  {
+    "route": "/collection",
+    "status": 200,
+    "text": "THE FULL SERIES\n\nFive cities, one unbroken line\n\nEach mug is drawn as a single continuous line at identical weight across the series. Twelve ounces of stoneware, printed wrap-around, dishwasher and microwave safe.\n\nTOKYO\n\nTokyo — Shibuya Crossing\n\nTwo hundred metres of Shibuya crossing, folded into a line you can hold.\n\n$28.00\n\nADD TO CART\nDetails\n\nPARIS\n\nParis — Eiffel Tower\n\nWrought iron above the Seine, drawn at the width of your hand.\n\n$28.00\n\nADD TO CART\nDetails\n\nNEW YORK CITY\n\nNew York — Brooklyn Bridge\n\nSteel, grid and river, drawn left to right without lifting the pen.\n\n$28.00\n\nADD TO CART\nDetails\n\nLISBON\n\nLisbon — Tram 28\n\nA hill tiled in blue and white, and a tram that never quite reaches the top.\n\n$28.00\n\nADD TO CART\nDetails\n\nMARRAKECH\n\nMarrakech — Koutoubia\n\nThe Koutoubia has watched the same square for nine hundred years.\n\n$28.00\n\nADD TO CART\nDetails\n\nBUNDLES\n\nTake two, thre",
+    "broken": []
+  },
+  {
+    "route": "/product/tokyo",
+    "status": 200,
+    "text": "COLLECTION\n/\nTOKYO\n\nJAPAN · SHIBUYA CROSSING\n\nTokyo — Shibuya Crossing\n\nTwo hundred metres of Shibuya crossing, folded into a line you can hold.\n\n$28.00\n\nQTY\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\nADD TO CART\nShips in a gift-ready box, foam-protected\nFlat $6 US shipping under $60 — free at $60 and over\nTest-mode checkout: no real card is charged\nThe line\n\nTokyo builds upward because the ground is already spoken for. Cut the city to one line and that line has to climb: crossing tower, tower lattice, a train hanging in mid-air, Fuji at the far end. The print runs all the way around, so you find a new piece of the skyline each time you pick the mug up. It is the one to keep by the kettle.\n\nDetails\nCAPACITY\nHolds 12 fl oz (350 ml), one full coffee or a long tea without refilling.\nMATERIAL\nStoneware ceramic, glazed inside and out.\nSIZE AND WEIGHT\n4.8 in tall by 3.4 in wide, and 14 oz in the hand.\nDISHWASHER SA",
+    "broken": [
+      "/assets/mug-tokyo.png"
+    ]
+  },
+  {
+    "route": "/faq",
+    "status": 200,
+    "text": "GOOD TO KNOW\n\nShipping, care and the awkward questions\n\nShort answers, written the way we would say them across a table.\n\nHow much is shipping, and how fast is it?\nDo you ship internationally?\nCan I put the mugs in the dishwasher or microwave?\nWhat are the mugs made of, and how big are they?\nWhat is the returns policy?\nIs gift wrapping included?\nDo bundles ship in one box?\nIs this a real shop? Can I pay with a real card?\nWhy one unbroken line?\nHow much is shipping, and how fast is it?\n\nUS shipping is a flat $6.00 for any order under $60, and free at $60 or more. Orders ship from Brooklyn, New York, within two business days, and most US orders arrive in two to four business days after that.\n\nYou will get a tracking email as soon as the label is printed. If an order has not moved for five business days, write to us and we will chase the carrier.\n\nDo you ship internationally?\n\nNot yet, and ",
+    "broken": []
+  },
+  {
+    "route": "/cart",
+    "status": 200,
+    "text": "YOUR CART\n\nNothing in the cart yet\n\nPick a city to start the line.\n\nBROWSE THE FIVE CITIES",
+    "broken": []
+  }
+]

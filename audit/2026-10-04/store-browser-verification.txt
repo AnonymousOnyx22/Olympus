@@ -1,0 +1,5 @@
+PASS 1440px: home, collection, product and FAQ; no horizontal overflow or broken images.
+PASS 390px: home, collection, product and FAQ; no horizontal overflow or broken images.
+PASS browser checkout: required-field validation, decline attached to card field, successful retry and confirmation.
+PASS broken-image fallback remains visible and accessible.
+PASS no browser JavaScript errors.
