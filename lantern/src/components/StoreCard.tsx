@@ -15,6 +15,10 @@ interface Props {
   onDelete: () => void
 }
 
+const STALLED_MS = 30 * 60 * 1000
+/** A task still "running" long after it started: its process died (restart/crash) and will never report back. */
+const isStalled = (task: ToolPart) => task.state.status === 'running' && 'time' in task.state && Date.now() - task.state.time.start > STALLED_MS
+
 export default function StoreCard({ agent, model, busy, paused, dailyCheck, onSetDailyCheck, onOpen, onSetPaused, onDelete }: Props) {
   const stream = useSessionStream(agent.spaceId, agent.sessionId, agent.ready && !paused)
   const [cover, setCover] = useState<string | null>(null)
@@ -54,7 +58,7 @@ export default function StoreCard({ agent, model, busy, paused, dailyCheck, onSe
     .map((part) => part.text.trim().replace(/\s+/g, ' '))
   const issue = agent.startError || stream.error || (stream.permissions.some((request) => request.sessionID === agent.sessionId) ? 'Needs your approval' : '')
   const state = paused ? 'Paused' : issue ? 'Needs attention' : working ? 'Working' : agent.ready ? (dailyCheck ? 'Watching' : 'Standing by') : 'Starting'
-  const dot = paused ? 'bg-slate-400' : issue ? 'bg-rose-500' : working ? 'animate-pulse bg-emerald-500' : agent.ready ? 'bg-aether-500' : 'bg-amber-400'
+  const dot = paused ? 'bg-slate-400' : issue ? 'bg-rose-500' : working ? 'animate-pulse bg-emerald-500' : agent.ready ? 'bg-slate-400' : 'bg-amber-400'
   return <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean transition hover:border-aether-300">
     <button type="button" onClick={onOpen} className="block w-full text-left">
       <div className="relative h-40 overflow-hidden bg-gradient-to-br from-aether-50 via-slate-100 to-slate-50">
@@ -87,7 +91,7 @@ export default function StoreCard({ agent, model, busy, paused, dailyCheck, onSe
           </div>
         </div>
         <div className="mt-2 flex gap-2 text-[10px]"><span className="rounded-md bg-emerald-50 px-2 py-1 text-emerald-700">{completedCount} steps done</span><span className={`rounded-md px-2 py-1 ${failedCount ? 'bg-rose-50 text-rose-700' : 'bg-slate-50 text-slate-500'}`}>{failedCount} failed</span></div>
-        {tasks.length > 0 && <div className="mt-3 space-y-1"><span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">Specialist agents</span>{tasks.map((task) => <div key={task.id} className="flex items-center gap-1.5 text-[10px] text-slate-600"><span className={`h-1.5 w-1.5 shrink-0 rounded-full ${task.state.status === 'error' ? 'bg-rose-500' : task.state.status === 'completed' ? 'bg-emerald-500' : 'animate-pulse bg-aether-500'}`} /><span className="min-w-0 flex-1 truncate">{typeof task.state.input.description === 'string' ? task.state.input.description : 'Assigned task'}</span></div>)}</div>}
+        {tasks.length > 0 && <div className="mt-3 space-y-1"><span className="block text-[10px] font-medium uppercase tracking-wide text-slate-400">Specialist agents</span>{tasks.map((task) => <div key={task.id} className="flex items-center gap-1.5 text-[10px] text-slate-600"><span title={isStalled(task) ? 'No progress for over 30 minutes - the process behind this task likely died' : undefined} className={`h-1.5 w-1.5 shrink-0 rounded-full ${task.state.status === 'error' ? 'bg-rose-500' : task.state.status === 'completed' ? 'bg-emerald-500' : isStalled(task) ? 'bg-amber-400' : 'animate-pulse bg-aether-500'}`} /><span className="min-w-0 flex-1 truncate">{typeof task.state.input.description === 'string' ? task.state.input.description : 'Assigned task'}</span></div>)}</div>}
       </div>
     </button>
     <div className="flex items-center justify-between gap-2 border-t border-slate-200 px-4 py-2.5">

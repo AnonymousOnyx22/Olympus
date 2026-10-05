@@ -40,6 +40,7 @@ isn't working, doubling down on what is.
 - `spacePool.ts`: stores are never evicted by the 4-daemon cap, independent of renderer pinning.
 - `App.tsx`: discovered stores adopt their existing session instead of "Manager setup unfinished";
   new stores start with Manage 24/7 on (first check after one interval).
+- StoreCard: standing-by dot is neutral grey (blue read as "working"); a specialist task running >30 min shows an amber stalled dot.
 - Connections: 79 providers, browser sign-in (not for payment processors), every saved connection
   available to every store automatically (no per-store toggle).
 
@@ -47,12 +48,9 @@ isn't working, doubling down on what is.
 
 1. Confirm in the running app that Harbor Desk shows as a live card and Manage 24/7 check-ins fire.
 2. Run a **fresh test store** using the **Store fine-tuning run** procedure below, start to finish.
-3. Surface a dead/orphaned subagent task in the UI - today a task killed by a restart shows
-   "running" forever (cosmetic, but misleading). Detect stale running tool parts and mark them.
-4. The blue "Standing by" dot reads as "working" to Nick - consider a neutral idle colour.
-5. Website audit still open: `site.config.json` has TODO legal name/emails (build gate correctly
+3. Website audit still open: `site.config.json` has TODO legal name/emails (build gate correctly
    refuses until filled). `electron/license.ts` is unwired scaffolding - fine for now.
-6. 47 pre-existing React lint warnings (setState-in-effect etc.) - not bugs, low priority.
+4. 47 pre-existing React lint warnings (setState-in-effect etc.) - not bugs, low priority.
 
 ## Store fine-tuning run
 
@@ -116,6 +114,8 @@ passes every row of the table with zero intervention - then try a different prod
 - **Never launch Electron from Claude Code's shell as-is**: it has `ELECTRON_RUN_AS_NODE=1`, which
   makes Electron run as plain Node and crash (`electron.app` undefined). Use:
   `cd lantern && env -u ELECTRON_RUN_AS_NODE npm run dev` (run in background).
+- An agent-launched Olympus is killed when the shell's background time limit runs out (about 30 min
+  by default, 2 h max). Fine for a test run; for real 24/7 management Nick must launch Olympus himself.
 - Session/activity lives in opencode's DB: `%USERPROFILE%\.local\share\opencode\opencode.db`
   (read-only via `node:sqlite`). Tables `session` (id, parent_id, title, directory, time_updated),
   `message` and `part` (JSON in `data`; `role`, `tool`, `state.status` are inside the JSON).
