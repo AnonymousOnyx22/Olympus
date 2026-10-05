@@ -300,6 +300,36 @@ export default function App() {
     void window.electronAPI.setPinnedSpaces(pinned).catch(() => {})
   }, [openIdsBySpace, stationIdsBySpace, pausedStoreIds])
 
+  // A store found on disk may already have a Station conversation Olympus never recorded -
+  // started by another tool, or resumed outside the app. Adopt its most recent top-level
+  // session rather than showing "Manager setup unfinished", which invites starting a second,
+  // competing build in the same folder. Attempted once per store per run.
+  const adoptAttempted = useRef(new Set<string>())
+  useEffect(() => {
+    for (const store of stores) {
+      if (!store.exists || stationIdsBySpace[store.id]?.length || adoptAttempted.current.has(store.id)) continue
+      adoptAttempted.current.add(store.id)
+      void (async () => {
+        try {
+          const opened = await window.electronAPI.openSpace(store.id)
+          setDaemonBySpace((prev) => ({ ...prev, [store.id]: opened.state }))
+          if (opened.state.status !== 'running') return
+          const existing = topLevelByRecent(await api.listSessions(store.id))[0]
+          if (!existing) return
+          onSessionCreated(store.id, existing)
+          setStationIdsBySpace((prev) => {
+            if (prev[store.id]?.length) return prev
+            const next = { ...prev, [store.id]: [existing.id] }
+            try { localStorage.setItem('olympus.stationSessions', JSON.stringify(next)) } catch { /* best effort */ }
+            return next
+          })
+        } catch {
+          // Left as unfinished; Continue setup still works.
+        }
+      })()
+    }
+  }, [stores, stationIdsBySpace])
+
   // Any project with open agent windows needs its daemon running, even if you've never
   // focused it this session (e.g. windows restored from a previous run) - otherwise its
   // agent panes sit at "Connecting" forever. A daemon that fails to start is retried with a
@@ -625,6 +655,14 @@ export default function App() {
     })
     try { await api.prompt(id, session.id, brief, selectedModel, variant) }
     catch (error) { setAppError(`Store request was not sent: ${error instanceof Error ? error.message : String(error)}. Your Station chat is saved; send the request again there.`) }
+    // Stores exist to run unattended, so management starts on by default. Stamped with now
+    // rather than 0 so the first check-in waits a full interval instead of interrupting the build.
+    setManagedStoreChecks((current) => {
+      if (Object.hasOwn(current, id)) return current
+      const next = { ...current, [id]: Date.now() }
+      try { localStorage.setItem('olympus.managedStoreChecks', JSON.stringify(next)) } catch { /* best effort */ }
+      return next
+    })
     return key
   }
   const setStationPaused = async (id: string, paused: boolean) => {

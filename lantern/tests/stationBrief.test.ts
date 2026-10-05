@@ -51,6 +51,15 @@ describe('Station store brief', () => {
     expect(brief).toContain('managed by one agent running continuously with nobody watching it')
   })
 
+  it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
+    const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
+    const check = buildStationCheckBrief()
+    for (const text of [brief, check]) {
+      expect(text).toContain('has been abandoned, not merely slow')
+      expect(text).toContain('it will never complete on its own')
+    }
+  })
+
   it('tells the 24/7 pass to act on real performance signal, not just fix-and-report', () => {
     const check = buildStationCheckBrief()
     expect(check).toContain('judge it by whatever real signal this store and its connections actually provide')

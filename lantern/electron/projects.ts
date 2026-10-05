@@ -199,6 +199,13 @@ export function findProject(id: string): ProjectInfo | undefined {
   const root = settings.projectRoots.find((candidate) => projectKey(path.dirname(target)) === projectKey(candidate))
   if (root) return describeProject(key, path.basename(target) || target, target, 'watched', root, settings)
 
+  // A store listStores() discovered on disk but nobody registered. Without this, opening one
+  // resolves to nothing and its agent starts in the General chats folder instead of its own.
+  const storeRoot = storeRoots(settings.projectRoots).find((candidate) => projectKey(path.dirname(target)) === projectKey(candidate))
+  // Ids are lowercased keys on Windows; use the folder's real casing for the agent's cwd and the UI.
+  const storeDir = storeRoot ? subfolders(storeRoot).find((dir) => projectKey(dir) === key) : undefined
+  if (storeDir) return describeProject(key, nameFromFolder(path.basename(storeDir)), storeDir, 'watched', null, settings)
+
   return undefined
 }
 
@@ -301,10 +308,44 @@ export function createProject(root: string, rawName: string): { id: string; proj
   return { id: key, projects: listProjects() }
 }
 
+/** Every known Projects root's sibling "Stores" folder - the same path createStore writes into. */
+function storeRoots(projectRoots: string[]): string[] {
+  const roots = new Map<string, string>()
+  for (const root of projectRoots) {
+    const storesRoot = path.join(path.dirname(root), 'Stores')
+    if (projectKey(storesRoot) !== projectKey(root)) roots.set(projectKey(storesRoot), storesRoot)
+  }
+  return [...roots.values()]
+}
+
+/** A readable name from a bare folder, e.g. "harbor-desk-muucj959" -> "Harbor Desk". */
+function nameFromFolder(dirName: string): string {
+  const trimmed = dirName.replace(/-[a-z0-9]{6,10}$/i, '') || dirName
+  return trimmed
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ') || dirName
+}
+
+/**
+ * Registered stores, plus any folder sitting directly in a Stores root that was never created
+ * through Olympus's own "New store" flow - e.g. one an agent or another tool wrote straight to
+ * disk. Without this, a store that exists as real files is invisible here simply because
+ * nothing ever called createStore for it.
+ */
 export function listStores(): ProjectInfo[] {
   const settings = getSettings()
-  return settings.stores.map((store) => ({
-    ...describeProject(store.id, store.name, store.path, 'manual', null, settings),
+  const byKey = new Map<string, { id: string; name: string; path: string; discovered: boolean }>()
+  for (const store of settings.stores) byKey.set(projectKey(store.path), { id: store.id, name: store.name, path: store.path, discovered: false })
+  for (const root of storeRoots(settings.projectRoots)) {
+    for (const dir of subfolders(root)) {
+      const key = projectKey(dir)
+      if (!byKey.has(key)) byKey.set(key, { id: key, name: nameFromFolder(path.basename(dir)), path: dir, discovered: true })
+    }
+  }
+  return [...byKey.values()].map((store) => ({
+    ...describeProject(store.id, store.name, store.path, store.discovered ? 'watched' : 'manual', null, settings),
     ...(isDir(store.path) ? detect(store.path) : {}),
   }))
 }
@@ -340,9 +381,12 @@ export function removeStore(id: string, deleteFiles: boolean): ProjectInfo[] {
   const settings = getSettings()
   const store = settings.stores.find((s) => s.id === id)
   updateSettings({ stores: settings.stores.filter((s) => s.id !== id) })
-  if (deleteFiles && store && isDir(store.path)) {
+  // A discovered store (never created through Olympus's own flow) has nothing to unlist above,
+  // but its folder is still real and still deletable - find it the same way listStores() does.
+  const targetPath = store?.path ?? storeRoots(settings.projectRoots).flatMap(subfolders).find((dir) => projectKey(dir) === id)
+  if (deleteFiles && targetPath && isDir(targetPath)) {
     try {
-      fs.rmSync(store.path, { recursive: true, force: true })
+      fs.rmSync(targetPath, { recursive: true, force: true })
     } catch {
       // Unlisted either way; the folder can be cleaned up by hand if it's locked.
     }
