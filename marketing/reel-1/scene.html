@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+:root{--ink:#203d56;--blue:#245f8d;--gold:#efbb4f;--paper:#fffdf5;--sky:#a6d6fb}
+*{box-sizing:border-box;margin:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--sky)}
+#stage{position:relative;width:1080px;height:1920px;background:linear-gradient(#8ac9fa,#a0d4fc 45%);font-family:"DejaVu Sans",sans-serif;color:var(--ink)}
+#art{position:absolute;bottom:0;right:0;height:1300px;width:auto;transform-origin:100% 100%;-webkit-mask-image:linear-gradient(transparent 0,#000 22%);mask-image:linear-gradient(transparent 0,#000 22%)}
+.t{position:absolute;left:70px;right:70px;font-family:"DejaVu Serif",serif;font-weight:700;line-height:1.12;opacity:0}
+.big{font-size:104px;top:210px}
+.sub{font-size:44px;font-family:"DejaVu Sans",sans-serif;font-weight:400;top:620px;color:#305a78}
+em{font-style:normal;color:var(--blue);background:linear-gradient(transparent 70%,var(--gold) 70%)}
+#card{position:absolute;left:60px;right:60px;top:520px;background:var(--paper);border:5px solid var(--ink);border-radius:28px;padding:36px;opacity:0;box-shadow:0 14px 0 var(--ink)}
+.file{font-family:"DejaVu Sans Mono",monospace;font-size:30px;color:#536b7b;margin-bottom:22px}
+.line{font-family:"DejaVu Sans Mono",monospace;font-size:34px;background:#dff3e6;color:#1f5d3e;padding:14px 18px;border-radius:12px;margin-bottom:12px}
+.wait{display:flex;justify-content:space-between;align-items:center;margin-top:26px}
+.wait span{font-size:32px;font-weight:700}
+#btn{font-size:36px;font-weight:700;background:var(--gold);border:4px solid var(--ink);border-radius:999px;padding:16px 40px}
+#tick{position:absolute;right:50px;top:-34px;width:84px;height:84px;border-radius:50%;background:#316f55;color:#fff;border:5px solid var(--ink);font-size:52px;text-align:center;line-height:72px;opacity:0}
+#end{position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;align-items:center;padding-top:120px;text-align:center}
+#end img{width:250px;height:250px;border-radius:50%;border:6px solid var(--ink);object-fit:cover}
+#end h1{font-family:"DejaVu Serif",serif;font-size:128px;letter-spacing:10px;margin-top:30px}
+#end p{font-size:46px;margin-top:22px;color:#305a78}
+#pill{margin-top:44px;font-size:44px;font-weight:700;background:var(--ink);color:var(--paper);padding:26px 64px;border-radius:999px}
+#dots{position:absolute;top:70px;left:0;right:0;text-align:center;font-size:30px;letter-spacing:6px;color:#305a78;font-weight:700}
+</style></head><body><div id="stage">
+<div id="dots">IN THE MAKING</div>
+<img id="art" src="hero.png">
+<div class="t big" id="a">Your AI coding agents.</div>
+<div class="t big" id="b">On <em>your</em> machine.</div>
+<div class="t big" id="c" style="font-size:88px">You approve every edit.</div>
+<div id="card"><div id="tick">✓</div>
+ <div class="file">src/app/page.tsx</div>
+ <div class="line">+ &lt;h1&gt;Good things start here.&lt;/h1&gt;</div>
+ <div class="line">+ &lt;p&gt;A little space for your next big idea.&lt;/p&gt;</div>
+ <div class="wait"><span id="wt">Waiting for your review</span><div id="btn">Accept edit</div></div></div>
+<div class="t big" id="d" style="font-size:92px">Local models.<br><em>Your</em> Olympus.</div>
+<div id="end"><img src="mark.png"><h1>OLYMPUS</h1><p>Your models. Your machine.</p><div id="pill">Waitlist opening soon</div></div>
+</div><script>
+const E=x=>x<0?0:x>1?1:x, ease=x=>1-Math.pow(1-E(x),3);
+const p=(t,a,b)=>E((t-a)/(b-a));
+function show(el,t,a,b,rise=40){ // in at a, out at b
+  const i=ease(p(t,a,a+.5)), o=ease(p(t,b,b+.4));
+  el.style.opacity=i*(1-o); el.style.transform=`translateY(${(1-i)*rise}px)`;}
+window.render=t=>{
+  const $=id=>document.getElementById(id);
+  $('art').style.transform=`translateY(${ease(p(t,11.8,12.6))*300}px) scale(${1+t*0.005})`;
+  show($('a'),t,0.3,2.8); show($('b'),t,2.9,5.4);
+  show($('c'),t,5.5,9.4);
+  // card
+  const ci=ease(p(t,6.0,6.6)), co=ease(p(t,9.4,9.9));
+  const card=$('card'); card.style.opacity=ci*(1-co); card.style.transform=`translateY(${(1-ci)*60+ -0}px)`;
+  card.style.top='560px';
+  const acc=p(t,8.0,8.3);
+  $('btn').style.transform=`scale(${1-0.12*Math.sin(acc*Math.PI)})`;
+  $('btn').style.background=t>8.15?'#316f55':'#efbb4f'; $('btn').style.color=t>8.15?'#fff':'#203d56';
+  $('btn').textContent=t>8.15?'Accepted':'Accept edit';
+  $('wt').textContent=t>8.15?'Written to disk':'Waiting for your review';
+  $('tick').style.opacity=ease(p(t,8.2,8.5)); $('tick').style.transform=`scale(${.6+.4*ease(p(t,8.2,8.6))})`;
+  show($('d'),t,9.9,12.0);
+  const en=ease(p(t,12.0,12.6)); $('end').style.opacity=en; $('end').style.transform=`translateY(${(1-en)*40}px)`;
+};
+render(0);
+</script></body></html>
