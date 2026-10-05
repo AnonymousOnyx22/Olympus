@@ -22,3 +22,25 @@ Prompt: standard sticker prompt from continue.md, via Olympus New store (isolate
    is hidden so it isn't rediscovered.
 5. **[brief, FIXED] Agent never updates its todo list.** Plan stayed 1/11 while brand, deps, art and
    copy were done. Brief now requires keeping it current as steps finish.
+6. **[brief ignored / code, open] Lead hung ~5 min on a launch call.** It ran `node scripts/launch.mjs; ...
+   Invoke-WebRequest ... | tail -n 2` as ONE call with no timeout. Its own launcher left the dev server
+   attached to the output pipe, so `tail` never returned. Broke two brief rules (explicit timeout;
+   launch and verify in separate calls). Server was healthy the whole time. Recovered by stopping the
+   server process (PID held the pipe). The brief is not enough: needs enforcement in code (a default
+   shell timeout for Station sessions) or a stricter, top-of-brief rule. Same class as Wander Mug Co.
+7. **[brief, open] Storefront honesty/design** - fake "BEST SELLER" badges and invented stock counts,
+   bundle shown SOLD OUT with all items in stock + blank image on /shop, shipping/returns text duplicated
+   in body and footer, 6 items in a 4-col grid. (Overall design is NOT template slop: cohesive palette,
+   serif type, consistent hand-drawn art, specific copy.)
+8. **[code, open] Folder/store name comes from the prompt, not the brand** (`build-a-small-...`).
+9. **[brief, FIXED] Todo list never updated** (plan stuck 1/11).
+10. **[code, FIXED] Model timeout killed the agent.** Lead and frontend specialist ended on
+    `UnknownError: The operation timed out.` and nothing restarted them. Olympus now resumes a store
+    whose last message errored (checked every 30s, 45s apart, max 5 tries). Recovered this run by hand.
+11. **[site, FIXED] Logo marquee didn't loop.** `.providers__row` still had `display:flex;
+    justify-content:center`, centering a 3312px track in a 1160px box: loop started ~1000px off and the
+    right side went blank each cycle. Now `display:block`; measured full at 1440/1920/2560.
+12. **[brief, FIXED] Storefront quality** - added rules: humanized copy (no em dashes/semicolons/stock
+    phrases), real multi-page site, animation and interactivity, loop testing, no fake social proof,
+    no duplicated content, bundle availability, view in a real browser before done.
+Result: Dogear finished - 21/21 checkout tests, 33/33 purchase flow, server launched detached.

@@ -826,6 +826,38 @@ export default function App() {
     const interval = window.setInterval(() => void runChecks(), 60_000)
     return () => window.clearInterval(interval)
   }, [managedStoreChecks, pausedStoreIds, daemonBySpace, stationModels, model, stationIdsBySpace, sessionsBySpace])
+  // A model request that errors (a provider timeout, a dropped connection) ends the agent's turn
+  // and nothing restarts it, so a store that should run unattended just stops. Resume it right
+  // away with a targeted prompt instead of waiting for the next 5-minute management pass, a few
+  // times at most so a store that fails for a real reason cannot loop forever.
+  const errorResumes = useRef(new Map<string, { count: number; at: number }>())
+  useEffect(() => {
+    const MAX_RESUMES = 5
+    const MIN_GAP_MS = 45_000
+    const tick = async () => {
+      for (const agent of stationEntries) {
+        const id = agent.spaceId
+        if (!agent.ready || pausedStoreIds.includes(id) || checkInFlight.current.has(id)) continue
+        const assigned = stationModels[JSON.stringify([id, agent.sessionId])]?.model ?? model
+        if (!assigned) continue
+        const record = errorResumes.current.get(id) ?? { count: 0, at: 0 }
+        if (record.count >= MAX_RESUMES || Date.now() - record.at < MIN_GAP_MS) continue
+        try {
+          const status = await api.sessionStatus(id)
+          if (status[agent.sessionId] && status[agent.sessionId].type !== 'idle') continue
+          const last = (await api.messages(id, agent.sessionId)).filter((message) => message.info.role === 'assistant').at(-1)?.info
+          if (!last || last.role !== 'assistant') continue
+          if (!last.error) { errorResumes.current.delete(id); continue }
+          errorResumes.current.set(id, { count: record.count + 1, at: Date.now() })
+          await api.prompt(id, agent.sessionId, 'Your last request failed with a transient model error (for example "The operation timed out"). It was not your mistake. Continue exactly where you left off. Check what is already on disk, do not redo finished work, and keep every shell call bounded with an explicit timeout.', assigned, stationModels[JSON.stringify([id, agent.sessionId])]?.variant)
+        } catch {
+          // Daemon not reachable right now; the next tick tries again.
+        }
+      }
+    }
+    const interval = window.setInterval(() => void tick(), 30_000)
+    return () => window.clearInterval(interval)
+  }, [stationEntries, pausedStoreIds, stationModels, model])
   const setStoreManaged = (id: string, enabled: boolean) => {
     setManagedStoreChecks((current) => {
       const next = { ...current }

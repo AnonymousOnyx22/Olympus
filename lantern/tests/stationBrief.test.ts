@@ -58,6 +58,24 @@ describe('Station store brief', () => {
     }
   })
 
+  it('forbids invented social proof and generic template output in the storefront', () => {
+    const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell stickers' })
+    expect(brief).toContain('Never invent social proof or scarcity')
+    expect(brief).toContain('no "best seller", "popular" or "trending" badges')
+    expect(brief).toContain('Do not repeat the same block of content twice on a page')
+    expect(brief).toContain('a bundle or set must be marked available whenever its components are')
+  })
+
+  it('demands a real, human, interactive selling site and bans invented social proof', () => {
+    const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell stickers' })
+    expect(brief).toContain('no em dashes and no semicolons anywhere in the copy')
+    expect(brief).toContain('a real selling site, not two pages')
+    expect(brief).toContain('smooth page and tab transitions')
+    expect(brief).toContain('loop without gaps or jumps')
+    expect(brief).toContain('Never invent social proof or scarcity')
+    expect(brief).toContain('a bundle must show as available whenever its parts are')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()
