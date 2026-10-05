@@ -241,7 +241,13 @@
         "terms.html",
         "about.html",
         "index.html",
-        "index.html#watch",
+        "assets/showcase/projects-current.png",
+        "assets/showcase/projects-current.png",
+        "how-it-works.html",
+        "security.html",
+        "requirements.html",
+        "pricing.html",
+        "waitlist.html",
         "index.html",
         "features.html",
         "how-it-works.html",
@@ -259,7 +265,8 @@
       ],
       "headings": [
         "A clearer way to build",
-        "See it in the running app."
+        "A place for the project, and the work happening inside it.",
+        "Store building has its own space."
       ],
       "smallText": 2,
       "errors": []
@@ -496,7 +503,8 @@
       "headings": [
         "Still being built.",
         "Join the waitlist",
-        "Pricing is not announced"
+        "Pricing is not announced",
+        "What is being tested"
       ],
       "smallText": 1,
       "errors": []
@@ -675,7 +683,7 @@
       "headings": [
         "Ready for your computer.",
         "What you need.",
-        "Choose your download.",
+        "Planned platforms.",
         "Version compatibility."
       ],
       "smallText": 2,
@@ -1150,7 +1158,13 @@
         "terms.html",
         "about.html",
         "index.html",
-        "index.html#watch",
+        "assets/showcase/projects-current.png",
+        "assets/showcase/projects-current.png",
+        "how-it-works.html",
+        "security.html",
+        "requirements.html",
+        "pricing.html",
+        "waitlist.html",
         "index.html",
         "features.html",
         "how-it-works.html",
@@ -1168,7 +1182,8 @@
       ],
       "headings": [
         "A clearer way to build",
-        "See it in the running app."
+        "A place for the project, and the work happening inside it.",
+        "Store building has its own space."
       ],
       "smallText": 2,
       "errors": []
@@ -1405,7 +1420,8 @@
       "headings": [
         "Still being built.",
         "Join the waitlist",
-        "Pricing is not announced"
+        "Pricing is not announced",
+        "What is being tested"
       ],
       "smallText": 1,
       "errors": []
@@ -1584,7 +1600,7 @@
       "headings": [
         "Ready for your computer.",
         "What you need.",
-        "Choose your download.",
+        "Planned platforms.",
         "Version compatibility."
       ],
       "smallText": 2,
@@ -2059,7 +2075,13 @@
         "terms.html",
         "about.html",
         "index.html",
-        "index.html#watch",
+        "assets/showcase/projects-current.png",
+        "assets/showcase/projects-current.png",
+        "how-it-works.html",
+        "security.html",
+        "requirements.html",
+        "pricing.html",
+        "waitlist.html",
         "index.html",
         "features.html",
         "how-it-works.html",
@@ -2077,7 +2099,8 @@
       ],
       "headings": [
         "A clearer way to build",
-        "See it in the running app."
+        "A place for the project, and the work happening inside it.",
+        "Store building has its own space."
       ],
       "smallText": 2,
       "errors": []
@@ -2314,7 +2337,8 @@
       "headings": [
         "Still being built.",
         "Join the waitlist",
-        "Pricing is not announced"
+        "Pricing is not announced",
+        "What is being tested"
       ],
       "smallText": 1,
       "errors": []
@@ -2493,7 +2517,7 @@
       "headings": [
         "Ready for your computer.",
         "What you need.",
-        "Choose your download.",
+        "Planned platforms.",
         "Version compatibility."
       ],
       "smallText": 2,

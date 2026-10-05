@@ -215,7 +215,7 @@ export default function ConnectionsSettings() {
                   </div>
                 </div>
                 {(selected.configuredFields.length > 0 || selected.browserSessionConnected) && (
-                  <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-200">Saved ? unverified</span>
+                  <span className="shrink-0 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-200">Saved - unverified</span>
                 )}
               </div>
 
@@ -224,7 +224,7 @@ export default function ConnectionsSettings() {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="text-[11.5px] font-medium text-slate-700">
-                        Or sign in directly{selected.browserSessionConnected && <span className="ml-1.5 font-normal text-emerald-600">session saved ? unverified</span>}
+                        Or sign in directly{selected.browserSessionConnected && <span className="ml-1.5 font-normal text-emerald-600">session saved - unverified</span>}
                       </p>
                       <p className="mt-0.5 text-[10.5px] leading-snug text-slate-500">
                         Opens a real {selected.name} login window - Olympus never sees the password, only the session.
@@ -334,7 +334,7 @@ export default function ConnectionsSettings() {
                             <div className="flex w-full items-center gap-2">
                               <ProviderLogo id={provider.id} className="h-4 w-4 shrink-0 text-slate-700" name={provider.name} category={provider.category} />
                               <span className="flex-1 truncate text-[12.5px] font-medium text-slate-900">{provider.name}</span>
-                              {connected && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" title="Connected" aria-label="Connected" />}
+                              {connected && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" title="Saved access - not verified" aria-label="Saved access - not verified" />}
                             </div>
                             <p className="line-clamp-2 text-[10.5px] leading-snug text-slate-500">{provider.description}</p>
                           </button>

@@ -106,6 +106,7 @@ function ProjectPreview({ projectKey, available, visible }: PreviewPanelProps) {
           {checking ? 'Finding…' : 'Find servers'}
         </button>
       </div>
+      {url && candidates.length > 0 && <div className="flex flex-wrap gap-2 border-b border-slate-200 px-3 py-2" aria-label="Available local servers">{candidates.map((address) => <button key={address} type="button" onClick={() => { choose(address); setCandidates([]) }} className="rounded-lg border border-slate-200 px-3 py-1 font-mono text-xs text-slate-700">{address}</button>)}</div>}
       <div className="relative min-h-0 flex-1">
         {url ? (
           <iframe key={`${url}:${refresh}`} onLoad={() => { window.clearTimeout(loadTimer.current); setFrameLoading(false) }} src={url} title="Local project preview" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts" className="h-full w-full border-0 bg-white" />

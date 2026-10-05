@@ -24,10 +24,19 @@ vi.mock('../electron/opencodeBridge', () => {
   return { OpencodeBridge }
 })
 
+// Controllable from each test via __setStoreIds, so eviction-guard behavior can be checked
+// against the main process's own store list rather than the renderer-pushed pinned set.
+let mockStoreIds: string[] = []
+vi.mock('../electron/projects', () => ({
+  listStores: () => mockStoreIds.map((id) => ({ id, name: id, path: `/stores/${id}` })),
+  __setStoreIds: (ids: string[]) => { mockStoreIds = ids },
+}))
+
 let pool: typeof import('../electron/spacePool')
 
 beforeEach(async () => {
   vi.resetModules()
+  mockStoreIds = []
   pool = await import('../electron/spacePool')
 })
 
@@ -57,5 +66,15 @@ describe('daemon pool eviction', () => {
     pool.setFocused('e')
     await startAll(['a', 'b', 'c', 'd', 'e'])
     expect(pool.state('a').status).toBe('stopped')
+  })
+
+  it('never evicts a store even if the renderer never pinned it', async () => {
+    // The exact gap that let a 24/7 store go quiet: nothing marks it pinned, so without this
+    // guard it is just the oldest unpinned idle space once the cap is crossed.
+    const projects = await import('../electron/projects')
+    ;(projects as unknown as { __setStoreIds: (ids: string[]) => void }).__setStoreIds(['a'])
+    pool.setFocused('e')
+    await startAll(['a', 'b', 'c', 'd', 'e'])
+    expect(pool.state('a').status).toBe('running')
   })
 })

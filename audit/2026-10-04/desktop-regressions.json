@@ -1,0 +1,5 @@
+[
+  "PASS cancelled empty browser sign-in reports an error and does not mark the account connected.",
+  "PASS two running projects retain and report their own effective permission modes.",
+  "PASS saved-connections filter excludes unconfigured providers."
+]

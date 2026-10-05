@@ -56,7 +56,8 @@ export default function StoreConnectionsButton({ projectId }: { projectId: strin
       </button>
       {open && (
         <div className="absolute right-0 top-full z-30 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-3 shadow-aegean-lg">
-          <p className="text-[11px] font-medium text-slate-700">Real access for this store</p>
+          <p className="text-[12px] font-medium text-slate-700">Saved access for this store</p>
+          <p className="mt-1 text-[11px] text-slate-500">Saved credentials have not been verified. Restart after adding, changing or removing access.</p>
           {error && <p role="alert" className="mt-1 text-[10.5px] text-rose-600">{error}</p>}
           {connections === null ? (
             <p className="mt-2 text-[11px] text-slate-500">Loading…</p>
