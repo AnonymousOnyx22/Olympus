@@ -336,11 +336,13 @@ function nameFromFolder(dirName: string): string {
  */
 export function listStores(): ProjectInfo[] {
   const settings = getSettings()
+  const hiddenStores = new Set(settings.hiddenProjects.map(projectKey))
   const byKey = new Map<string, { id: string; name: string; path: string; discovered: boolean }>()
   for (const store of settings.stores) byKey.set(projectKey(store.path), { id: store.id, name: store.name, path: store.path, discovered: false })
   for (const root of storeRoots(settings.projectRoots)) {
     for (const dir of subfolders(root)) {
       const key = projectKey(dir)
+      if (hiddenStores.has(key)) continue
       if (!byKey.has(key)) byKey.set(key, { id: key, name: nameFromFolder(path.basename(dir)), path: dir, discovered: true })
     }
   }
@@ -380,17 +382,24 @@ export function createStore(projectRoot: string, rawName: string, displayName?: 
 export function removeStore(id: string, deleteFiles: boolean): ProjectInfo[] {
   const settings = getSettings()
   const store = settings.stores.find((s) => s.id === id)
-  updateSettings({ stores: settings.stores.filter((s) => s.id !== id) })
-  // A discovered store (never created through Olympus's own flow) has nothing to unlist above,
-  // but its folder is still real and still deletable - find it the same way listStores() does.
+  // A discovered store (never created through Olympus's own flow) has nothing to unlist from
+  // settings.stores, but its folder is still real - find it the same way listStores() does.
   const targetPath = store?.path ?? storeRoots(settings.projectRoots).flatMap(subfolders).find((dir) => projectKey(dir) === id)
+  let failure: string | null = null
   if (deleteFiles && targetPath && isDir(targetPath)) {
     try {
-      fs.rmSync(targetPath, { recursive: true, force: true })
-    } catch {
-      // Unlisted either way; the folder can be cleaned up by hand if it's locked.
+      // A just-stopped agent can hold its folder for a moment on Windows, so retry.
+      fs.rmSync(targetPath, { recursive: true, force: true, maxRetries: 8, retryDelay: 400 })
+    } catch (error) {
+      failure = error instanceof Error ? error.message : String(error)
     }
+    if (isDir(targetPath) && !failure) failure = 'the folder is still in use'
   }
+  // Unlist it. If the folder is still on disk, hide it too, or discovery would list it again.
+  const stillThere = !!targetPath && isDir(targetPath)
+  const hidden = stillThere && !settings.hiddenProjects.some((p) => projectKey(p) === id) ? [...settings.hiddenProjects, targetPath] : settings.hiddenProjects
+  updateSettings({ stores: settings.stores.filter((s) => s.id !== id), hiddenProjects: hidden })
+  if (failure) throw new Error(`Removed from Olympus, but its folder could not be deleted (${failure}). Close anything using it and delete it by hand.`)
   return listStores()
 }
 

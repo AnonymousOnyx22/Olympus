@@ -51,6 +51,13 @@ describe('Station store brief', () => {
     expect(brief).toContain('managed by one agent running continuously with nobody watching it')
   })
 
+  it('requires the agent to keep its live todo list current as it works', () => {
+    for (const text of [buildStationBrief({ name: 'Sticker Co.', request: 'Sell stickers' }), buildStationCheckBrief()]) {
+      expect(text).toContain('Keep your todo list true')
+      expect(text).toContain('tick items off as they are done (not in a batch at the end)')
+    }
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()

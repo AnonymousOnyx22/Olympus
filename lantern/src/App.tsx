@@ -634,6 +634,10 @@ export default function App() {
     if ('projectId' in target) id = target.projectId
     else {
       const created = await window.electronAPI.createStore(target.root, target.name, title)
+      // Mark it handled before it enters the list: otherwise the adoption effect opens its daemon
+      // at the same moment this flow does, the second start cancels the first, and the new store
+      // never starts ("That project could not start").
+      adoptAttempted.current.add(created.id)
       setStores(created.stores)
       id = created.id
     }

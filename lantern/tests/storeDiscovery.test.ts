@@ -101,4 +101,18 @@ describe('store auto-discovery', () => {
     expect(fs.existsSync(target)).toBe(false)
     expect(listStores()).toHaveLength(0)
   })
+
+  it('does not list a discovered store again after it was removed but its folder was kept', async () => {
+    const { updateSettings } = await import('../electron/settings')
+    updateSettings({ projectRoots: [projectsRoot] })
+    const target = path.join(storesRoot, 'keep-me')
+    fs.mkdirSync(target, { recursive: true })
+    const { listStores, removeStore, projectKey } = await import('../electron/projects')
+    expect(listStores()).toHaveLength(1)
+
+    removeStore(projectKey(target), false)
+
+    expect(fs.existsSync(target)).toBe(true)
+    expect(listStores()).toHaveLength(0)
+  })
 })
