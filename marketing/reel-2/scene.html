@@ -227,7 +227,7 @@ const stickers=[
  '<circle cx="32" cy="54" r="15" fill="#d9ecf5" stroke="#3b2a20" stroke-width="5"/><circle cx="68" cy="54" r="15" fill="#d9ecf5" stroke="#3b2a20" stroke-width="5"/><path d="M47 52q3-5 6 0M17 50l-6-8M83 50l6-8" stroke="#3b2a20" stroke-width="5" fill="none" stroke-linecap="round"/>',
 ];
 const prompt='A small sticker shop with a cozy reading theme. Six hand-drawn designs and a test-mode checkout.';
-const steps=[[26.1,'Named the brand: <b>Dogear</b>'],[26.8,'Hand-drew the logo and 6 sticker designs'],[27.5,'Wrote product names, prices and copy'],[28.2,'Built the storefront'],[28.9,'Test checkout completed'],[29.6,'Manage 24/7 is on']];
+const steps=[[26.1,'Named the brand: <b>Quillnook</b>'],[26.8,'Hand-drew the logo and 6 sticker designs'],[27.5,'Wrote product names, prices and copy'],[28.2,'Built the storefront'],[28.9,'Test checkout completed'],[29.6,'Manage 24/7 is on']];
 function staHTML(t){
  const typed=type(prompt,t,23.5,56),bp=1-.08*Math.sin(Math.PI*p(t,25.4,25.7)),going=t>=25.6;
  let h=`<div class="sh">Station</div><div class="ss">Describe a store. Your Station agent builds it in its own project and chat.</div>
@@ -240,7 +240,7 @@ function staHTML(t){
  h+='</div></div>';
  const sa=ease(p(t,28.2,28.8));
  const tiles=[['Open Book',0],['Tea &amp; Chapters',1],['Shelf Cat',2]];
- h+=`<div class="store" style="opacity:${sa};transform:translateY(${(1-sa)*40}px)"><div class="top"><span class="logo">Dogear</span><span class="cart">Cart (${t>=28.9?1:0})</span></div><div class="tag">Stickers for people who fold the corner.</div><div class="tiles">`+
+ h+=`<div class="store" style="opacity:${sa};transform:translateY(${(1-sa)*40}px)"><div class="top"><span class="logo">Quillnook</span><span class="cart">Cart (${t>=28.9?1:0})</span></div><div class="tag">Stickers for people who read past bedtime.</div><div class="tiles">`+
   tiles.map(x=>`<div class="tile"><svg viewBox="0 0 100 100">${stickers[x[1]]}</svg><span>${x[0]}<b>$4</b></span></div>`).join('')+`</div>`;
  const oa=ease(p(t,29.0,29.4));if(t>=29.0)h+=`<div class="order" style="opacity:${oa};transform:scale(${.8+.2*oa})">✓ Test order #1001 confirmed</div>`;
  return h+'</div>';}
@@ -278,7 +278,7 @@ window.render=t=>{
  for(const x of T){if(t<x[0]||t>x[1])continue;const a=ease(p(t,x[0],x[0]+.4))*(1-ease(p(t,x[1]-.35,x[1])));to.innerHTML=`<span class="dot" style="background:${x[2]}"></span>${x[3]}`;to.style.opacity=a;to.style.transform=`translateY(${(1-a)*-30}px)`;$('chrome').querySelector('.lights').style.opacity=1-a;}
  // end card
  const e=$('end');e.style.opacity=endFade;const ec=ease(p(t,31.1,31.9));$('endc').style.transform=`translateY(${(1-ec)*40}px)`;$('endc').style.opacity=ec;
- e.querySelector('.art').style.transform=`translateY(${(1-ec)*80+300}px) scale(${1+(t-31)*.006})`;
+ e.querySelector('.art').style.transform='translateY(300px)';
  $('kicker').style.color=endFade>.5?'#203d56':'var(--gold)';$('kicker').style.zIndex=10;
 };
 render(0);
