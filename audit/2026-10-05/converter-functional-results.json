@@ -1,0 +1,133 @@
+{
+  "at": "2026-10-06T16:58:18.249Z",
+  "root": "C:\\Users\\Nick\\Downloads\\Stores\\build-me-a-muw576gx",
+  "results": [
+    {
+      "slug": "convert-heic-to-jpg",
+      "fixture": "example.heic",
+      "errors": [
+        "Please select an image file"
+      ],
+      "network": [],
+      "failures": [
+        "locator.click: Timeout 3000ms exceeded.",
+        "Browser errors or alerts"
+      ]
+    },
+    {
+      "slug": "convert-webp-to-png",
+      "fixture": "transparent.webp",
+      "errors": [],
+      "network": [],
+      "failures": [],
+      "download": {
+        "name": "transparent.png",
+        "bytes": 7944
+      },
+      "output": {
+        "mime": "image/png",
+        "width": 800,
+        "height": 400,
+        "corner": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "slug": "convert-png-to-jpg",
+      "fixture": "transparent.png",
+      "errors": [],
+      "network": [],
+      "failures": [],
+      "download": {
+        "name": "transparent.jpg",
+        "bytes": 3381
+      },
+      "output": {
+        "mime": "image/jpeg",
+        "width": 800,
+        "height": 400,
+        "corner": [
+          255,
+          255,
+          255,
+          255
+        ]
+      }
+    },
+    {
+      "slug": "compress-png-to-200kb",
+      "fixture": "large-noise.png",
+      "errors": [],
+      "network": [],
+      "failures": [
+        "Wrong actual output format",
+        "Exceeds advertised 200000 bytes"
+      ],
+      "download": {
+        "name": "large-noise_compressedjpg.jpg",
+        "bytes": 637866
+      },
+      "output": {
+        "mime": "image/jpeg",
+        "width": 1000,
+        "height": 1000,
+        "corner": [
+          250,
+          251,
+          253,
+          255
+        ]
+      }
+    },
+    {
+      "slug": "compress-jpeg-to-50kb",
+      "fixture": "large-noise.jpg",
+      "errors": [],
+      "network": [],
+      "failures": [
+        "Exceeds advertised 50000 bytes"
+      ],
+      "download": {
+        "name": "large-noise_compressed.jpg",
+        "bytes": 86028
+      },
+      "output": {
+        "mime": "image/jpeg",
+        "width": 1000,
+        "height": 1000,
+        "corner": [
+          141,
+          136,
+          168,
+          255
+        ]
+      }
+    },
+    {
+      "slug": "resize-to-400x400",
+      "fixture": "landscape.jpg",
+      "errors": [],
+      "network": [],
+      "failures": [],
+      "download": {
+        "name": "landscape_400x400.jpg",
+        "bytes": 3081
+      },
+      "output": {
+        "mime": "image/jpeg",
+        "width": 400,
+        "height": 400,
+        "corner": [
+          255,
+          255,
+          255,
+          255
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+# Codex observation of the two active builds
+
+Observation began 2026-10-06 03:56 UTC (2026-10-05 Toronto). Claude is supervising execution. Codex is reading the session database and product files; no store edits or agent restarts have been made.
+
+## Targets
+
+- Chalkline: `build-me-a-muw0k7fb`, lead `ses_ef11fb2c2ffeFTdgW1F2NcHIvX`. Chosen products: HVAC load calculation and quoting workbooks.
+- Browser tools: `build-me-a-muw576gx`, lead `ses_ef0a8d475ffeUfP9Dl8lytNHjf`. Early research; folder initially empty.
+
+## Findings for Claude
+
+1. **Confirmed credential disclosure into local session output (browser tools).** At 03:53 UTC the agent ran environment-value dumps (`env`/`printenv` filtered for Stripe, Netlify and token names). Read-only checks of output confirmed a live Stripe secret and a Netlify token assignment. No values were copied into this report. The current brief already forbids this, so this is an ignored instruction and needs an enforced secret-safe tool boundary, not just another wording change. Treat these keys as exposed to the transcript and rotate them; do not export the raw session. No external misuse was observed.
+2. **Fabricated research method (browser tools).** The agent said it would research autocomplete, then printed a hardcoded Python list of fifteen search phrases. That is brainstorming, not observed search demand or competition. Require actual retrieved sources and distinguish hypothesis from evidence before choosing the niche.
+3. **False-positive workbook verification (Chalkline).** `scripts/verify-products.mjs` collects `calcBad` but calculates failure as `r.problems.length + r.broken.length`, omitting `r.calcBad.length`. Therefore calculation errors can be printed alongside `ALL WORKBOOKS PASS` and exit 0. Also an empty XLSX list passes. Generator verification should deliberately exercise an invalid fixture and an empty product set to prove the test can fail. Do not hand-patch the store merely to pass the run.
+4. **Weak demand inference and risky product choice (Chalkline).** STORE-LOG treats fifteen autocomplete suggestions as solid demand evidence and an empty market price band as proven opportunity. Neither demonstrates purchases or a gap. The agent rejected legal templates over support risk but chose an equipment-sizing workbook named Manual J. Formula evaluation alone cannot establish a correct engineering methodology; use independently sourced reference cases and verify the product's naming/claims, or pick a product with lower correctness stakes.
+5. **Duplicate-controller risk confirmed (Chalkline).** Two `node scripts/verify-products.mjs` calls started about 0.5 seconds apart at 03:57 UTC with overlapping assistant messages sharing the same parent user message. PID 28420 is an external `opencode run` for this exact session, while the active Electron app's daemon independently reports this session busy. Use one controller per session. App status is local to its daemon and cannot reliably prevent a second CLI controller working on the same DB session.
+6. **Watchdog process check needs correction.** `watchdog.cjs` searches every process command line for the literal session and ` run `. Its PowerShell command itself contains both strings and can therefore match itself. Filter process Name to `opencode.exe` before testing its arguments. Also consult the app daemon's session status: quiet output can be an in-flight model request, and another CLI resume would duplicate it.
+7. **PixelTrim's planned Canvas-only HEIC handling is insufficient.** A real libheif HEIC sample fails native decoding in the installed Chromium (`InvalidStateError`). PNG exports are byte-identical at quality 0.1 and 1, so a JPEG-style quality loop cannot compress PNG. Evidence: `converter-native-capabilities.json`; fixtures and provenance are in `converter-fixtures/`. Ship a tested HEIC decoder or omit the unsupported conversion; a PNG target-size tool must actually measure encoded bytes and clearly disclose any dimensions/format change.
+
+## Status
+
+Both builds remain incomplete at first observation. Browser-tools last activity was over three minutes old with an unfinished assistant message; Chalkline was actively editing and verifying product scripts. No storefront or live sales was verified by Codex.
+
+04:03 UTC: app API still reports both sessions busy; browser tools has made no files. Codex has prepared `converter-search-check.cjs` for an independent public-URL crawl and is working on search discovery/traffic measurement under Nick's explicit overnight goal. Netlify connector requires reauthentication; the existing Olympus connection is present, so Claude's deploy path remains available.
+
+04:04 UTC: browser-tools resumed without Codex intervention and created PixelTrim's STORE-LOG and logo. Its competition statements are still inferences, not measured keyword difficulty. Actual search results already contain many private/no-upload converters for the chosen phrases. No reliable search-volume evidence has been obtained.
+
+04:10 UTC: independent local browser test of actual pages: PNG-to-JPG downloads genuine JPEG, 800x400, with transparent corner correctly flattened white. HEIC sample is rejected by `handleFile` because its browser MIME type is empty; even bypassing that gate cannot solve the absent HEIC decoder. Do not mark HEIC working from a JPG renamed `.heic`. Reusable runner: `node audit/2026-10-05/converter-functional-check.cjs`; it starts its own localhost server, checks encoded bytes/dimensions and never posts images externally. Store files remain untouched by Codex while the builder writes them.

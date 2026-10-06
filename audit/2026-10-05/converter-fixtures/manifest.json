@@ -1,0 +1,33 @@
+[
+  {
+    "name": "transparent.png",
+    "bytes": 7944,
+    "source": "Deterministic locally generated test image"
+  },
+  {
+    "name": "transparent.webp",
+    "bytes": 688,
+    "source": "Deterministic locally generated test image"
+  },
+  {
+    "name": "landscape.jpg",
+    "bytes": 3444,
+    "source": "Deterministic locally generated test image"
+  },
+  {
+    "name": "large-noise.png",
+    "bytes": 3441670,
+    "source": "Deterministic locally generated test image"
+  },
+  {
+    "name": "large-noise.jpg",
+    "bytes": 1020019,
+    "source": "Deterministic locally generated test image"
+  },
+  {
+    "name": "example.heic",
+    "bytes": 718114,
+    "source": "https://raw.githubusercontent.com/strukturag/libheif/master/examples/example.heic",
+    "purpose": "Local compatibility test only; not a production asset"
+  }
+]

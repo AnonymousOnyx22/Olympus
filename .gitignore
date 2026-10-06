@@ -6,3 +6,7 @@
 # the source keeps the {{tokens}}, so committing this would only ever
 # commit one company's details into history.
 olympus-web/dist/
+
+# Agent run logs contain full message text, including key prefixes
+audit/2026-10-05/real-1/
+audit/2026-10-05/real-2/

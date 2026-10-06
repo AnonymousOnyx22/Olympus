@@ -1,0 +1,7 @@
+{
+  "nativeHEIC": {
+    "success": false,
+    "error": "InvalidStateError"
+  },
+  "pngQualityParameterChangesOutput": false
+}

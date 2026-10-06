@@ -15,15 +15,16 @@ applies if the owner ever chooses to pay for a plan.
 
 ## Business models Station can choose from (2026-10-05)
 
-The data lives in `lantern/src/services/storeModels.ts` and is injected into the brief. Eight models, all free to
-run and hands-off for the owner: digital printables, templates and spreadsheets, paid guides and mini courses,
-small paid web tools, a niche newsletter, a niche review or guide site, a curated directory, and print on demand.
+The data lives in `lantern/src/services/storeModels.ts` and is injected into the brief. Twelve routes now cover
+digital printables, templates and spreadsheets, paid guides, small paid web tools, newsletters, review sites,
+directories, print on demand, original reports/data, paid alerts, lead generation, and niche job boards. Each
+route has different launch gates; see `audit/2026-10-05/business-model-review.md` before calling one complete.
 
 Newsletters and content sites make money from sponsors, affiliate links and ads, but ad networks and affiliate
-programs want a real audience (often thousands of subscribers) and usually an approval only the owner can apply
-for. The agent builds the audience first (pages worth finding by search plus an email signup), starts with money
-that needs no approval (own paid products, a paid tier, sponsor slots the owner sells directly), and lists each
-approval for the owner. Expect many months before any income.
+programs want a real audience and may require approval or a paid plan. The agent builds the audience first
+(pages worth finding by search plus an email signup), tests an owned paid product or tier when payments are
+connected, and lists each unavailable approval or advertiser agreement as a launch gate. Do not depend on the
+owner selling sponsor slots: that is ongoing owner work. Expect many months before any income.
 
 ## Design themes
 

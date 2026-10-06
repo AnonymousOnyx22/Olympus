@@ -1,0 +1,49 @@
+{
+  "name": "Chalkline",
+  "at": "2026-10-06T20:42:50.973Z",
+  "latestPartAt": 1791315439773,
+  "assistant": [
+    {
+      "created": 1791315394776
+    },
+    {
+      "created": 1791315383936,
+      "completed": 1791315394053,
+      "finish": "tool-calls"
+    },
+    {
+      "created": 1791315353294,
+      "completed": 1791315383405,
+      "finish": "tool-calls"
+    },
+    {
+      "created": 1791315263386,
+      "completed": 1791315352842,
+      "finish": "tool-calls"
+    }
+  ],
+  "tools": [
+    {
+      "id": "prt_112b7e8be0019yZ7f2VhzZ57tD",
+      "tool": "bash",
+      "status": "running",
+      "start": 1791315405895
+    },
+    {
+      "id": "prt_112b7bc7a001djqia6bqz5I35u",
+      "tool": "edit",
+      "status": "completed",
+      "start": 1791315393726,
+      "end": 1791315393990
+    },
+    {
+      "id": "prt_112b7365f00167JgDNQSoVzTn6",
+      "tool": "bash",
+      "status": "completed",
+      "start": 1791315359410,
+      "end": 1791315383279
+    }
+  ],
+  "fileCount": 0,
+  "files": []
+}
