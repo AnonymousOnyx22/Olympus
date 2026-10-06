@@ -130,6 +130,17 @@ describe('Station store brief', () => {
     expect(brief).toContain('a trial or development store cannot take real orders')
   })
 
+  it('offers every business model and design theme and forbids repeating a theme', async () => {
+    const { BUSINESS_MODELS, STORE_THEMES } = await import('../src/services/storeModels')
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    for (const model of BUSINESS_MODELS) expect(brief).toContain(model.name)
+    for (const theme of STORE_THEMES) expect(brief).toContain(theme.name)
+    expect(brief).toContain('do not reuse a theme another store already has')
+    expect(brief).toContain('never assume or promise that income')
+    expect(BUSINESS_MODELS.length).toBeGreaterThanOrEqual(8)
+    expect(STORE_THEMES.length).toBeGreaterThanOrEqual(12)
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()

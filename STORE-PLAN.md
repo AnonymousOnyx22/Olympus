@@ -13,6 +13,25 @@ and Printful's price for that order. One-time owner steps: a free host account a
 (an order is charged when it is placed), and Stripe account activation (identity and bank). Shopify below only
 applies if the owner ever chooses to pay for a plan.
 
+## Business models Station can choose from (2026-10-05)
+
+The data lives in `lantern/src/services/storeModels.ts` and is injected into the brief. Eight models, all free to
+run and hands-off for the owner: digital printables, templates and spreadsheets, paid guides and mini courses,
+small paid web tools, a niche newsletter, a niche review or guide site, a curated directory, and print on demand.
+
+Newsletters and content sites make money from sponsors, affiliate links and ads, but ad networks and affiliate
+programs want a real audience (often thousands of subscribers) and usually an approval only the owner can apply
+for. The agent builds the audience first (pages worth finding by search plus an email signup), starts with money
+that needs no approval (own paid products, a paid tier, sponsor slots the owner sells directly), and lists each
+approval for the owner. Expect many months before any income.
+
+## Design themes
+
+Twelve distinct themes (paper editorial, Swiss grid, soft pastel, dark luxe, retro seventies, botanical studio,
+hand drawn notebook, brutalist mono, Nordic minimal, Y2K gloss, field guide, newsprint), each with a real
+palette, type, layout and motion. The agent picks one that fits the niche and must not reuse a theme another
+store already has.
+
 ## What each tool actually does
 
 | Need | Answer | One-time owner step |
