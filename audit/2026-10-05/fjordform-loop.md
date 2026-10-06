@@ -1,0 +1,40 @@
+# Fjordform growth loop
+
+Owner's instruction (2026-10-06): keep running this loop until the site gets real traffic or becomes a working paid product (SaaS). Do not ask the owner questions. Decide, act, and record.
+
+## Facts
+- Store folder: `C:\Users\Nick\Downloads\Stores\build-me-a-muw576gx` (brand Fjordform, formerly PixelTrim).
+- Live site: https://jolly-begonia-f52994.netlify.app (Netlify site id `5f7d5060-882a-4d11-814c-272405d15e3e`).
+- The agent that builds it runs in Olympus (Station chat, Claude Sonnet 5.5 through the owner's own login). Olympus is started with a debug port, currently 9666, so scripts in `%TEMP%\drive` can drive it (`fixchat.cjs` shows how to send a message). If the port is dead, relaunch Olympus from `lantern` with `--remote-debugging-port=<free port>` and repoint the scripts.
+- The agent deploys itself (Netlify token reaches it through the bridge). Backup: Netlify connector `deploy-site`, then run the returned `npx @netlify/mcp` command in the folder.
+- Report endpoint: `/.netlify/functions/report` with the token in `REPORT-TOKEN.txt` (also copied to `%TEMP%\px-token.txt`). Never print it or publish it.
+- Audit scripts: `%TEMP%\seo_audit.py` (every sitemap page: title, description, h1, canonical, JSON-LD, dashes, hyphens, sliders) and `%TEMP%\drive\usability.cjs` (first-time visitor test, desktop and phone).
+
+## The owner's checklist (judge the live site against every line)
+1. No em dashes, en dashes or hyphens in visible copy, titles or descriptions (page addresses may keep hyphens).
+2. Drop and done: no quality slider, always maximum quality, converts automatically on drop, two steps to a downloaded file.
+3. SEO: unique title of 60 characters or fewer, unique description of 120 to 158 characters, one h1, absolute canonical, true structured data, sitemap with lastmod, internal links, fast. Never promise a top Google spot.
+4. Ease of use score (judge every iteration): steps to a downloaded file (target 2), controls visible before the first conversion (target 2: From and To), time to result, phone layout without sideways scroll, plain error messages, keyboard use, labels.
+
+## One iteration
+1. Check the agent. Is a run in progress? (`%TEMP%\bridge-app.log` ends with `done` when idle, or look at the Station chat status.) If it is working, do nothing except report briefly.
+2. Audit the live site with both scripts and the report endpoint. Record the scores in the table below.
+3. Find the single biggest gap against the checklist, or if the checklist is met, the best next growth action (a new long tail page people really search for, better copy on the weakest page, IndexNow ping, free directory and tool listing texts for the owner to post, a related tool).
+4. Send the agent one focused brief through Olympus (never more than one job at a time), telling it to deploy itself and verify live.
+5. Update the log below and commit and push this file.
+
+## Stop conditions
+- Real traffic: the report shows at least 50 views in a day on tool pages that did not come from test visits (the test baseline is below), or Search Console access is given and shows impressions and clicks. Then report the numbers and keep improving what draws the traffic.
+- Working paid product: an account plus payment flow that completes end to end in Stripe test mode with a test key the owner provides. The saved Stripe key is LIVE, so never call Stripe with it. Until a test key exists, this stays a plan: Fjordform Pro (bulk batches and no ads) as a candidate, built only after traffic proves demand.
+
+## Honest limits
+- A new site on a free subdomain with no links to it takes weeks to rank. Nobody can promise a top spot or overnight traffic.
+- Real revenue cannot be proven without real visitors and a real buyer.
+
+## Baseline (test traffic, not real)
+- Report total at loop start (2026-10-06, all of it test visits by the agents and me, none real): REPORT TOTAL 24 pages 9
+
+## Log
+| When | Ease score notes | Biggest gap | Action sent | Result |
+| --- | --- | --- | --- | --- |
+| 2026-10-06 17:50 | 3 steps to download, 4 option tabs, quality slider at 90, Unavailable label, 45 hyphens, 1 en dash, half the descriptions under 120 characters | Ease of use and copy rules | Fix brief: remove slider and tabs, auto convert, copy rules, SEO text, IndexNow, deploy and verify | Pending |
