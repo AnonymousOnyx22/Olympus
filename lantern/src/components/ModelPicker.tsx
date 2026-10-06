@@ -32,6 +32,16 @@ interface ModelPresentation {
   fullName: string
 }
 
+interface FamilyGroup {
+  name: string
+  rows: Row[]
+}
+
+interface BrandGroup {
+  name: string
+  families: FamilyGroup[]
+}
+
 const FAMILY_RULES: [RegExp, string][] = [
   [/\bopus\b/i, 'Opus'], [/\bsonnet\b/i, 'Sonnet'], [/\bhaiku\b/i, 'Haiku'],
   [/^gpt\b/i, 'GPT'], [/^gemini\b/i, 'Gemini'], [/^gemma\b/i, 'Gemma'],
@@ -40,6 +50,8 @@ const FAMILY_RULES: [RegExp, string][] = [
   [/^phi\b/i, 'Phi'], [/^command\b/i, 'Command'], [/^granite\b/i, 'Granite'],
 ]
 
+const FAMILY_ORDER = ['Opus', 'Sonnet', 'Haiku']
+const BRAND_ORDER = ['Anthropic', 'OpenAI', 'Google', 'xAI', 'DeepSeek', 'Qwen', 'Mistral AI', 'Meta']
 
 const accessStyle = {
   local: { label: 'Local', className: 'bg-slate-100 text-slate-600 ring-slate-200' },
@@ -73,6 +85,11 @@ function presentModel(modelID: string): ModelPresentation {
     .replace(new RegExp(`^${family.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'i'), '')
   const match = withoutFamily.match(/\b(?:v?\d+(?:\.\d+)+|[rvo]\d+|\d+)\b/i)
   return { family, version: (match?.[0]?.replace(/^v/i, '') ?? withoutFamily) || fullName, fullName }
+}
+
+const familyRank = (name: string) => {
+  const index = FAMILY_ORDER.indexOf(name)
+  return index < 0 ? FAMILY_ORDER.length : index
 }
 
 // ---- Favorites --------------------------------------------------------------
@@ -242,8 +259,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
   const [variantOpen, setVariantOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [adding, setAdding] = useState(false)
-  // Step one is a dropdown per provider (Claude Code, Local, an API provider). Step two is its models, step three a model's thinking modes.
-  const [openProviders, setOpenProviders] = useState<Set<string>>(() => new Set())
+  const [openFamilies, setOpenFamilies] = useState<Set<string>>(() => new Set())
   const [endpointError, setEndpointError] = useState<string | null>(null)
   const [favoriteKeys, setFavoriteKeys] = useState<string[]>(() => loadFavorites())
   useEffect(() => saveFavorites(favoriteKeys), [favoriteKeys])
@@ -267,18 +283,34 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
     triggerRef.current?.focus()
   })
 
-  const rows = useMemo<Row[]>(() => providers
-    .filter((provider) => provider.online)
-    .flatMap((provider) => provider.models.map((modelID): Row => ({
-      providerID: provider.id,
-      providerName: provider.name,
-      modelID,
-      access: provider.access?.[modelID] ?? (provider.source === 'local' ? 'local' : 'api'),
-    })))
-    // Claude and GPT are used through their own CLI logins, never a paid API, so those API routes are not offered.
-    .filter((row) => !(row.access === 'api' && ['Anthropic', 'OpenAI'].includes(brandFor(row.modelID).name))), [providers])
+  const rows = useMemo<Row[]>(() => {
+    const candidates = providers
+      .filter((provider) => provider.online)
+      .flatMap((provider) => provider.models.map((modelID): Row => ({
+        providerID: provider.id,
+        providerName: provider.name,
+        modelID,
+        access: provider.access?.[modelID] ?? (provider.source === 'local' ? 'local' : 'api'),
+      })))
+      // Claude and GPT are used through their own CLI logins, never a paid API, so those API routes are not offered.
+      .filter((row) => !(row.access === 'api' && ['Anthropic', 'OpenAI'].includes(brandFor(row.modelID).name)))
+    const score = (row: Row) => {
+      const brand = brandFor(row.modelID).name.toLowerCase().replace(/[^a-z0-9]/g, '')
+      const provider = `${row.providerID} ${row.providerName}`.toLowerCase().replace(/[^a-z0-9]/g, '')
+      const isSelected = selected?.providerID === row.providerID && selected.modelID === row.modelID
+      return (isSelected ? 100 : 0) + (row.access === 'cli' ? 30 : row.access === 'local' ? 20 : 0) + (provider.includes(brand) ? 10 : 0)
+    }
+    const canonical = new Map<string, Row>()
+    for (const row of candidates) {
+      const key = `${brandFor(row.modelID).name}/${prettyModelName(row.modelID)}`.toLowerCase()
+      const current = canonical.get(key)
+      if (!current || score(row) > score(current)) canonical.set(key, row)
+    }
+    return [...canonical.values()]
+  }, [providers, selected])
   // Favorites are pinned above everything else, in the order they were favorited (then however
-  // the user has dragged them since). Only shown while browsing, not mid-search.
+  // the user has dragged them since). Only shown while browsing, not mid-search - a query already
+  // narrows the list to what's relevant, and duplicating a favorite there would just be noise.
   const favoriteRows = useMemo(
     () => favoriteKeys.map((key) => rows.find((row) => rowKey(row) === key)).filter((row): row is Row => !!row),
     [favoriteKeys, rows],
@@ -286,28 +318,46 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
   const showFavorites = !query.trim() && favoriteRows.length > 0
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    const base = q ? rows.filter((row) => `${row.providerName} ${brandFor(row.modelID).name} ${prettyModelName(row.modelID)} ${row.modelID}`.toLowerCase().includes(q)) : rows
+    const base = q ? rows.filter((row) => `${brandFor(row.modelID).name} ${prettyModelName(row.modelID)}`.toLowerCase().includes(q)) : rows
     return showFavorites ? base.filter((row) => !favoriteKeys.includes(rowKey(row))) : base
   }, [rows, query, showFavorites, favoriteKeys])
-  const providerGroups = useMemo(() => {
-    const byProvider = new Map<string, { id: string; name: string; rows: Row[] }>()
+  const groups = useMemo<BrandGroup[]>(() => {
+    const grouped = new Map<string, Map<string, Row[]>>()
     for (const row of filtered) {
-      const group = byProvider.get(row.providerID) ?? { id: row.providerID, name: row.providerName, rows: [] }
-      group.rows.push(row)
-      byProvider.set(row.providerID, group)
+      const brand = brandFor(row.modelID).name
+      const family = presentModel(row.modelID).family
+      const families = grouped.get(brand) ?? new Map<string, Row[]>()
+      const familyRows = families.get(family) ?? []
+      familyRows.push(row)
+      families.set(family, familyRows)
+      grouped.set(brand, families)
     }
-    // Your own logins first, then local servers, then free and API providers.
-    const rank = (group: { rows: Row[] }) => (group.rows.every((row) => row.access === 'cli') ? 0 : group.rows.every((row) => row.access === 'local') ? 1 : group.rows.some((row) => row.access === 'free') ? 2 : 3)
-    return [...byProvider.values()].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name))
+    return [...grouped.entries()]
+      .map(([name, families]) => ({
+        name,
+        families: [...families.entries()]
+          .map(([family, familyRows]) => ({
+            name: family,
+            rows: familyRows.sort((a, b) => presentModel(b.modelID).version.localeCompare(presentModel(a.modelID).version, undefined, { numeric: true })),
+          }))
+          .sort((a, b) => familyRank(a.name) - familyRank(b.name) || a.name.localeCompare(b.name)),
+      }))
+      .sort((a, b) => {
+        const aIndex = BRAND_ORDER.indexOf(a.name)
+        const bIndex = BRAND_ORDER.indexOf(b.name)
+        return (aIndex < 0 ? BRAND_ORDER.length : aIndex) - (bIndex < 0 ? BRAND_ORDER.length : bIndex) || a.name.localeCompare(b.name)
+      })
   }, [filtered])
 
   useEffect(() => {
     if (!open) return
-    const id = selected?.providerID ?? providerGroups[0]?.id
-    if (id) setOpenProviders((current) => (current.has(id) ? current : new Set([...current, id])))
-  }, [open, selected, providerGroups])
+    const active = selected ? rows.find((row) => row.providerID === selected.providerID && row.modelID === selected.modelID) : null
+    const row = active ?? rows[0]
+    if (!row) return
+    const key = `${brandFor(row.modelID).name}:${presentModel(row.modelID).family}`
+    setOpenFamilies((current) => current.has(key) ? current : new Set([...current, key]))
+  }, [open, rows, selected])
 
-  // Step two is the model, step three its thinking mode: picking a model that has variants opens them straight away.
   const choose = (row: Row) => {
     onSelect({ providerID: row.providerID, modelID: row.modelID })
     setOpen(false)
@@ -492,49 +542,59 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                       )}
                     </div>
                   ) : (
-                    providerGroups.map((group, groupIndex) => {
-                      const expanded = !!query.trim() || openProviders.has(group.id)
-                      const activeGroup = group.rows.some((row) => selected?.providerID === row.providerID && selected.modelID === row.modelID)
-                      const kinds = [...new Set(group.rows.map((row) => row.access))]
+                    groups.map((group, groupIndex) => {
+                      const sample = group.families[0]?.rows[0]
+                      const BrandLogo = sample ? brandFor(sample.modelID).Logo : null
                       return (
-                        <section key={group.id} className={groupIndex === 0 ? '' : 'mt-0.5'}>
-                          <button
-                            type="button"
-                            aria-expanded={expanded}
-                            onClick={() => setOpenProviders((current) => {
-                              const next = new Set(current)
-                              if (next.has(group.id)) next.delete(group.id)
-                              else next.add(group.id)
-                              return next
-                            })}
-                            className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left transition ${activeGroup ? 'bg-slate-50 text-slate-900' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
-                          >
-                            <motion.svg animate={{ rotate: expanded ? 90 : 0 }} className="h-3 w-3 shrink-0 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M8 4l10 8-10 8z" /></motion.svg>
-                            <span className="min-w-0 flex-1 truncate text-[12.5px] font-medium">{group.name}</span>
-                            {kinds.map((kind) => (
-                              <span key={kind} className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9.5px] font-medium ring-1 ${accessStyle[kind].className}`}>{accessStyle[kind].label}</span>
-                            ))}
-                            <span className="shrink-0 font-mono text-[9.5px] text-slate-400">{group.rows.length}</span>
-                          </button>
-                          <AnimatePresence initial={false}>
-                            {expanded && (
-                              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} className="overflow-hidden">
-                                <div className="space-y-0.5 pb-1 pl-3">
-                                  {group.rows.map((row, index) => (
-                                    <ModelRow
-                                      key={`${row.providerID}/${row.modelID}`}
-                                      row={row}
-                                      index={index}
-                                      active={selected?.providerID === row.providerID && selected.modelID === row.modelID}
-                                      favorite={favoriteKeys.includes(rowKey(row))}
-                                      onToggleFavorite={() => toggleFavorite(row)}
-                                      onClick={() => choose(row)}
-                                    />
-                                  ))}
+                        <section key={group.name} className={groupIndex === 0 ? '' : 'mt-2 border-t border-slate-200 pt-2'}>
+                          <div className="flex items-center gap-2 px-2.5 pb-1.5 pt-0.5 text-[10.5px] font-medium uppercase tracking-[0.08em] text-slate-500">
+                            {BrandLogo && <BrandLogo className="h-3.5 w-3.5 text-slate-400" title={group.name} />}
+                            {group.name}
+                          </div>
+                          <div className="space-y-0.5">
+                            {group.families.map((family) => {
+                              const key = `${group.name}:${family.name}`
+                              const expanded = !!query.trim() || openFamilies.has(key)
+                              const activeFamily = family.rows.some((row) => selected?.providerID === row.providerID && selected.modelID === row.modelID)
+                              return (
+                                <div key={key}>
+                                  <button
+                                    type="button"
+                                    onClick={() => setOpenFamilies((current) => {
+                                      const next = new Set(current)
+                                      if (next.has(key)) next.delete(key)
+                                      else next.add(key)
+                                      return next
+                                    })}
+                                    className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left transition ${activeFamily ? 'text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
+                                  >
+                                    <motion.svg animate={{ rotate: expanded ? 90 : 0 }} className="h-3 w-3 shrink-0 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M8 4l10 8-10 8z" /></motion.svg>
+                                    <span className="text-[12px] font-medium">{family.name}</span>
+                                    <span className="ml-auto font-mono text-[9.5px] text-slate-400">{family.rows.length}</span>
+                                  </button>
+                                  <AnimatePresence initial={false}>
+                                    {expanded && (
+                                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} className="overflow-hidden">
+                                        <div className="space-y-0.5 pb-1">
+                                          {family.rows.map((row, index) => (
+                                            <ModelRow
+                                              key={`${row.providerID}/${row.modelID}`}
+                                              row={row}
+                                              index={index}
+                                              active={selected?.providerID === row.providerID && selected.modelID === row.modelID}
+                                              favorite={favoriteKeys.includes(rowKey(row))}
+                                              onToggleFavorite={() => toggleFavorite(row)}
+                                              onClick={() => choose(row)}
+                                            />
+                                          ))}
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
                                 </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
+                              )
+                            })}
+                          </div>
                         </section>
                       )
                     })
