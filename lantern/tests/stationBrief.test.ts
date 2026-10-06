@@ -184,4 +184,11 @@ describe('Station store brief', () => {
     expect(brief).toContain('first-party counter')
     expect(brief).toContain('never the project folder')
   })
+  it('tells agents never to ask the owner and the manager to answer specialists', () => {
+    const brief = buildStationBrief({ request: 'make a store', name: '' } as never)
+    expect(brief).toContain('Never ask the owner a question')
+    expect(brief).toContain('Owner notes')
+    expect(brief).toContain('you answer it yourself')
+    expect(buildStationCheckBrief()).toContain('do not start a competing task')
+  })
 })

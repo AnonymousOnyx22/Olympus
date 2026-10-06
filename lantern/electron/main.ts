@@ -696,6 +696,10 @@ if (!app.requestSingleInstanceLock()) {
   void app.whenReady().then(() => {
     // Ensures Windows uses our icon (not electron.exe's) for the taskbar button.
     if (process.platform === 'win32') app.setAppUserModelId('com.olympus.app')
+    cliBridge.setBridgeEnv(() => {
+      const ids = connections.CONNECTION_PROVIDERS.map((p) => p.id)
+      return { ...connections.envForConnections(ids), ...browserSignIn.sessionEnv(ids) }
+    })
     void cliBridge.startCliBridge()
     registerIpc()
     projects.watchRoots(notifyProjects)

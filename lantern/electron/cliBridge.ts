@@ -96,14 +96,20 @@ export const findCodex = (): string | null => onPath(process.platform === 'win32
 
 interface RunHandlers { text: (chunk: string) => void; done: (error?: string) => void }
 
+/** Environment the CLI programs get on top of this process's own: the owner's saved connections (Netlify and so on), same as the agent engine. */
+let extraEnv: () => Record<string, string | undefined> = () => ({})
+export function setBridgeEnv(provider: () => Record<string, string | undefined>): void { extraEnv = provider }
+
+let lastCwd: { dir: string; at: number } | null = null
+
 // One continuing conversation per folder, so a follow-up message resumes the same CLI session.
 const started = new Set<string>()
 
 function runClaude(exe: string, cwd: string, model: string, prompt: string, handlers: RunHandlers): ChildProcess {
-  const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash,Read,Write,Edit,Glob,Grep']
+  const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash,Read,Write,Edit,Glob,Grep,WebSearch,WebFetch']
   if (started.has(cwd)) args.push('--continue')
   args.push('--model', model)
-  const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe) })
+  const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe), env: { ...process.env, ...extraEnv() } })
   let buffer = ''
   let failure = ''
   let sawText = false
@@ -138,7 +144,7 @@ function runClaude(exe: string, cwd: string, model: string, prompt: string, hand
 
 function runCodex(exe: string, cwd: string, model: string, prompt: string, handlers: RunHandlers): ChildProcess {
   const args = ['exec', '-m', model, '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'sandbox_workspace_write.network_access=true', '-']
-  const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe) })
+  const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe), env: { ...process.env, ...extraEnv() } })
   let output = ''
   let errors = ''
   child.stdout?.on('data', (data: Buffer) => { output += data.toString() })
@@ -193,7 +199,14 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse): Prom
   else res.writeHead(200, { 'content-type': 'application/json' })
 
   if (isTitleRequest(messages)) { finish(titleFrom(lastUserText(messages))); return }
-  const cwd = workingDirectory(messages)
+  const toolCount = Array.isArray((body as { tools?: unknown[] }).tools) ? (body as { tools?: unknown[] }).tools!.length : 0
+  let cwd = workingDirectory(messages)
+  // Only the engine's real agent requests carry tools. A small request with no tools and no folder is a side request
+  // such as a title or summary, so it gets a one line answer instead of a full CLI run.
+  if (!cwd && toolCount === 0) { finish(titleFrom(lastUserText(messages))); return }
+  // A real request that did not repeat the folder is tied to the folder this bridge saw most recently, if that was recent.
+  if (!cwd && lastCwd && Date.now() - lastCwd.at < 15 * 60_000) cwd = lastCwd.dir
+  if (cwd) lastCwd = { dir: cwd, at: Date.now() }
   const prompt = lastUserText(messages)
   const exe = engine === 'claude-code' ? findClaude() : findCodex()
   if (!cwd) { finish('', 'this request did not say which project folder it belongs to.'); return }
