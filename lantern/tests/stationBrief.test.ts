@@ -91,6 +91,14 @@ describe('Station store brief', () => {
     expect(check).toContain('never invent numbers, and never claim the store is earning')
   })
 
+  it('only builds stores that run hands-off, with fulfilment, support and disputes automated', () => {
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    expect(brief).toContain('The store must run with no work from the owner, ever')
+    expect(brief).toContain('print on demand, digital downloads, or dropshipping through a supplier with an order API')
+    expect(brief).toContain('Handle disputes yourself too')
+    expect(brief).toContain('one short list rather than interrupting them one item at a time')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()
