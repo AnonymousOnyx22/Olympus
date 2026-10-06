@@ -174,4 +174,12 @@ describe('Station store brief', () => {
     expect(check).toContain('make one concrete improvement this pass')
     expect(check).toContain('Do not publish, purchase, change live payments')
   })
+  it('teaches search ranking honestly: long tail, one page per intent, IndexNow, no instant-first promise', () => {
+    const brief = buildStationBrief({ request: 'make a tool site', name: '' } as never)
+    expect(brief).toContain('no site can be put at the top of a search on day one')
+    expect(brief).toContain('IndexNow')
+    expect(brief).toContain('One page per search intent')
+    expect(brief).toContain('sitemap.xml')
+    expect(brief).toContain('Do not buy links')
+  })
 })

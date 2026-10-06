@@ -14,8 +14,8 @@ describe('store models and themes', () => {
     expect(text).not.toMatch(/monthly fee|subscription plan|you ship|owner ships/)
   })
 
-  it('does not promise newsletter or content income', () => {
-    for (const id of ['newsletter', 'affiliate']) {
+  it('does not promise income for audience-dependent models', () => {
+    for (const id of ['newsletter', 'affiliate', 'leadgen', 'jobboard']) {
       const m = BUSINESS_MODELS.find((x) => x.id === id)!
       expect(m.timeToFirstSale.toLowerCase()).toMatch(/many months|months/)
       expect(m.honestRisk.length).toBeGreaterThan(40)
