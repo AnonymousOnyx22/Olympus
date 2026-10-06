@@ -12,8 +12,11 @@ const stores = [
 ]
 const PROMPT = 'Continue where you stopped. Read your todo list and STORE-LOG.md, finish the next unfinished step, and keep going until the store is built, deployed to my connected Netlify account, and tested live at desktop and phone width. Write files in small pieces and use bounded commands. Add the first-party visitor counter and token-protected report endpoint from the search playbook, and test it live. Never call Stripe and never place a Printful order. When everything is verified, update STORE-LOG.md and end your final message with the exact words STORE COMPLETE and the live address, plus an honest list of what is not wired up.'
 
+// Free models to fall back through when the current one hits its free-tier limit or stops answering.
+const MODELS = ['opencode/big-pickle', 'opencode/nemotron-3-ultra-free', 'opencode/longcat-2.5-preview-free', 'opencode/mimo-v2.6-flash-free', 'opencode/fledge-alpha-free', 'opencode/ling-3.1-flash-free']
+const LIMIT = /limit|quota|rate|credit|exceed|429|too many|usage/i
 const log = (m) => fs.appendFileSync(process.env.TEMP + '/watchdog.log', new Date().toISOString() + ' ' + m + '\n')
-const state = Object.fromEntries(stores.map((s) => [s.name, { resumes: 0, last: 0, done: false }]))
+const state = Object.fromEntries(stores.map((s) => [s.name, { resumes: 0, last: 0, done: false, model: 0, lastSeen: 0, stuck: 0 }]))
 
 // True while some `opencode run` for this session is already alive, so a resume is never doubled up.
 const running = (session) => {
@@ -29,16 +32,23 @@ function tick() {
     if (st.done || st.resumes >= 15) continue
     try {
       const d = new DatabaseSync(db, { readOnly: true })
+      const d2 = new DatabaseSync(db, { readOnly: true })
       const last = d.prepare('select max(time_created) t from part where session_id=?').get(s.session).t || 0
       const text = d.prepare("select json_extract(p.data,'$.text') x from part p join message m on m.id=p.message_id where p.session_id=? and json_extract(m.data,'$.role')='assistant' and json_extract(p.data,'$.type')='text' order by p.time_created desc limit 1").get(s.session)?.x || ''
       d.close()
+      const err = d2.prepare("select json_extract(data,'$.error') e from message where session_id=? and json_extract(data,'$.role')='assistant' order by time_created desc limit 1").get(s.session)?.e || ''
+      d2.close()
+      if (err && LIMIT.test(String(err)) && st.model < MODELS.length - 1) { st.model++; st.last = 0; log(`${s.name} hit a limit (${String(err).slice(0, 80)}), switching to ${MODELS[st.model]}`) }
       if (/STORE COMPLETE/.test(text)) { st.done = true; log(s.name + ' complete'); continue }
+      if (st.resumes > 0 && last <= st.lastSeen && Date.now() - st.last > 240000) { st.stuck++ } else if (last > st.lastSeen) { st.stuck = 0 }
+      if (st.stuck >= 2 && st.model < MODELS.length - 1) { st.model++; st.stuck = 0; st.last = 0; log(`${s.name} not answering, switching to ${MODELS[st.model]}`) }
+      st.lastSeen = Math.max(st.lastSeen, last)
       const quiet = (Date.now() - last) / 1000
       if (quiet > 300 && Date.now() - st.last > 360000 && !running(s.session)) {
         st.resumes++
         st.last = Date.now()
-        log(`${s.name} quiet ${Math.round(quiet)}s, resume #${st.resumes}`)
-        const child = spawn('opencode', ['run', '--session', s.session, '--dir', s.dir, '--model', 'opencode/big-pickle', '--auto', PROMPT], {
+        log(`${s.name} quiet ${Math.round(quiet)}s, resume #${st.resumes} on ${MODELS[st.model]}`)
+        const child = spawn('opencode', ['run', '--session', s.session, '--dir', s.dir, '--model', MODELS[st.model], '--auto', PROMPT], {
           detached: true, stdio: 'ignore', windowsHide: true, shell: true,
           env: { ...process.env, OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: '180000' },
         })
