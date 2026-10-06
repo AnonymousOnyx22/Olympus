@@ -76,6 +76,21 @@ describe('Station store brief', () => {
     expect(brief).toContain('a bundle must show as available whenever its parts are')
   })
 
+  it('picks ideas from evidence, keeps a memory log, and never promises income', () => {
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    expect(brief).toContain('choose it with evidence, not taste')
+    expect(brief).toContain('STORE-LOG.md')
+    expect(brief).toContain('Never promise or imply income')
+  })
+
+  it('runs a continuous idea and testing loop in the 24/7 pass without inventing numbers', () => {
+    const check = buildStationCheckBrief()
+    expect(check).toContain('Keep STORE-LOG.md current as the memory of this store')
+    expect(check).toContain('run the idea pipeline')
+    expect(check).toContain('with a stated hypothesis and a date to judge it')
+    expect(check).toContain('never invent numbers, and never claim the store is earning')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()

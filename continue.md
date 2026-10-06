@@ -48,9 +48,22 @@ isn't working, doubling down on what is.
 
 1. Confirm in the running app that Harbor Desk shows as a live card and Manage 24/7 check-ins fire.
 2. Run a **fresh test store** using the **Store fine-tuning run** procedure below, start to finish.
-3. Website audit still open: `site.config.json` has TODO legal name/emails (build gate correctly
+3. **Adopting discovered stores starts an agent for every one of them at launch** and stores are
+   exempt from the 4-agent cap, so N stores means N agents forever, and a killed one is restarted by the
+   reopen effect (this is what kept two deleted stores' folders locked). Adopt lazily (when a store is
+   opened) and make the app's own delete clear the renderer state.
+4. **Model timeouts are frequent** ("The operation timed out" hit the lead, the frontend specialist and
+   a drawing specialist in one build). Auto-resume covers the lead only; cover specialists and look at
+   the model/provider timeout.
+5. **Enforce shell timeouts in code**, not only in the brief (Dogear's lead hung 5 min on one launch call).
+6. **Store folder/name comes from the prompt, not the brand.**
+7. Run the fine-tuning procedure on Marginalia (run 3, started 2026-10-05) and judge the result against
+   the new storefront rules; see audit/2026-10-05/findings.md for run 1-2.
+8. Brief now has evidence-based idea selection, STORE-LOG.md memory, and an idea/testing pipeline in the
+   24/7 pass. Unproven in practice: watch a real check-in and see that it keeps the log and adds a product.
+9. Website audit still open: `site.config.json` has TODO legal name/emails (build gate correctly
    refuses until filled). `electron/license.ts` is unwired scaffolding - fine for now.
-4. 47 pre-existing React lint warnings (setState-in-effect etc.) - not bugs, low priority.
+10. 47 pre-existing React lint warnings (setState-in-effect etc.) - not bugs, low priority.
 
 ## Store fine-tuning run
 
