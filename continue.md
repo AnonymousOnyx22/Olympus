@@ -139,6 +139,8 @@ isn't working, doubling down on what is.
     `npx @netlify/mcp` command to run in the folder. The counter shows 11 views that are all test traffic (no way to
     reset Blobs without a reset endpoint); real traffic is zero. Any new store must publish a clean dist from day one.
 
+22. **Fjordform growth loop (owner, 2026-10-06):** keep iterating until real traffic or a working paid product. Rules, checklist, stop conditions and log are in `audit/2026-10-05/fjordform-loop.md`. A session cron (job fires at minutes 7 and 37) runs one iteration each time; it dies when the Claude session ends or after 7 days, so a new session must re-create it from that file.
+
 ## Store fine-tuning run
 
 The loop that makes Station one-shot stores: build one, watch every step, log what it gets wrong,
