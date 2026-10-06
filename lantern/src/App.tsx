@@ -150,6 +150,15 @@ export default function App() {
   const [spaceId, setSpaceId] = useState<string>(GENERAL_SPACE)
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>('workspace')
   const [screen, setScreen] = useState<'workspace' | 'projects' | 'connections'>('workspace')
+  // Saved connections that are not known to be broken. Re-read whenever the Connections page is left or entered.
+  const [connectionCount, setConnectionCount] = useState(0)
+  useEffect(() => {
+    let alive = true
+    void window.electronAPI.listConnections().then((list) => {
+      if (alive) setConnectionCount(list.filter((c) => (c.configuredFields.length > 0 || c.browserSessionConnected) && c.verification?.status !== 'failed').length)
+    }).catch(() => undefined)
+    return () => { alive = false }
+  }, [screen])
   // The picker either adds a window or changes the originating window's folder.
   const [picker, setPicker] = useState<{ purpose: 'agent' | 'pane'; inId: string; sessionId?: string } | null>(null)
   const [contextOpen, setContextOpen] = useState(() => localStorage.getItem('olympus.contextOpen') !== 'false' && window.innerWidth >= 1100)
@@ -937,7 +946,7 @@ export default function App() {
         onOpenStation={openStationOverview}
         onOpenStore={openStationStore}
         onOpenProjects={() => setScreen('projects')}
-        onOpenConnections={() => setScreen('connections')} connectionsActive={screen === 'connections'}
+        onOpenConnections={() => setScreen('connections')} connectionsActive={screen === 'connections'} connectionCount={connectionCount}
         onNewAgent={() => openPicker('agent')} skills={skills} />
       <div className="flex min-w-0 flex-1 flex-col">
         {screen === 'workspace' ? <WorkspaceBar projectId={hasProject ? spaceId : null} editCount={editRequests.length} view={workspaceView} title={workspaceView === 'station' ? 'Station' : workspaceTitle || 'General'}

@@ -31,6 +31,8 @@ interface SidebarProps {
   onOpenProjects: () => void
   onOpenConnections: () => void
   connectionsActive: boolean
+  /** Saved connections that are not known to be failing. */
+  connectionCount: number
   /**
    * Opens the folder picker for a new agentic chat. It is a picker rather than an immediate
    * action because the folder is the one thing you cannot infer: an agent started without
@@ -81,7 +83,7 @@ export default function Sidebar(props: SidebarProps) {
                 that, and two indicators for one fact is noise. */}
             <span className="ml-auto text-[10px]">{props.stationAgentCount}</span>
           </button>
-          <button onClick={props.onOpenConnections} aria-pressed={props.connectionsActive} title="Real API access and sign-ins for your stores: Stripe, Shopify, Etsy, Pinterest" className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs transition ${props.connectionsActive ? 'bg-aether-50 text-slate-900 ring-1 ring-aether-500/40' : 'text-slate-600 hover:bg-aether-50/60 hover:text-slate-900'}`}><Icon path="M8 12h8M9 7l-3 5 3 5M15 7l3 5-3 5" />Connections</button>
+          <button onClick={props.onOpenConnections} aria-pressed={props.connectionsActive} title="Real API access and sign-ins for your stores: Stripe, Shopify, Etsy, Pinterest" className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs transition ${props.connectionsActive ? 'bg-aether-50 text-slate-900 ring-1 ring-aether-500/40' : 'text-slate-600 hover:bg-aether-50/60 hover:text-slate-900'}`}><Icon path="M8 12h8M9 7l-3 5 3 5M15 7l3 5-3 5" />Connections<span className="ml-auto text-[10px]" aria-label={`${props.connectionCount} active connections`}>{props.connectionCount}</span></button>
           <button onClick={() => setSkillsOpen(!skillsOpen)} aria-expanded={skillsOpen} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs text-slate-600 transition hover:bg-aether-50/60 hover:text-slate-900"><Icon path="m12 3 2 6 6 3-6 2-2 7-2-7-6-2 6-3 2-6Z" /><span>Skills</span><span className="ml-auto text-[10px]">{props.skills.length}</span>
             {/* The notch points left while the list is shut, then swings down as it opens. */}
             <svg aria-hidden="true" className={`h-3 w-3 shrink-0 transition-transform duration-300 ease-out motion-reduce:transition-none ${skillsOpen ? 'rotate-0' : 'rotate-90'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
