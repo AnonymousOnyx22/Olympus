@@ -73,6 +73,10 @@ export function buildOpencodeConfig(providers: LocalProvider[], selected: ModelR
     provider,
     ...(model ? { model, small_model: model } : {}),
     share: 'disabled',
+    // Big folders (a project with node_modules, a build output) made the engine's file watcher and change snapshots
+    // take minutes to start, so the agent sat on "Starting" forever. Skip the heavy folders and the snapshots.
+    snapshot: false,
+    watcher: { ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**', '**/.next/**', '**/vendor/**'] },
     autoupdate: false,
     permission: {
       edit: permissionMode === 'ask' ? 'ask' : 'allow',
