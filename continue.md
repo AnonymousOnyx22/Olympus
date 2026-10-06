@@ -113,6 +113,14 @@ isn't working, doubling down on what is.
     big-pickle): all passed in about 20s, so big-pickle stays. A local model is not viable on this laptop
     (integrated Arc graphics, 15.7 GB RAM).
 
+18. **GOAL (owner, 2026-10-06): a working store that gets search traffic, starting with the free image converter
+    and resizer site.** Claude and Codex both work on it. Honest target: a new domain cannot rank overnight, so
+    "overnight" means everything that makes ranking possible is live and checked by morning: live URL, one
+    page per search phrase with a working in-browser tool, sitemap and robots, IndexNow submitted, structured
+    data, Lighthouse and phone checks passed, search log started in STORE-LOG.md. Real traffic is judged in
+    weeks and only from Search Console or analytics numbers, never guessed. `audit/2026-10-05/watchdog.cjs`
+    restarts a quiet store agent (log: `%TEMP%\watchdog.log`); it stops when the agent writes STORE COMPLETE.
+
 ## Store fine-tuning run
 
 The loop that makes Station one-shot stores: build one, watch every step, log what it gets wrong,
