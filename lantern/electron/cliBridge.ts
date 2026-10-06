@@ -64,7 +64,7 @@ export function describeTool(name: string, input: unknown): string {
 
 const ENGINES: Record<CliEngine, { name: string; models: string[] }> = {
   'claude-code': { name: 'Claude Code (your login)', models: ['claude-sonnet-5-5', 'claude-opus-5-5', 'claude-haiku-4-5'] },
-  'codex-cli': { name: 'Codex (your ChatGPT login)', models: ['gpt-6-sol'] },
+  'codex-cli': { name: 'Codex (your ChatGPT login)', models: ['gpt-6-astra', 'gpt-6-sol', 'gpt-6-luna', 'gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna'] },
 }
 
 function onPath(names: string[]): string | null {
@@ -142,17 +142,49 @@ function runClaude(exe: string, cwd: string, model: string, prompt: string, hand
   return child
 }
 
+/** Short readable form of a command Codex ran, without the PowerShell wrapper. */
+export function describeCommand(command: string): string {
+  const inner = command.replace(/^"?[^"]*powershell\.exe"?\s+-Command\s+/i, '').replace(/^"|"$/g, '')
+  return inner.replace(/\s+/g, ' ').slice(0, 100)
+}
+
+/** Turns one line of `codex exec --json` into text for the chat, or null when it has nothing to show. */
+export function codexLine(line: string): { text?: string; error?: string } | null {
+  let event: { type?: string; message?: string; error?: { message?: string }; item?: { type?: string; text?: string; command?: string; changes?: { path?: string }[] } }
+  try { event = JSON.parse(line) } catch { return null }
+  const item = event.item
+  if (event.type === 'item.completed' && item?.type === 'agent_message' && item.text) return { text: item.text + '\n' }
+  if (event.type === 'item.started' && item?.type === 'command_execution' && item.command) return { text: `\n> Run: ${describeCommand(item.command)}\n` }
+  if (event.type === 'item.completed' && item?.type === 'file_change') {
+    const paths = (item.changes ?? []).map((change) => change.path).filter(Boolean).slice(0, 4).join(', ')
+    return { text: `\n> Edit: ${paths || 'files'}\n` }
+  }
+  if (event.type === 'turn.failed' || event.type === 'error') return { error: event.error?.message ?? event.message ?? 'Codex reported an error.' }
+  return null
+}
+
 function runCodex(exe: string, cwd: string, model: string, prompt: string, handlers: RunHandlers): ChildProcess {
-  const args = ['exec', '-m', model, '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'sandbox_workspace_write.network_access=true', '-']
+  const args = ['exec', '--json', '-m', model, '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'sandbox_workspace_write.network_access=true', '-']
   const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe), env: { ...process.env, ...extraEnv() } })
-  let output = ''
+  let buffer = ''
+  let failure = ''
   let errors = ''
-  child.stdout?.on('data', (data: Buffer) => { output += data.toString() })
+  child.stdout?.on('data', (data: Buffer) => {
+    buffer += data.toString()
+    let index: number
+    while ((index = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, index).trim()
+      buffer = buffer.slice(index + 1)
+      if (!line) continue
+      const parsed = codexLine(line)
+      if (parsed?.text) handlers.text(parsed.text)
+      if (parsed?.error) failure = parsed.error
+    }
+  })
   child.stderr?.on('data', (data: Buffer) => { errors += data.toString() })
   child.on('error', (error) => handlers.done(`Could not start Codex: ${error.message}`))
   child.on('close', (code) => {
-    if (output.trim()) handlers.text(output.trim() + '\n')
-    handlers.done(code === 0 ? undefined : (errors.trim().split('\n').slice(-3).join(' ') || `Codex stopped with code ${code}.`))
+    handlers.done(code === 0 && !failure ? undefined : failure || errors.trim().split('\n').slice(-3).join(' ') || `Codex stopped with code ${code}.`)
   })
   child.stdin?.end(prompt)
   return child

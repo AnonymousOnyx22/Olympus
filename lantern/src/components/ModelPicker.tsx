@@ -52,7 +52,7 @@ const FAMILY_RULES: [RegExp, string][] = [
   [/^phi\b/i, 'Phi'], [/^command\b/i, 'Command'], [/^granite\b/i, 'Granite'],
 ]
 
-const FAMILY_ORDER = ['Opus', 'Sonnet', 'Haiku', 'Sol', 'Luna', 'Terra', 'Codex']
+const FAMILY_ORDER = ['Opus', 'Sonnet', 'Haiku', 'Astra', 'Sol', 'Luna', 'Terra', 'Codex']
 const BRAND_ORDER = ['Anthropic', 'OpenAI', 'Google', 'xAI', 'DeepSeek', 'Qwen', 'Mistral AI', 'Meta']
 
 const accessStyle = {

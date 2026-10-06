@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { describeTool, isTitleRequest, lastUserText, sseChunk, textOf, titleFrom, workingDirectory } from '../electron/cliBridge'
+import { codexLine, describeCommand, describeTool, isTitleRequest, lastUserText, sseChunk, textOf, titleFrom, workingDirectory } from '../electron/cliBridge'
 
 describe('cliBridge helpers', () => {
   it('reads text from string or part-list content', () => {
@@ -39,5 +39,13 @@ describe('cliBridge helpers', () => {
     const source = fs.readFileSync(path.join(process.cwd(), 'electron', 'cliBridge.ts'), 'utf8')
     expect(source).toContain('ENGINES[engine].models.includes(String(body.model))')
     expect(source).not.toMatch(/const model = body\.model/)
+  })
+  it('turns Codex JSON events into live chat lines', () => {
+    expect(codexLine(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: 'Working on it' } }))).toEqual({ text: 'Working on it\n' })
+    const run = codexLine(JSON.stringify({ type: 'item.started', item: { type: 'command_execution', command: '"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command Get-Date' } }))
+    expect(run?.text).toBe('\n> Run: Get-Date\n')
+    expect(codexLine(JSON.stringify({ type: 'turn.failed', error: { message: 'nope' } }))).toEqual({ error: 'nope' })
+    expect(codexLine('not json')).toBeNull()
+    expect(describeCommand('plain command')).toBe('plain command')
   })
 })
