@@ -4,6 +4,27 @@
 
 import type { ReactElement } from 'react'
 import {
+  siBluesky,
+  siBrevo,
+  siBunnydotnet,
+  siCarrd,
+  siFedex,
+  siFigma,
+  siFramer,
+  siHelpscout,
+  siItchdotio,
+  siKlarna,
+  siKofi,
+  siMatomo,
+  siPexels,
+  siRedbubble,
+  siReddit,
+  siRevolut,
+  siSellfy,
+  siTumblr,
+  siUps,
+  siWebflow,
+  siYoutube,
   siStripe,
   siPaypal,
   siSquare,
@@ -109,8 +130,67 @@ const Vercel = officialLogo(siVercel)
 const Render = officialLogo(siRender)
 const CloudflarePages = officialLogo(siCloudflarepages)
 
+const Bluesky = officialLogo(siBluesky)
+const Brevo = officialLogo(siBrevo)
+const Bunnydotnet = officialLogo(siBunnydotnet)
+const Carrd = officialLogo(siCarrd)
+const Fedex = officialLogo(siFedex)
+const Figma = officialLogo(siFigma)
+const Framer = officialLogo(siFramer)
+const Helpscout = officialLogo(siHelpscout)
+const Itchdotio = officialLogo(siItchdotio)
+const Klarna = officialLogo(siKlarna)
+const Kofi = officialLogo(siKofi)
+const Matomo = officialLogo(siMatomo)
+const Pexels = officialLogo(siPexels)
+const Redbubble = officialLogo(siRedbubble)
+const Reddit = officialLogo(siReddit)
+const Revolut = officialLogo(siRevolut)
+const Sellfy = officialLogo(siSellfy)
+const Tumblr = officialLogo(siTumblr)
+const Ups = officialLogo(siUps)
+const Webflow = officialLogo(siWebflow)
+const Youtube = officialLogo(siYoutube)
+const Chart = svg(<path d="M4 20V10m6 10V4m6 16v-7m4 7H3" />)
+const LinkedIn = svg(<path d="M4 4h16v16H4V4Zm4 6v7m0-10.5v.01M12 17v-7m0 3c0-2 4-3 4 0v4" />)
+
 /** Keyed by the `id` in electron/connections.ts's `CONNECTION_PROVIDERS`. */
 export const CONNECTION_LOGOS: Record<string, (p: LogoProps) => ReactElement> = {
+  affirm: Tag,
+  amplitude: Chart,
+  bluesky: Bluesky,
+  brevo: Brevo,
+  'bunny-net': Bunnydotnet,
+  carrd: Carrd,
+  contrado: Printer,
+  customerio: Envelope,
+  fedex: Fedex,
+  figma: Figma,
+  framer: Framer,
+  freshdesk: ChatBubble,
+  gelato: Printer,
+  helpscout: Helpscout,
+  icelolly: Globe,
+  imgbb: Cloud,
+  'itch-io': Itchdotio,
+  klarna: Klarna,
+  'ko-fi': Kofi,
+  linkedin: LinkedIn,
+  matomo: Matomo,
+  pexels: Pexels,
+  postmark: Envelope,
+  redbubble: Redbubble,
+  reddit: Reddit,
+  revolut: Revolut,
+  sellfy: Sellfy,
+  shipbob: ShippingBox,
+  shutterstock: Palette,
+  teelaunch: Printer,
+  tidio: ChatBubble,
+  tumblr: Tumblr,
+  ups: Ups,
+  webflow: Webflow,
+  youtube: Youtube,
   stripe: Stripe,
   paypal: PayPal,
   square: Square,

@@ -49,6 +49,23 @@ isn't working, doubling down on what is.
 - Connections: 79 providers, browser sign-in (not for payment processors), every saved connection
   available to every store automatically (no per-store toggle).
 
+**Visual and copy review (2026-10-05)**
+- Olympus website has a recognizable illustrated Greek visual system; the strongest "AI slop" risk is
+  vague/repeated benefit copy, not a generic visual template. Nick clarified that Olympus does not
+  cater to mobile; keep visual review and improvements focused on desktop.
+- Station's generic blue controls, blank/placeholder store cover, small metrics, and ambiguous
+  "Managing 24/7"/"steps done" labels weaken trust. A 24/7 label only means checks while Olympus is open.
+- Dogear had fake best-seller/stock claims and broken/blank product images; Marginalia is substantially
+  more distinct, but storefront copy must not claim human hand drawing, packing, shipping, or proven
+  sales until those things are true. No store has yet had a real visitor or sale.
+
+**Business model breadth (2026-10-05)**
+- Codex extended `storeModels.ts` from eight to twelve routes: original reports/data, paid alerts,
+  lead generation, and niche job boards were added. Newsletter copy no longer assumes Nick sells
+  sponsor slots. `STORE-PLAN.md` now points to `audit/2026-10-05/business-model-review.md`, which
+  sets the revenue and unattended-operation gates for each model. Claude is running the real builds.
+- Verification after this edit: TypeScript passed; Vitest 198 passed, 1 skipped; build passed.
+
 ## Next up
 
 1. Confirm in the running app that Harbor Desk shows as a live card and Manage 24/7 check-ins fire.
@@ -74,6 +91,27 @@ isn't working, doubling down on what is.
 10. Website audit still open: `site.config.json` has TODO legal name/emails (build gate correctly
    refuses until filled). `electron/license.ts` is unwired scaffolding - fine for now.
 11. 47 pre-existing React lint warnings (setState-in-effect etc.) - not bugs, low priority.
+12. Use the desktop visual/copy review to tighten launch surfaces: make Station status and
+    next-action labels evidence based; require generator copy to describe the actual art method,
+    supplier, shipping, and observed performance honestly.
+13. Test a **different revenue mechanism** after the current digital-download run: prefer an original
+    paid report/data product, then a paid utility or alerts. Do not call an audience route monetized
+    until the buyer, subscribers, or advertiser agreement exists; use the acceptance gates in
+    `audit/2026-10-05/business-model-review.md`.
+
+14. **Live builds (2026-10-06).** Chalkline (`build-me-a-muw0k7fb`: Excel and PDF workbooks for HVAC
+    contractors, Swiss grid, Netlify + Stripe) was resumed headlessly and is still producing product files; no
+    storefront or deploy yet. A free-tools store (image converter and resizer, ad or sponsor slot, search
+    playbook) was started on the real profile as `build-me-a-muw576gx` after rebuilding, so the 10 minute
+    model timeout is live for it. Audit both with `audit/2026-10-05/audit-store.cjs`, log defects in
+    `findings.md`, then run a newsletter build for comparison.
+15. **Search playbook** (`searchPlaybook.ts`) is in the brief: long-tail phrases, one page per intent, tools run in
+    the browser, IndexNow, honest link building, never promise a ranking. Unproven until a store ranks.
+16. **Cleanup when fine-tuning ends:** delete the test and non-working stores (owner's instruction), keep what
+    is genuinely launched. Not before: they are still being used for fine-tuning.
+17. Free hosted models were compared on a tiny tool task (nemotron-3-ultra-free, longcat-2.5-preview-free,
+    big-pickle): all passed in about 20s, so big-pickle stays. A local model is not viable on this laptop
+    (integrated Arc graphics, 15.7 GB RAM).
 
 ## Store fine-tuning run
 
@@ -147,5 +185,10 @@ passes every row of the table with zero intervention - then try a different prod
 - Monitor signatures must exclude ages/timestamps or they fire every poll.
 
 ## Verify before you claim done
+
+**Active dual-build watch (Codex, 2026-10-05):** read `audit/2026-10-05/codex-dual-build-watch.md`.
+Browser-tools agent printed live Stripe and Netlify credentials into its local transcript (values not
+copied); Chalkline's workbook verifier can report PASS despite calculation errors. These findings
+need attention during Claude's current runs. Codex is observing, without editing store files.
 
 `cd lantern && npx tsc --noEmit -p . && npx vitest run && npm run build` - last run: 163 passing.
