@@ -387,6 +387,35 @@ function registerIpc() {
     browserSignIn.forgetSession(String(providerId))
     return connections.listConnectionStatus()
   })
+  // Signs in to a model provider with an account login (ChatGPT Plus/Pro, GitHub Copilot) instead of an API key.
+  // The agent engine runs the real OAuth flow and keeps the login in its own auth store, shared by every agent.
+  const MODEL_SIGN_IN: Record<string, string[]> = { openai: ['auth.openai.com'], 'github-copilot': ['github.com'] }
+  handle('models:signIn', async (_e, providerId: unknown, spaceId: unknown) => {
+    const id = String(providerId)
+    const hosts = MODEL_SIGN_IN[id]
+    if (!hosts) throw new Error('That provider has no account sign-in.')
+    const space = typeof spaceId === 'string' && pool.isOpen(spaceId) ? spaceId : pool.openSpaceIds()[0]
+    const base = space ? pool.baseUrl(space) : null
+    const creds = space ? pool.credentials(space) : null
+    if (!space || !base) throw new Error('Open any project or store first so an agent engine is running, then try again.')
+    const headers = { 'content-type': 'application/json', ...(creds ? { authorization: basicAuthHeader(creds) } : {}) }
+    const methodsRes = await fetch(`${base}/provider/auth`, { headers, signal: AbortSignal.timeout(15_000) })
+    const methods = ((await methodsRes.json()) as Record<string, { type: string; label: string }[]>)[id] ?? []
+    const preferred = methods.findIndex((m) => m.type === 'oauth' && /browser/i.test(m.label))
+    const method = preferred >= 0 ? preferred : methods.findIndex((m) => m.type === 'oauth')
+    if (method < 0) throw new Error('This version of the agent engine has no account sign-in for that provider.')
+    const authRes = await fetch(`${base}/provider/${id}/oauth/authorize`, { method: 'POST', headers, body: JSON.stringify({ method }), signal: AbortSignal.timeout(30_000) })
+    if (!authRes.ok) throw new Error(`The sign-in could not start (${authRes.status}).`)
+    const auth = (await authRes.json()) as { url?: string; method?: string; instructions?: string }
+    const target = new URL(String(auth.url))
+    if (target.protocol !== 'https:' || !hosts.some((host) => target.hostname === host || target.hostname.endsWith(`.${host}`))) throw new Error('The sign-in address was not what was expected, so it was not opened.')
+    await shell.openExternal(target.href)
+    // The engine holds this request open until the browser step finishes, which can take minutes.
+    void fetch(`${base}/provider/${id}/oauth/callback`, { method: 'POST', headers, body: JSON.stringify({ method }), signal: AbortSignal.timeout(10 * 60_000) })
+      .then(async (res) => send('models:signedIn', id, res.ok, res.ok ? '' : `The sign-in did not finish (${res.status}).`))
+      .catch((error: Error) => send('models:signedIn', id, false, `The sign-in did not finish: ${error.message}`))
+    return { instructions: auth.instructions ?? 'Finish signing in in your browser.' }
+  })
   handle('stores:list', () => projects.listStores())
   handle('stores:create', (_e, root: unknown, name: unknown, displayName: unknown) => projects.createStore(String(root), String(name), typeof displayName === 'string' ? displayName : undefined))
   handle('stores:remove', async (_e, id: unknown, deleteFiles: unknown) => {
