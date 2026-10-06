@@ -32,7 +32,7 @@ describe('connections', () => {
     const list = listConnectionStatus()
     // The library has grown well past these four - just confirm the originals are still in it,
     // rather than pinning the exact list (and its order) as new providers get added over time.
-    expect(list.map((p) => p.id)).toEqual(expect.arrayContaining(['stripe', 'shopify', 'etsy', 'pinterest']))
+    expect(list.map((p) => p.id)).toEqual(expect.arrayContaining(['stripe', 'shopify', 'etsy', 'pinterest', 'printful', 'netlify', 'vercel']))
     expect(list.every((p) => p.configuredFields.length === 0)).toBe(true)
   })
 

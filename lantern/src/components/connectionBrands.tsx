@@ -36,6 +36,10 @@ import {
   siUnsplash,
   siPosthog,
   siPlausibleanalytics,
+  siNetlify,
+  siVercel,
+  siRender,
+  siCloudflarepages,
 } from 'simple-icons'
 
 type LogoProps = { className?: string; title?: string }
@@ -100,6 +104,10 @@ const Intercom = officialLogo(siIntercom)
 const Unsplash = officialLogo(siUnsplash)
 const PostHog = officialLogo(siPosthog)
 const Plausible = officialLogo(siPlausibleanalytics)
+const Netlify = officialLogo(siNetlify)
+const Vercel = officialLogo(siVercel)
+const Render = officialLogo(siRender)
+const CloudflarePages = officialLogo(siCloudflarepages)
 
 /** Keyed by the `id` in electron/connections.ts's `CONNECTION_PROVIDERS`. */
 export const CONNECTION_LOGOS: Record<string, (p: LogoProps) => ReactElement> = {
@@ -147,4 +155,8 @@ export const CONNECTION_LOGOS: Record<string, (p: LogoProps) => ReactElement> = 
   unsplash: Unsplash,
   posthog: PostHog,
   plausible: Plausible,
+  netlify: Netlify,
+  vercel: Vercel,
+  render: Render,
+  'cloudflare-pages': CloudflarePages,
 }

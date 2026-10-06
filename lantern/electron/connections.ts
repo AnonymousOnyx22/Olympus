@@ -669,6 +669,45 @@ export const CONNECTION_PROVIDERS: ConnectionProvider[] = [
     description: 'Self-hosted analytics you can run yourself.',
     fields: [{ key: 'MATOMO_URL', label: 'Server URL', secret: false }, { key: 'MATOMO_TOKEN', label: 'API token', secret: true }],
   },
+  // ---- Site hosting -----------------------------------------------------------------
+  // Where a finished store actually goes live. Without one, a store only runs on this computer.
+  {
+    id: 'netlify',
+    name: 'Netlify',
+    category: 'Site hosting',
+    description: 'Free static hosting with serverless functions. The simplest place to put a store live.',
+    fields: [
+      { key: 'NETLIFY_AUTH_TOKEN', label: 'Personal access token', secret: true },
+      { key: 'NETLIFY_SITE_ID', label: 'Site ID (optional)', secret: false },
+    ],
+  },
+  {
+    id: 'vercel',
+    name: 'Vercel',
+    category: 'Site hosting',
+    description: 'Hosting with serverless functions and a generous free tier.',
+    fields: [
+      { key: 'VERCEL_TOKEN', label: 'Access token', secret: true },
+      { key: 'VERCEL_PROJECT_ID', label: 'Project ID (optional)', secret: false },
+    ],
+  },
+  {
+    id: 'cloudflare-pages',
+    name: 'Cloudflare Pages',
+    category: 'Site hosting',
+    description: 'Free static hosting on Cloudflare with edge functions.',
+    fields: [
+      { key: 'CLOUDFLARE_API_TOKEN', label: 'API token', secret: true },
+      { key: 'CLOUDFLARE_ACCOUNT_ID', label: 'Account ID', secret: false },
+    ],
+  },
+  {
+    id: 'render',
+    name: 'Render',
+    category: 'Site hosting',
+    description: 'Hosting for a store that needs a small always-on server.',
+    fields: [{ key: 'RENDER_API_KEY', label: 'API key', secret: true }],
+  },
 ]
 
 function providerById(id: string): ConnectionProvider | undefined {

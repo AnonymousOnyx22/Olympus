@@ -99,6 +99,15 @@ describe('Station store brief', () => {
     expect(brief).toContain('one short list rather than interrupting them one item at a time')
   })
 
+  it('requires a real supply chain and hosting before calling a store done', () => {
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    expect(brief).toContain('Drawing artwork is not a supply chain')
+    expect(brief).toContain('Printful, Printify, or Gelato')
+    expect(brief).toContain('price every item above cost plus shipping, payment fees and a margin')
+    expect(brief).toContain('NETLIFY_AUTH_TOKEN')
+    expect(brief).toContain('Never describe a store as live, shipping, or earning when it only runs on this computer')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()

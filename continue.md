@@ -61,9 +61,14 @@ isn't working, doubling down on what is.
    the new storefront rules; see audit/2026-10-05/findings.md for run 1-2.
 8. Brief now has evidence-based idea selection, STORE-LOG.md memory, and an idea/testing pipeline in the
    24/7 pass. Unproven in practice: watch a real check-in and see that it keeps the log and adds a product.
-9. Website audit still open: `site.config.json` has TODO legal name/emails (build gate correctly
+9. **Supply chain and hosting are not proven end to end.** Stores had no supplier and nowhere to live (only
+   art + a local test checkout). Brief now requires a POD supplier (Printful/Printify/Gelato) with real costs
+   and margin, print-ready PNGs on a media host, order webhook -> supplier order, and a deploy via a hosting
+   connection (Netlify/Vercel/Cloudflare Pages/Render, just added to Connections). Needs a live test with
+   real keys: owner must add supplier + hosting + live Stripe; agents cannot create those accounts.
+10. Website audit still open: `site.config.json` has TODO legal name/emails (build gate correctly
    refuses until filled). `electron/license.ts` is unwired scaffolding - fine for now.
-10. 47 pre-existing React lint warnings (setState-in-effect etc.) - not bugs, low priority.
+11. 47 pre-existing React lint warnings (setState-in-effect etc.) - not bugs, low priority.
 
 ## Store fine-tuning run
 
