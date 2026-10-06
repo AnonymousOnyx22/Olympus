@@ -18,7 +18,7 @@ const state = Object.fromEntries(stores.map((s) => [s.name, { resumes: 0, last: 
 // True while some `opencode run` for this session is already alive, so a resume is never doubled up.
 const running = (session) => {
   try {
-    const out = execSync(`powershell -NoProfile -Command "(Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match ' run ' -and $_.CommandLine -match '${session}' }).Count"`).toString().trim()
+    const out = execSync(`powershell -NoProfile -Command "(Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'opencode|node' -and $_.CommandLine -match ' run ' -and $_.CommandLine -match '${session}' -and $_.CommandLine -notmatch 'Get-CimInstance' }).Count"`).toString().trim()
     return Number(out) > 0
   } catch { return false }
 }
