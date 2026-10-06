@@ -38,6 +38,11 @@ const running = (session) => {
   } catch { return false }
 }
 
+// A resume that lost its connection can hang for hours and block every later resume, so kill any for this session.
+const killRuns = (session) => {
+  try { execSync(`powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.Name -match 'opencode|node' -and $_.CommandLine -match ' run ' -and $_.CommandLine -match '${session}' -and $_.CommandLine -notmatch 'Get-CimInstance' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }"`) } catch { /* nothing to kill */ }
+}
+
 function tick() {
   for (const s of stores) {
     const st = state[s.name]
@@ -58,6 +63,7 @@ function tick() {
       if (st.stuck >= 2) { st.model = (st.model + 1) % MODELS.length; st.stuck = 0; st.last = 0; log(`${s.name} not answering, switching to ${MODELS[st.model]}`) }
       st.lastSeen = Math.max(st.lastSeen, last)
       const quiet = (Date.now() - last) / 1000
+      if (quiet > 600 && running(s.session)) { log(`${s.name} has a hung resume process, stopping it`); killRuns(s.session) }
       if (quiet > 300 && Date.now() - st.last > 360000 && !running(s.session)) {
         for (let i = 0; i < MODELS.length && !answers(MODELS[st.model]); i++) { log(`${MODELS[st.model]} is not answering, trying the next free model`); st.model = (st.model + 1) % MODELS.length }
         st.resumes++
