@@ -16,6 +16,7 @@ const CATEGORY_TINT: Record<string, string> = {
   'Fulfillment & shipping': 'bg-indigo-100 text-indigo-800',
   'Media hosting': 'bg-cyan-100 text-cyan-900',
   'Site hosting': 'bg-blue-100 text-blue-900',
+  'AI models': 'bg-purple-100 text-purple-900',
   'Marketing & social': 'bg-rose-100 text-rose-800',
   Email: 'bg-teal-100 text-teal-900',
   Analytics: 'bg-orange-100 text-orange-900',

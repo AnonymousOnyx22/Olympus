@@ -114,4 +114,15 @@ describe('checkConnection', () => {
     expect(hasAutomaticCheck('canva')).toBe(false)
     expect(hasAutomaticCheck('stripe')).toBe(true)
   })
+  it('verifies AI model keys against the right service and never echoes the key', async () => {
+    seen.length = 0
+    const ok = await checkConnection('openai', { OPENAI_API_KEY: 'sk-abc' }, spy(reply(200, { data: [{}, {}] })) as never)
+    expect(ok.status).toBe('verified')
+    expect(ok.detail).toContain('2 models')
+    expect(seen[0].url).toBe('https://api.openai.com/v1/models')
+    const bad = await checkConnection('anthropic', { ANTHROPIC_API_KEY: 'sk-ant-secretvalue' }, spy(reply(401, { error: { message: 'invalid x-api-key' } })) as never)
+    expect(bad.status).toBe('failed')
+    expect(bad.detail).not.toContain('secretvalue')
+    expect(seen.at(-1)?.headers['x-api-key']).toBe('sk-ant-secretvalue')
+  })
 })

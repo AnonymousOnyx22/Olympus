@@ -709,6 +709,57 @@ export const CONNECTION_PROVIDERS: ConnectionProvider[] = [
     description: 'Hosting for a store that needs a small always-on server.',
     fields: [{ key: 'RENDER_API_KEY', label: 'API key', secret: true }],
   },
+  // ---- AI models ---------------------------------------------------------------------
+  // Keys here reach the store agents as environment variables, which opencode reads to unlock that provider's models.
+  {
+    id: 'opencode-zen',
+    name: 'OpenCode Zen',
+    category: 'AI models',
+    description: 'Paid and free models through OpenCode, including the GPT, Claude and Gemini families. Needs funds on the account.',
+    fields: [{ key: 'OPENCODE_API_KEY', label: 'API key', secret: true }],
+  },
+  {
+    id: 'openai',
+    name: 'OpenAI',
+    category: 'AI models',
+    description: 'GPT and Codex models for the store agents.',
+    fields: [{ key: 'OPENAI_API_KEY', label: 'API key', secret: true, placeholder: 'sk-…' }],
+  },
+  {
+    id: 'anthropic',
+    name: 'Anthropic',
+    category: 'AI models',
+    description: 'Claude models for the store agents.',
+    fields: [{ key: 'ANTHROPIC_API_KEY', label: 'API key', secret: true, placeholder: 'sk-ant-…' }],
+  },
+  {
+    id: 'google-gemini',
+    name: 'Google Gemini',
+    category: 'AI models',
+    description: 'Gemini models. Has a free tier.',
+    fields: [{ key: 'GEMINI_API_KEY', label: 'API key', secret: true }],
+  },
+  {
+    id: 'openrouter',
+    name: 'OpenRouter',
+    category: 'AI models',
+    description: 'One key for many models, including several free ones.',
+    fields: [{ key: 'OPENROUTER_API_KEY', label: 'API key', secret: true, placeholder: 'sk-or-…' }],
+  },
+  {
+    id: 'mistral',
+    name: 'Mistral',
+    category: 'AI models',
+    description: 'Mistral and Codestral models.',
+    fields: [{ key: 'MISTRAL_API_KEY', label: 'API key', secret: true }],
+  },
+  {
+    id: 'huggingface',
+    name: 'Hugging Face',
+    category: 'AI models',
+    description: 'Hosted open models. Has a free tier.',
+    fields: [{ key: 'HF_TOKEN', label: 'Access token', secret: true, placeholder: 'hf_…' }],
+  },
 ]
 
 function providerById(id: string): ConnectionProvider | undefined {
