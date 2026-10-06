@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { codexLine, describeCommand, describeTool, isTitleRequest, lastUserText, sseChunk, textOf, titleFrom, workingDirectory } from '../electron/cliBridge'
+import { claudeLine, codexLine, newClaudeState, describeCommand, describeTool, isTitleRequest, lastUserText, sseChunk, textOf, titleFrom, workingDirectory } from '../electron/cliBridge'
 
 describe('cliBridge helpers', () => {
   it('reads text from string or part-list content', () => {
@@ -47,5 +47,23 @@ describe('cliBridge helpers', () => {
     expect(codexLine(JSON.stringify({ type: 'turn.failed', error: { message: 'nope' } }))).toEqual({ error: 'nope' })
     expect(codexLine('not json')).toBeNull()
     expect(describeCommand('plain command')).toBe('plain command')
+  })
+  it('streams Claude Code partial output as it is produced', () => {
+    const state = newClaudeState()
+    const ev = (event: object) => JSON.stringify({ type: 'stream_event', event })
+    expect(claudeLine(ev({ type: 'message_start' }), state)).toBeNull()
+    expect(claudeLine(ev({ type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text: 'Hello' } }), state)).toEqual({ text: 'Hello' })
+    expect(claudeLine(ev({ type: 'content_block_start', index: 1, content_block: { type: 'tool_use', name: 'Write' } }), state)).toEqual({ text: '\n> Write...\n' })
+    expect(claudeLine(ev({ type: 'content_block_delta', index: 1, delta: { type: 'input_json_delta', partial_json: '{"file_path":"a/b.html"' } }), state)).toBeNull()
+    expect(claudeLine(ev({ type: 'content_block_delta', index: 1, delta: { type: 'input_json_delta', partial_json: ',"content":"x"}' } }), state)).toBeNull()
+    expect(claudeLine(ev({ type: 'content_block_stop', index: 1 }), state)).toEqual({ text: '  a/b.html\n' })
+    // The finished message repeats what was already streamed, so it adds nothing
+    expect(claudeLine(JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'Hello' }] } }), state)).toBeNull()
+  })
+  it('falls back to finished messages when no partial events arrive, and reports errors', () => {
+    const state = newClaudeState()
+    expect(claudeLine(JSON.stringify({ type: 'assistant', message: { content: [{ type: 'text', text: 'Hi' }, { type: 'tool_use', name: 'Bash', input: { command: 'ls' } }] } }), state)?.text).toBe('Hi\n\n> Bash: ls\n')
+    expect(claudeLine(JSON.stringify({ type: 'result', is_error: true, result: 'out of credits' }), state)).toEqual({ error: 'out of credits' })
+    expect(claudeLine('not json', state)).toBeNull()
   })
 })

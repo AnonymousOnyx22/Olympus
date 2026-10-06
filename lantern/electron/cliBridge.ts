@@ -100,19 +100,80 @@ interface RunHandlers { text: (chunk: string) => void; done: (error?: string) =>
 let extraEnv: () => Record<string, string | undefined> = () => ({})
 export function setBridgeEnv(provider: () => Record<string, string | undefined>): void { extraEnv = provider }
 
+/** Set OLYMPUS_BRIDGE_LOG to a file path to record what the bridge does with each request (never the prompt text). */
+const debug = (message: string): void => { const file = process.env.OLYMPUS_BRIDGE_LOG; if (file) { try { fs.appendFileSync(file, `${new Date().toISOString()} ${message}
+`) } catch { /* logging only */ } } }
+
 let lastCwd: { dir: string; at: number } | null = null
 
 // One continuing conversation per folder, so a follow-up message resumes the same CLI session.
 const started = new Set<string>()
 
+export interface ClaudeStreamState { streamedText: boolean; sawText: boolean; tools: Map<number, { name: string; json: string }> }
+export const newClaudeState = (): ClaudeStreamState => ({ streamedText: false, sawText: false, tools: new Map() })
+
+/**
+ * Turns one line of `claude -p --output-format stream-json --include-partial-messages` into chat text. Partial events
+ * make text and each tool call appear as they are produced, instead of only when a whole step has finished, which
+ * can be minutes while a long file is being written.
+ */
+export function claudeLine(line: string, state: ClaudeStreamState): { text?: string; error?: string } | null {
+  let event: { type?: string; result?: string; is_error?: boolean; message?: { content?: unknown[] }; event?: { type?: string; index?: number; content_block?: { type?: string; name?: string }; delta?: { type?: string; text?: string; partial_json?: string } } }
+  try { event = JSON.parse(line) } catch { return null }
+  if (event.type === 'stream_event' && event.event) {
+    const inner = event.event
+    if (inner.type === 'message_start') { state.streamedText = false; return null }
+    if (inner.type === 'content_block_start' && inner.content_block?.type === 'tool_use' && inner.content_block.name && inner.index !== undefined) {
+      state.tools.set(inner.index, { name: inner.content_block.name, json: '' })
+      return { text: `\n> ${inner.content_block.name}...\n` }
+    }
+    if (inner.type === 'content_block_delta' && inner.delta?.type === 'text_delta' && inner.delta.text) {
+      state.streamedText = true
+      state.sawText = true
+      return { text: inner.delta.text }
+    }
+    if (inner.type === 'content_block_delta' && inner.delta?.type === 'input_json_delta' && inner.index !== undefined) {
+      const tool = state.tools.get(inner.index)
+      if (tool) tool.json += inner.delta.partial_json ?? ''
+      return null
+    }
+    if (inner.type === 'content_block_stop' && inner.index !== undefined) {
+      const tool = state.tools.get(inner.index)
+      if (!tool) return null
+      state.tools.delete(inner.index)
+      try {
+        const input = JSON.parse(tool.json) as Record<string, unknown>
+        const target = String(input.file_path ?? input.path ?? input.command ?? input.pattern ?? input.url ?? '').replace(/\s+/g, ' ').slice(0, 100)
+        return target ? { text: `  ${target}\n` } : null
+      } catch { return null }
+    }
+    return null
+  }
+  if (event.type === 'assistant' && !state.streamedText) {
+    // No partial events arrived for this message, so show the finished one.
+    let text = ''
+    for (const part of event.message?.content ?? []) {
+      const block = part as { type?: string; text?: string; name?: string; input?: unknown }
+      if (block.type === 'text' && block.text) { text += block.text + '\n'; state.sawText = true }
+      else if (block.type === 'tool_use' && block.name) text += describeTool(block.name, block.input)
+    }
+    return text ? { text } : null
+  }
+  if (event.type === 'result') {
+    if (event.is_error) return { error: String(event.result ?? 'Claude Code reported an error.') }
+    if (!state.sawText && event.result) return { text: event.result }
+  }
+  return null
+}
+
 function runClaude(exe: string, cwd: string, model: string, prompt: string, handlers: RunHandlers): ChildProcess {
-  const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash,Read,Write,Edit,Glob,Grep,WebSearch,WebFetch']
+  const args = ['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash,Read,Write,Edit,Glob,Grep,WebSearch,WebFetch']
   if (started.has(cwd)) args.push('--continue')
   args.push('--model', model)
   const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe), env: { ...process.env, ...extraEnv() } })
+  const state = newClaudeState()
   let buffer = ''
   let failure = ''
-  let sawText = false
   child.stdout?.on('data', (data: Buffer) => {
     buffer += data.toString()
     let index: number
@@ -120,19 +181,9 @@ function runClaude(exe: string, cwd: string, model: string, prompt: string, hand
       const line = buffer.slice(0, index).trim()
       buffer = buffer.slice(index + 1)
       if (!line) continue
-      try {
-        const event = JSON.parse(line) as { type?: string; message?: { content?: unknown[] }; result?: string; is_error?: boolean }
-        if (event.type === 'assistant') {
-          for (const part of event.message?.content ?? []) {
-            const block = part as { type?: string; text?: string; name?: string; input?: unknown }
-            if (block.type === 'text' && block.text) { handlers.text(block.text + '\n'); sawText = true }
-            else if (block.type === 'tool_use' && block.name) handlers.text(describeTool(block.name, block.input))
-          }
-        } else if (event.type === 'result') {
-          if (event.is_error) failure = String(event.result ?? 'Claude Code reported an error.')
-          else if (!sawText && event.result) handlers.text(event.result)
-        }
-      } catch { /* not a JSON line */ }
+      const parsed = claudeLine(line, state)
+      if (parsed?.text) handlers.text(parsed.text)
+      if (parsed?.error) failure = parsed.error
     }
   })
   child.stderr?.on('data', (data: Buffer) => { failure = failure || data.toString().slice(0, 300) })
@@ -207,6 +258,7 @@ function readBody(req: http.IncomingMessage): Promise<string> {
 }
 
 async function handle(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  debug(`incoming ${req.method} ${req.url} length=${req.headers['content-length'] ?? 'chunked'}`)
   if (req.headers.authorization !== `Bearer ${token}`) { res.writeHead(401).end(); return }
   const match = (req.url ?? '').match(/^\/(claude-code|codex-cli)\/v1\/(models|chat\/completions)/)
   if (!match) { res.writeHead(404).end(); return }
@@ -230,7 +282,8 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse): Prom
   if (stream) res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache' })
   else res.writeHead(200, { 'content-type': 'application/json' })
 
-  if (isTitleRequest(messages)) { finish(titleFrom(lastUserText(messages))); return }
+  debug(`request engine=${engine} model=${model} stream=${stream} messages=${messages.length} tools=${Array.isArray((body as { tools?: unknown[] }).tools) ? (body as { tools?: unknown[] }).tools!.length : 0}`)
+  if (isTitleRequest(messages)) { debug('answered as a title request'); finish(titleFrom(lastUserText(messages))); return }
   const toolCount = Array.isArray((body as { tools?: unknown[] }).tools) ? (body as { tools?: unknown[] }).tools!.length : 0
   let cwd = workingDirectory(messages)
   // Only the engine's real agent requests carry tools. A small request with no tools and no folder is a side request
@@ -241,6 +294,8 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse): Prom
   if (cwd) lastCwd = { dir: cwd, at: Date.now() }
   const prompt = lastUserText(messages)
   const exe = engine === 'claude-code' ? findClaude() : findCodex()
+  debug(`folder=${cwd ?? 'none'} program=${exe ?? 'none'}`)
+  debug(`connection variables passed: ${Object.keys(extraEnv()).length}, netlify token present: ${!!extraEnv().NETLIFY_AUTH_TOKEN}`)
   if (!cwd) { finish('', 'this request did not say which project folder it belongs to.'); return }
   if (!exe) { finish('', 'the program was not found on this PC.'); return }
 
@@ -248,8 +303,8 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse): Prom
   // A quiet CLI would look like a stalled model to the engine, so keep the stream alive while it works.
   const keepAlive = stream ? setInterval(() => res.write(sseChunk(id, model, '')), 10_000) : null
   const handlers: RunHandlers = {
-    text: (chunk) => { if (stream) res.write(sseChunk(id, model, chunk)); else collected += chunk },
-    done: (error) => { if (keepAlive) clearInterval(keepAlive); finish(stream ? '' : collected, error) },
+    text: (chunk) => { debug(`text ${chunk.length} chars`); if (stream) res.write(sseChunk(id, model, chunk)); else collected += chunk },
+    done: (error) => { debug(`done ${error ?? 'ok'}`); if (keepAlive) clearInterval(keepAlive); finish(stream ? '' : collected, error) },
   }
   const child = engine === 'claude-code' ? runClaude(exe, cwd, model, prompt, handlers) : runCodex(exe, cwd, model, prompt, handlers)
   res.on('close', () => { if (keepAlive) clearInterval(keepAlive); if (!child.killed && child.exitCode === null) child.kill() })
@@ -259,7 +314,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse): Prom
 export function startCliBridge(): Promise<void> {
   if (server) return Promise.resolve()
   return new Promise((resolve) => {
-    server = http.createServer((req, res) => { handle(req, res).catch(() => { try { res.writeHead(500).end() } catch { /* already sent */ } }) })
+    server = http.createServer((req, res) => { handle(req, res).catch((error: Error) => { debug(`error ${error.message}`); try { res.writeHead(500).end() } catch { /* already sent */ } }) })
     server.listen(0, '127.0.0.1', () => { port = (server!.address() as { port: number }).port; resolve() })
   })
 }
