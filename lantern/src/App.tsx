@@ -1,3 +1,4 @@
+import { migrateModelRef } from './services/legacyModels'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Sidebar from './components/Sidebar'
@@ -134,7 +135,10 @@ export default function App() {
     return {}
   })
   const [stationModels, setStationModels] = useState<Record<string, { model: ModelRef; variant: string | null }>>(() => {
-    try { return JSON.parse(localStorage.getItem('olympus.stationModels') ?? '{}') as Record<string, { model: ModelRef; variant: string | null }> }
+    try {
+      const saved = JSON.parse(localStorage.getItem('olympus.stationModels') ?? '{}') as Record<string, { model: ModelRef; variant: string | null }>
+      return Object.fromEntries(Object.entries(saved).map(([key, choice]) => [key, { ...choice, model: migrateModelRef(choice.model) }]))
+    }
     catch { return {} }
   })
   const [appError, setAppError] = useState<string | null>(null)

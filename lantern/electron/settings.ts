@@ -1,3 +1,4 @@
+import { migrateModelRef } from '../src/services/legacyModels'
 import { app } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -107,7 +108,7 @@ function normalize(value: unknown): OlympusSettings {
     : legacy.permissionBypass === true ? 'bypass' : 'ask'
   return {
     lastProject: typeof raw.lastProject === 'string' ? raw.lastProject : null,
-    selectedModel: modelRef(raw.selectedModel),
+    selectedModel: migrateModelRef(modelRef(raw.selectedModel)),
     customEndpoints: Array.isArray(raw.customEndpoints)
       ? raw.customEndpoints.map(endpoint).filter((item): item is LocalEndpoint => item !== null)
       : [],
