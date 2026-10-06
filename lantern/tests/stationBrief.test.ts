@@ -116,6 +116,13 @@ describe('Station store brief', () => {
     expect(brief).toContain('a store with no traffic earns nothing')
   })
 
+  it('ranks digital downloads first and avoids marketplace dropshipping', () => {
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    expect(brief).toContain('digital downloads first')
+    expect(brief).toContain('avoid marketplace dropshipping')
+    expect(brief).toContain('Read STORE-PLAN.md')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()
