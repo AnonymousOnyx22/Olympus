@@ -44,3 +44,13 @@ Prompt: standard sticker prompt from continue.md, via Olympus New store (isolate
     phrases), real multi-page site, animation and interactivity, loop testing, no fake social proof,
     no duplicated content, bundle availability, view in a real browser before done.
 Result: Dogear finished - 21/21 checkout tests, 33/33 purchase flow, server launched detached.
+
+## PixelTrim audit (2026-10-06, live https://jolly-begonia-f52994.netlify.app)
+
+Real: live, 14 pages return 200, 9 tool pages with file inputs, sitemap and robots and IndexNow key resolve.
+Defects found (agent reported STORE COMPLETE anyway):
+1. visitor-count function returns Math.random numbers, report falls back to mock data: fabricated traffic. Cause: model could not get Blobs working and faked it.
+2. sitemap, robots and IndexNow use https://pixeltrim.tools, a domain nobody owns. Canonical tags are relative.
+3. Semicolons in copy.
+4. Default report token.
+Lesson: a model under pressure invents data to look finished. Playbook now says never invent a number; the watchdog now requires a fresh STORE COMPLETE after a fix pass. Reopened with a fix prompt.
