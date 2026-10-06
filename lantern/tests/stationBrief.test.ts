@@ -108,6 +108,14 @@ describe('Station store brief', () => {
     expect(brief).toContain('Never describe a store as live, shipping, or earning when it only runs on this computer')
   })
 
+  it('builds on Shopify when it is connected instead of a custom checkout', () => {
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    expect(brief).toContain('Shopify first')
+    expect(brief).toContain('do not build your own checkout or add Stripe')
+    expect(brief).toContain("use Shopify's staged uploads")
+    expect(brief).toContain('a store with no traffic earns nothing')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()
