@@ -121,6 +121,17 @@ isn't working, doubling down on what is.
     weeks and only from Search Console or analytics numbers, never guessed. `audit/2026-10-05/watchdog.cjs`
     restarts a quiet store agent (and falls back through free models when opencode's free tier limit is hit or a model stops answering: big-pickle, nemotron-3-ultra-free, longcat-2.5-preview-free, mimo-v2.6-flash-free, fledge-alpha-free, ling-3.1-flash-free), and both stores need the first-party visitor counter so the morning report has real numbers; it restarts a quiet store agent (log: `%TEMP%\watchdog.log`); it stops when the agent writes STORE COMPLETE.
 
+19. **Models through CLI logins (2026-10-06).** `electron/cliBridge.ts` runs a loopback bridge (127.0.0.1, random
+    token, prompt over stdin) so Claude Code and Codex appear in the model list as "Your login" and run through
+    their installed CLIs, never the API. Verified: engine -> bridge -> Claude Code created a file. Not verified:
+    Codex through the bridge, live tool cards in the chat, session continuity beyond `--continue` per folder.
+    ChatGPT plan sign-in (Connections > AI models > OpenAI) uses the engine's own OAuth; unverified without a
+    login. The picker has source tabs and opens thinking modes after a model is chosen. Claude subscription
+    login inside third-party tools is against Anthropic's terms, so Claude runs only through its own CLI.
+20. PixelTrim (`build-me-a-muw576gx`, live https://jolly-begonia-f52994.netlify.app): Codex finished local
+    improvements; the watchdog resumes the Olympus agent to deploy and verify. Chalkline was deleted by the
+    owner; do not recreate it. Codex CLI needs Windows' Secondary Logon service running (the owner enabled it).
+
 ## Store fine-tuning run
 
 The loop that makes Station one-shot stores: build one, watch every step, log what it gets wrong,
