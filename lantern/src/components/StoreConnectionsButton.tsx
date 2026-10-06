@@ -57,7 +57,7 @@ export default function StoreConnectionsButton({ projectId }: { projectId: strin
       {open && (
         <div className="absolute right-0 top-full z-30 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-3 shadow-aegean-lg">
           <p className="text-[12px] font-medium text-slate-700">Saved access for this store</p>
-          <p className="mt-1 text-[11px] text-slate-500">Saved credentials have not been verified. Restart after adding, changing or removing access.</p>
+          <p className="mt-1 text-[11px] text-slate-500">Each service was tested when it was saved. Restart after adding, changing or removing access.</p>
           {error && <p role="alert" className="mt-1 text-[10.5px] text-rose-600">{error}</p>}
           {connections === null ? (
             <p className="mt-2 text-[11px] text-slate-500">Loading…</p>
@@ -67,8 +67,9 @@ export default function StoreConnectionsButton({ projectId }: { projectId: strin
             <ul className="mt-2 space-y-1">
               {configured.map((provider) => (
                 <li key={provider.id} className="flex items-center gap-1.5 text-[12px] text-slate-700">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
-                  {provider.name}
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${provider.configuredFields.length === 0 || !provider.verification ? 'bg-amber-400' : provider.verification.status === 'verified' ? 'bg-emerald-500' : provider.verification.status === 'failed' ? 'bg-rose-500' : provider.verification.status === 'incomplete' ? 'bg-amber-400' : 'bg-slate-400'}`} aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate" title={provider.verification?.detail}>{provider.name}</span>
+                  <span className="shrink-0 text-[10px] text-slate-500">{provider.configuredFields.length === 0 ? 'session, not verified' : !provider.verification ? 'not checked' : provider.verification.status === 'verified' ? 'verified' : provider.verification.status === 'failed' ? 'failed' : provider.verification.status === 'incomplete' ? 'incomplete' : 'no test'}</span>
                 </li>
               ))}
             </ul>

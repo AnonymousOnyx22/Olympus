@@ -225,6 +225,15 @@ export interface ConnectionProvider {
   fields: ConnectionField[]
 }
 
+/** The result of actually testing a saved connection against the service. */
+export interface ConnectionCheck {
+  /** verified: the service accepted it. failed: it refused or was unreachable. incomplete: a required
+   * field is missing. unchecked: no automatic test exists, so it is saved but not claimed as working. */
+  status: 'verified' | 'failed' | 'incomplete' | 'unchecked'
+  detail: string
+  at: number
+}
+
 /** What the renderer is allowed to know about a connection: never the decrypted values. */
 export interface ConnectionStatus {
   id: string
@@ -240,6 +249,8 @@ export interface ConnectionStatus {
   supportsBrowserSignIn: boolean
   /** Whether a signed-in browser session is currently saved for this provider. */
   browserSessionConnected: boolean
+  /** Last real test of the saved values; null until one has run (or after the values changed). */
+  verification: ConnectionCheck | null
 }
 
 /** A project as shown in the manager: saved or detected, plus facts read from disk. */
@@ -329,6 +340,8 @@ export interface ElectronAPI {
   listConnections(): Promise<ConnectionStatus[]>
   /** Saves (or, for an empty string, clears) field values for one connection, encrypted at rest. */
   setConnection(providerId: string, values: Record<string, string>): Promise<ConnectionStatus[]>
+  /** Tests the saved values against the service now and returns the updated list. */
+  verifyConnection(providerId: string): Promise<ConnectionStatus[]>
   /** Deletes every saved value for one connection. */
   clearConnection(providerId: string): Promise<ConnectionStatus[]>
 

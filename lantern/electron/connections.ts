@@ -1,7 +1,8 @@
 import { app, safeStorage } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
-import type { ConnectionProvider, ConnectionStatus } from '../src/types/opencode'
+import type { ConnectionCheck, ConnectionProvider, ConnectionStatus } from '../src/types/opencode'
+import { checkConnection } from './connectionChecks'
 import { supportsSignIn, hasSession } from './browserSignIn'
 
 /**
@@ -717,6 +718,8 @@ function providerById(id: string): ConnectionProvider | undefined {
 interface StoredConnection {
   /** Non-secret fields are stored as plain strings; secret fields as base64 `safeStorage` blobs. */
   values: Record<string, string>
+  /** Last real test of these values. Dropped whenever a value changes, so it can never describe stale input. */
+  check?: ConnectionCheck
 }
 type Store = Record<string, StoredConnection>
 
@@ -759,6 +762,7 @@ export function listConnectionStatus(): ConnectionStatus[] {
     configuredFields: provider.fields.filter((field) => !!store[provider.id]?.values[field.key]).map((field) => field.key),
     supportsBrowserSignIn: supportsSignIn(provider.id),
     browserSessionConnected: hasSession(provider.id),
+    verification: store[provider.id]?.check ?? null,
   }))
 }
 
@@ -768,18 +772,44 @@ export function setConnectionValues(providerId: string, values: Record<string, s
   if (!provider) throw new Error(`Unknown connection: ${providerId}`)
   const store = load()
   const current: StoredConnection = { values: { ...(store[providerId]?.values ?? {}) } }
+  let changed = false
   for (const field of provider.fields) {
     const raw = values[field.key]
     if (raw === undefined) continue
+    changed = true
     if (!raw.trim()) {
       delete current.values[field.key]
       continue
     }
     current.values[field.key] = field.secret ? encrypt(raw.trim()) : raw.trim()
   }
+  if (changed) delete current.check
+  else if (store[providerId]?.check) current.check = store[providerId].check
   if (Object.keys(current.values).length) store[providerId] = current
   else delete store[providerId]
   persist(store)
+  return listConnectionStatus()
+}
+
+/** Decrypts one connection's values and tests them against the service, then remembers the result. */
+export async function verifyConnection(providerId: string, fetchFn?: typeof fetch): Promise<ConnectionStatus[]> {
+  const provider = providerById(providerId)
+  if (!provider) throw new Error(`Unknown connection: ${providerId}`)
+  const stored = load()[providerId]
+  if (!stored) return listConnectionStatus()
+  const env: Record<string, string> = {}
+  for (const field of provider.fields) {
+    const raw = stored.values[field.key]
+    if (raw) env[field.key] = field.secret ? decrypt(raw) : raw
+  }
+  const result = await checkConnection(providerId, env, fetchFn)
+  // Re-read before writing: the user may have edited the values while the request was in flight,
+  // and a result for the old values must not be attached to the new ones.
+  const fresh = load()
+  if (fresh[providerId] && JSON.stringify(fresh[providerId].values) === JSON.stringify(stored.values)) {
+    fresh[providerId] = { ...fresh[providerId], check: { ...result, at: Date.now() } }
+    persist(fresh)
+  }
   return listConnectionStatus()
 }
 

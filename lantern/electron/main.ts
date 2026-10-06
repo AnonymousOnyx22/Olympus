@@ -373,8 +373,11 @@ function registerIpc() {
   handle('connections:set', (_e, providerId: unknown, values: unknown) => {
     if (typeof providerId !== 'string' || !values || typeof values !== 'object') throw new Error('Invalid connection values')
     const entries = Object.entries(values as Record<string, unknown>).filter((entry): entry is [string, string] => typeof entry[1] === 'string')
-    return connections.setConnectionValues(providerId, Object.fromEntries(entries))
+    connections.setConnectionValues(providerId, Object.fromEntries(entries))
+    // Test it right away so the owner sees a real answer, not "saved".
+    return connections.verifyConnection(providerId)
   })
+  handle('connections:verify', (_e, providerId: unknown) => connections.verifyConnection(String(providerId)))
   handle('connections:clear', (_e, providerId: unknown) => connections.clearConnection(String(providerId)))
   handle('connections:openSignIn', async (_e, providerId: unknown) => {
     await browserSignIn.openSignIn(String(providerId))

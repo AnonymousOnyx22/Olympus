@@ -31,6 +31,7 @@ const api: ElectronAPI = {
   createProject: (root, name) => ipcRenderer.invoke('projects:create', root, name),
   listConnections: () => ipcRenderer.invoke('connections:list'),
   setConnection: (providerId, values) => ipcRenderer.invoke('connections:set', providerId, values),
+  verifyConnection: (providerId) => ipcRenderer.invoke('connections:verify', providerId),
   clearConnection: (providerId) => ipcRenderer.invoke('connections:clear', providerId),
   openConnectionSignIn: (providerId) => ipcRenderer.invoke('connections:openSignIn', providerId),
   forgetConnectionSignIn: (providerId) => ipcRenderer.invoke('connections:forgetSignIn', providerId),

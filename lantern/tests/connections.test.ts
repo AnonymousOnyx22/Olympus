@@ -85,4 +85,39 @@ describe('connections', () => {
     const { setConnectionValues } = await import('../electron/connections')
     expect(() => setConnectionValues('not-a-real-provider', { KEY: 'x' })).toThrow()
   })
+
+  it('remembers the result of a real check, and forgets it the moment a value changes', async () => {
+    const { setConnectionValues, verifyConnection, listConnectionStatus } = await import('../electron/connections')
+    setConnectionValues('stripe', { STRIPE_SECRET_KEY: 'sk_test_one' })
+    expect(listConnectionStatus().find((p) => p.id === 'stripe')!.verification).toBeNull()
+
+    const ok = (async () => new Response('{}', { status: 200 })) as unknown as typeof fetch
+    const after = await verifyConnection('stripe', ok)
+    expect(after.find((p) => p.id === 'stripe')!.verification?.status).toBe('verified')
+    // Survives a reload from disk.
+    expect(listConnectionStatus().find((p) => p.id === 'stripe')!.verification?.status).toBe('verified')
+
+    const edited = setConnectionValues('stripe', { STRIPE_SECRET_KEY: 'sk_test_two' })
+    expect(edited.find((p) => p.id === 'stripe')!.verification).toBeNull()
+  })
+
+  it('keeps a failed result as failed rather than hiding it', async () => {
+    const { setConnectionValues, verifyConnection } = await import('../electron/connections')
+    setConnectionValues('stripe', { STRIPE_SECRET_KEY: 'sk_test_bad' })
+    const refused = (async () => new Response('{"error":{"message":"Invalid API Key provided"}}', { status: 401 })) as unknown as typeof fetch
+    const stripe = (await verifyConnection('stripe', refused)).find((p) => p.id === 'stripe')!
+    expect(stripe.verification?.status).toBe('failed')
+    expect(stripe.verification?.detail).toContain('Invalid API Key provided')
+  })
+
+  it('does not attach a result to values that changed while the check was running', async () => {
+    const { setConnectionValues, verifyConnection, listConnectionStatus } = await import('../electron/connections')
+    setConnectionValues('stripe', { STRIPE_SECRET_KEY: 'sk_test_old' })
+    const slow = (async () => {
+      setConnectionValues('stripe', { STRIPE_SECRET_KEY: 'sk_test_new' })
+      return new Response('{}', { status: 200 })
+    }) as unknown as typeof fetch
+    await verifyConnection('stripe', slow)
+    expect(listConnectionStatus().find((p) => p.id === 'stripe')!.verification).toBeNull()
+  })
 })

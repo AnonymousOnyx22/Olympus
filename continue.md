@@ -41,6 +41,11 @@ isn't working, doubling down on what is.
 - `App.tsx`: discovered stores adopt their existing session instead of "Manager setup unfinished";
   new stores start with Manage 24/7 on (first check after one interval).
 - StoreCard: standing-by dot is neutral grey (blue read as "working"); a specialist task running >30 min shows an amber stalled dot.
+- Connections verify for real: saving a key tests it against the service (Stripe incl. test/LIVE mode and
+  mismatched pairs, Printful, Printify, Netlify, Vercel, Cloudflare, Render, Shopify incl. plan that cannot sell,
+  Gumroad, SendGrid, Discord, Mailchimp). Result is stored with the values and dropped when they change; services
+  with no check say "Saved, no test", never "verified". Browser sessions still cannot be verified. Next: more
+  providers' checks (Resend, Canva, R2/S3 need signed requests), and surface a failed check to the store agent.
 - Connections: 79 providers, browser sign-in (not for payment processors), every saved connection
   available to every store automatically (no per-store toggle).
 
