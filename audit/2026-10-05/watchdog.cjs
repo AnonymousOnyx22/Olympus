@@ -30,7 +30,7 @@ function tick() {
     try {
       const d = new DatabaseSync(db, { readOnly: true })
       const last = d.prepare('select max(time_created) t from part where session_id=?').get(s.session).t || 0
-      const text = d.prepare("select json_extract(data,'$.text') x from part where session_id=? and json_extract(data,'$.type')='text' order by time_created desc limit 1").get(s.session)?.x || ''
+      const text = d.prepare("select json_extract(p.data,'$.text') x from part p join message m on m.id=p.message_id where p.session_id=? and json_extract(m.data,'$.role')='assistant' and json_extract(p.data,'$.type')='text' order by p.time_created desc limit 1").get(s.session)?.x || ''
       d.close()
       if (/STORE COMPLETE/.test(text)) { st.done = true; log(s.name + ' complete'); continue }
       const quiet = (Date.now() - last) / 1000
