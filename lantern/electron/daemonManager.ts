@@ -55,7 +55,7 @@ export function buildOpencodeConfig(providers: LocalProvider[], selected: ModelR
   // Bound silent cloud requests without imposing a short generation limit on local models.
   // OpenCode merges this with the provider's existing authentication and endpoint settings.
   if (selected && !provider[selected.providerID]) {
-    provider[selected.providerID] = { options: { timeout: 180_000, chunkTimeout: 60_000 } }
+    provider[selected.providerID] = { options: { timeout: 600_000, chunkTimeout: 120_000 } }
   }
 
   // Trust an explicit selection (it may be an opencode-configured provider we didn't probe);
@@ -176,6 +176,10 @@ function daemonEnv(config: object | null, credentials: DaemonCredentials, connec
     OPENCODE_DISABLE_LSP_DOWNLOAD: '1',
     OPENCODE_DISABLE_DEFAULT_PLUGINS: '1',
     OPENCODE_DISABLE_EMBEDDED_WEB_UI: '1',
+    // A shell call that sets no timeout of its own is stopped after three minutes. Without this, one
+    // command that never returns (a server started in the same call that checks it) hangs the agent
+    // for good, and the prompt asking agents not to do that has been ignored more than once.
+    OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS: '180000',
   }
 }
 
