@@ -46,7 +46,7 @@ export function buildOpencodeConfig(providers: LocalProvider[], selected: ModelR
       {
         npm: '@ai-sdk/openai-compatible',
         name: p.name,
-        options: { baseURL: p.baseURL, apiKey: 'local' },
+        options: { baseURL: p.baseURL, apiKey: p.apiKey ?? 'local' },
         models: Object.fromEntries(p.models.map((m) => [m, { name: m, tool_call: true }])),
       },
     ]),

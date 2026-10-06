@@ -23,7 +23,7 @@ interface Row {
   providerID: string
   providerName: string
   modelID: string
-  access: 'local' | 'free' | 'api'
+  access: 'local' | 'free' | 'api' | 'cli'
 }
 
 interface ModelPresentation {
@@ -57,6 +57,7 @@ const accessStyle = {
   local: { label: 'Local', className: 'bg-slate-100 text-slate-600 ring-slate-200' },
   free: { label: 'Free', className: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
   api: { label: 'API', className: 'bg-aether-50 text-aether-700 ring-aether-200' },
+  cli: { label: 'Your login', className: 'bg-violet-50 text-violet-700 ring-violet-200' },
 } as const
 
 const VARIANT_DESCRIPTIONS: Record<string, string> = {
@@ -258,6 +259,8 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
   const [variantOpen, setVariantOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [adding, setAdding] = useState(false)
+  // Step one of the list: where the model comes from (your Claude or ChatGPT login, free, API, local).
+  const [source, setSource] = useState<'all' | 'cli' | 'free' | 'api' | 'local'>('all')
   const [openFamilies, setOpenFamilies] = useState<Set<string>>(() => new Set())
   const [endpointError, setEndpointError] = useState<string | null>(null)
   const [favoriteKeys, setFavoriteKeys] = useState<string[]>(() => loadFavorites())
@@ -282,15 +285,21 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
     triggerRef.current?.focus()
   })
 
+  const allRows = useMemo<Row[]>(() => providers
+    .filter((provider) => provider.online)
+    .flatMap((provider) => provider.models.map((modelID): Row => ({
+      providerID: provider.id,
+      providerName: provider.name,
+      modelID,
+      access: provider.access?.[modelID] ?? (provider.source === 'local' ? 'local' : 'api'),
+    }))), [providers])
+  const sourceCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: allRows.length, cli: 0, free: 0, api: 0, local: 0 }
+    for (const row of allRows) counts[row.access] += 1
+    return counts
+  }, [allRows])
   const rows = useMemo<Row[]>(() => {
-    const candidates = providers
-      .filter((provider) => provider.online)
-      .flatMap((provider) => provider.models.map((modelID): Row => ({
-        providerID: provider.id,
-        providerName: provider.name,
-        modelID,
-        access: provider.access?.[modelID] ?? (provider.source === 'local' ? 'local' : 'api'),
-      })))
+    const candidates = source === 'all' ? allRows : allRows.filter((row) => row.access === source)
     const score = (row: Row) => {
       const brand = brandFor(row.modelID).name.toLowerCase().replace(/[^a-z0-9]/g, '')
       const provider = `${row.providerID} ${row.providerName}`.toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -304,7 +313,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
       if (!current || score(row) > score(current)) canonical.set(key, row)
     }
     return [...canonical.values()]
-  }, [providers, selected])
+  }, [allRows, source, selected])
   // Favorites are pinned above everything else, in the order they were favorited (then however
   // the user has dragged them since). Only shown while browsing, not mid-search - a query already
   // narrows the list to what's relevant, and duplicating a favorite there would just be noise.
@@ -354,6 +363,16 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
     const key = `${brandFor(row.modelID).name}:${presentModel(row.modelID).family}`
     setOpenFamilies((current) => current.has(key) ? current : new Set([...current, key]))
   }, [open, rows, selected])
+
+  // Step two is the model, step three its thinking mode: picking a model that has variants opens them straight away.
+  const choose = (row: Row) => {
+    onSelect({ providerID: row.providerID, modelID: row.modelID })
+    setOpen(false)
+    if ((providers.find((provider) => provider.id === row.providerID)?.variants?.[row.modelID]?.length ?? 0) > 0) {
+      if (anchored) positionMenu()
+      setVariantOpen(true)
+    }
+  }
 
   const selectedBrand = selected ? brandFor(selected.modelID) : null
   const selectedAccess = selected
@@ -495,6 +514,22 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                       className="w-full bg-transparent text-[12.5px] text-slate-900 placeholder:text-slate-400 outline-none"
                     />
                   </div>
+                  <div role="tablist" aria-label="Model source" className="mt-2 flex flex-wrap gap-1">
+                    {([['all', 'All'], ['cli', 'Your login'], ['free', 'Free'], ['api', 'API'], ['local', 'Local']] as const)
+                      .filter(([id]) => id === 'all' || sourceCounts[id] > 0)
+                      .map(([id, label]) => (
+                        <button
+                          key={id}
+                          type="button"
+                          role="tab"
+                          aria-selected={source === id}
+                          onClick={() => setSource(id)}
+                          className={`rounded-lg px-2 py-1 text-[11px] font-medium transition ${source === id ? 'bg-aether-50 text-aether-700 ring-1 ring-aether-200' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'}`}
+                        >
+                          {label} <span className="text-[10px] text-slate-400">{sourceCounts[id]}</span>
+                        </button>
+                      ))}
+                  </div>
                 </div>
 
                 <div className="max-h-[320px] space-y-0.5 overflow-y-auto p-2">
@@ -515,10 +550,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                             key={rowKey(row)}
                             row={row}
                             active={selected?.providerID === row.providerID && selected.modelID === row.modelID}
-                            onClick={() => {
-                              onSelect({ providerID: row.providerID, modelID: row.modelID })
-                              setOpen(false)
-                            }}
+                            onClick={() => choose(row)}
                             onToggleFavorite={() => toggleFavorite(row)}
                           />
                         ))}
@@ -575,10 +607,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                                               active={selected?.providerID === row.providerID && selected.modelID === row.modelID}
                                               favorite={favoriteKeys.includes(rowKey(row))}
                                               onToggleFavorite={() => toggleFavorite(row)}
-                                              onClick={() => {
-                                                onSelect({ providerID: row.providerID, modelID: row.modelID })
-                                                setOpen(false)
-                                              }}
+                                              onClick={() => choose(row)}
                                             />
                                           ))}
                                         </div>

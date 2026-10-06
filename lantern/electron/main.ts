@@ -1,6 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
+import * as cliBridge from './cliBridge'
 import { buildOpencodeConfig, basicAuthHeader, detectOpencodeVersion, probeInstalledProviders } from './daemonManager'
 import * as pool from './spacePool'
 import { sameDirectory, sessionsInDirectory } from './sessionScope'
@@ -86,6 +87,9 @@ function lockDownPermissions(target: Electron.Session) {
 }
 pool.initSpacePool(send)
 
+/** Adds Claude Code and Codex, which run through their own CLI logins, to a discovery result. */
+const withCli = async (found: Promise<LocalProvider[]>): Promise<LocalProvider[]> => [...(await found), ...cliBridge.cliProviders()]
+
 /** Local port probe plus, if the daemon is up, the providers it knows (incl. opencode CLI setup). */
 async function listAllProviders(spaceId: string): Promise<LocalProvider[]> {
   const base = pool.baseUrl(spaceId)
@@ -94,12 +98,12 @@ async function listAllProviders(spaceId: string): Promise<LocalProvider[]> {
     // Independent of each other - one probes local ports, the other asks the daemon over
     // HTTP - so run them concurrently rather than paying both timeouts back to back.
     const [local, fromDaemon] = await Promise.all([
-      discoverProviders(getSettings().customEndpoints),
+      withCli(discoverProviders(getSettings().customEndpoints)),
       fetchDaemonProviders(base, creds ? basicAuthHeader(creds) : undefined),
     ])
     return mergeProviders(fromDaemon, local)
   }
-  const local = await discoverProviders(getSettings().customEndpoints)
+  const local = await withCli(discoverProviders(getSettings().customEndpoints))
   // No project daemon yet - spin up a throwaway one so models configured via the
   // opencode CLI still show on the welcome screen (before any folder is opened).
   const installed = await probeInstalledProviders()
@@ -144,7 +148,7 @@ async function startForProject(spaceId: string, dir: string, force = false): Pro
   if (!force && (current.status === 'running' || current.status === 'starting') && current.cwd === resolved) {
     return { state: current, providers: await listAllProviders(spaceId) }
   }
-  const local = await discoverProviders(settings.customEndpoints)
+  const local = await withCli(discoverProviders(settings.customEndpoints))
   const online = local.filter((p) => p.online)
   send(
     'daemon:log',
@@ -693,6 +697,7 @@ app.on('web-contents-created', (_e, contents) => {
 // ---------- graceful teardown ----------
 let quitting = false
 async function shutdown() {
+  cliBridge.stopCliBridge()
   if (quitting) return
   quitting = true
   projects.stopWatching()
@@ -720,6 +725,7 @@ if (!app.requestSingleInstanceLock()) {
   void app.whenReady().then(() => {
     // Ensures Windows uses our icon (not electron.exe's) for the taskbar button.
     if (process.platform === 'win32') app.setAppUserModelId('com.olympus.app')
+    void cliBridge.startCliBridge()
     registerIpc()
     projects.watchRoots(notifyProjects)
     createWindow()

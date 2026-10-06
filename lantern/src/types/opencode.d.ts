@@ -174,8 +174,10 @@ export interface LocalProvider extends LocalEndpoint {
   /** Variant ids reported by OpenCode for each model (provider-specific thinking modes). */
   variants?: Record<string, string[]>
   /** How the model is reached, used for the small access tag in the picker. */
-  access?: Record<string, 'local' | 'free' | 'api'>
+  access?: Record<string, 'local' | 'free' | 'api' | 'cli'>
   error?: string
+  /** Bearer token for providers that need one (the built-in Claude Code and Codex bridge). */
+  apiKey?: string
   /** Where this provider came from: a probed local server, or the opencode daemon's own config. */
   source?: 'local' | 'opencode'
 }
