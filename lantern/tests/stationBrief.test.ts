@@ -141,6 +141,13 @@ describe('Station store brief', () => {
     expect(STORE_THEMES.length).toBeGreaterThanOrEqual(12)
   })
 
+  it('keeps live payment keys and money-spending calls off limits while building', () => {
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    expect(brief).toContain('Live keys are off limits while building')
+    expect(brief).toContain('if it starts with sk_live_ or rk_live_, do not call the Stripe API at all')
+    expect(brief).toContain('Only a key that starts with sk_test_ may be used for real test calls')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()
