@@ -116,7 +116,10 @@ export function mergeProviders(daemon: LocalProvider[], local: LocalProvider[]):
   const merged: LocalProvider[] = []
   const seen = new Set<string>()
   for (const p of local) {
-    merged.push(byId.get(p.id) ?? p) // daemon data wins when it knows this endpoint
+    // Daemon data wins when it knows this endpoint, except for Claude Code and Codex: the engine would call them
+    // "Local" because they sit on 127.0.0.1, but they run through the user's own login.
+    const viaLogin = Object.values(p.access ?? {}).includes('cli')
+    merged.push(viaLogin ? p : byId.get(p.id) ?? p)
     seen.add(p.id)
   }
   for (const p of daemon) if (!seen.has(p.id)) merged.push(p)

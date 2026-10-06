@@ -44,13 +44,15 @@ interface BrandGroup {
 
 const FAMILY_RULES: [RegExp, string][] = [
   [/\bopus\b/i, 'Opus'], [/\bsonnet\b/i, 'Sonnet'], [/\bhaiku\b/i, 'Haiku'],
+  [/^gpt\b.*\bsol\b/i, 'Sol'], [/^gpt\b.*\bluna\b/i, 'Luna'], [/^gpt\b.*\bterra\b/i, 'Terra'],
+  [/^gpt\b.*\bcodex\b/i, 'Codex'], [/^gpt\b.*\b(?:mini|nano|pro)\b/i, 'GPT Mini and Pro'],
   [/^gpt\b/i, 'GPT'], [/^gemini\b/i, 'Gemini'], [/^gemma\b/i, 'Gemma'],
   [/^llama\b/i, 'Llama'], [/^qwen/i, 'Qwen'], [/^deepseek\b/i, 'DeepSeek'],
   [/^mistral\b|^mixtral\b|^codestral\b/i, 'Mistral'], [/^grok\b/i, 'Grok'],
   [/^phi\b/i, 'Phi'], [/^command\b/i, 'Command'], [/^granite\b/i, 'Granite'],
 ]
 
-const FAMILY_ORDER = ['Opus', 'Sonnet', 'Haiku']
+const FAMILY_ORDER = ['Opus', 'Sonnet', 'Haiku', 'Sol', 'Luna', 'Terra', 'Codex']
 const BRAND_ORDER = ['Anthropic', 'OpenAI', 'Google', 'xAI', 'DeepSeek', 'Qwen', 'Mistral AI', 'Meta']
 
 const accessStyle = {
@@ -75,7 +77,7 @@ function variantLabel(variant: string) {
   return variant.charAt(0).toUpperCase() + variant.slice(1)
 }
 
-function presentModel(modelID: string): ModelPresentation {
+export function presentModel(modelID: string): ModelPresentation {
   const fullName = prettyModelName(modelID)
   const family = FAMILY_RULES.find(([pattern]) => pattern.test(fullName))?.[1]
     ?? fullName.split(/\s+/)[0]

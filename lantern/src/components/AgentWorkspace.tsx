@@ -131,6 +131,8 @@ export interface AgentPaneProps extends AgentPaneShared {
   /** Set when this project's agent failed to start; shown instead of "Connecting". */
   startError?: string
   onRetryStart?: () => void
+  paused?: boolean
+  onResume?: () => void
   sessionID: string
   title: string
   onClose: () => void
@@ -206,13 +208,14 @@ export function AgentPane(props: AgentPaneProps) {
   // model available yet) must still be closable, or it becomes a dead end.
   const canClose = !busy && !queue.length && !sending.current && !effectivePermissions.length
   const failed = !props.ready && !!props.startError
+  const paused = !props.ready && !!props.paused && !failed
   // One live description of what the model is actually doing right now ("Reading x.ts",
   // "Reasoning", "Composing reply"...), shared by the header badge, the chat's own status line,
   // and Station's activity bar. Showing a generic "Working" next to this told you nothing the
   // real description didn't already say, just in a less useful form.
   const activity = describeActivity({ ...stream, permissions })
-  const orbKind: OrbKind = failed ? 'attention' : !props.ready || !stream.loaded ? 'connecting' : effectivePermissions.length || outcome || stalled ? 'attention' : busy ? 'working' : 'ready'
-  const statusLabel = failed ? "Couldn't start" : !props.ready || !stream.loaded ? 'Connecting' : effectivePermissions.length ? 'Needs approval' : stalled ? 'No recent progress' : busy ? activity : outcome === 'stopped' ? 'Stopped' : outcome === 'failed' ? 'Task failed' : 'Ready'
+  const orbKind: OrbKind = paused ? 'idle' : failed ? 'attention' : !props.ready || !stream.loaded ? 'connecting' : effectivePermissions.length || outcome || stalled ? 'attention' : busy ? 'working' : 'ready'
+  const statusLabel = paused ? 'Paused' : failed ? "Couldn't start" : !props.ready || !stream.loaded ? 'Connecting' : effectivePermissions.length ? 'Needs approval' : stalled ? 'No recent progress' : busy ? activity : outcome === 'stopped' ? 'Stopped' : outcome === 'failed' ? 'Task failed' : 'Ready'
   return <article aria-label={`Agent chat: ${props.title}`} data-session-id={props.sessionID} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-aegean">
     <header className="flex h-9 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3">
       <StatusOrb kind={orbKind} size={13} />
@@ -228,6 +231,10 @@ export function AgentPane(props: AgentPaneProps) {
       <span className="min-w-0 flex-1">{stream.syncError || (stalled ? `No progress updates for ${Math.floor(stream.quietSeconds / 60)} minutes. The agent may be waiting on a command or provider. Check its status before stopping it.` : outcome === 'stopped' ? 'This run was stopped. Your conversation and files are still here.' : 'The last task failed. You can continue in this conversation without restarting the app.')}</span>
       <button type="button" disabled={stream.refreshing} onClick={() => void stream.refresh()} className={buttonClass}>{stream.refreshing ? 'Checking…' : 'Check status'}</button>
       {outcome && !permissions.length && props.ready && stream.loaded && model && <button type="button" onClick={() => { setError(''); void send('Continue the previous task from the existing files and conversation. Inspect the last failure or cancellation first, check which work already completed, and resume only the unfinished work. Use explicit timeouts for commands; do not leave a foreground development server blocking a tool call.').catch((reason) => setError(String(reason))) }} className={buttonClass}>Continue task</button>}
+    </div>}
+    {paused && <div role="status" className="flex items-center gap-2 border-b border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] text-slate-600">
+      <span className="min-w-0 flex-1">This store is paused, so its agent is stopped. Start it to chat or let it keep working.</span>
+      {props.onResume && <button type="button" onClick={props.onResume} className="shrink-0 rounded-lg bg-aether-600 px-2.5 py-1 font-medium text-white transition hover:bg-aether-500">Start</button>}
     </div>}
     {failed && <div role="alert" className="flex items-start gap-2 border-b border-rose-100 bg-rose-50 px-3 py-2 text-[11.5px] text-rose-700">
       <span className="min-w-0 flex-1 break-words">This project's agent couldn't start. {props.startError}</span>

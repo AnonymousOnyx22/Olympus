@@ -12,6 +12,9 @@ export interface AgentGridEntry {
   /** Why this project's agent could not start, if it failed; replaces an endless "Connecting". */
   startError?: string
   onRetryStart?: () => void
+  /** True while a store is paused on purpose: its agent is stopped, which is not the same as connecting. */
+  paused?: boolean
+  onResume?: () => void
 }
 
 interface Conversation {
@@ -102,6 +105,8 @@ export default function AllAgentsGrid({ entries, hasProjects, conversations, onO
               ready={entry.ready}
               startError={entry.startError}
               onRetryStart={entry.onRetryStart}
+              paused={entry.paused}
+              onResume={entry.onResume}
               onClose={() => onClose(entry.spaceId, entry.sessionId)}
               onDelete={() => void deleteAgent(entry.spaceId, entry.sessionId)}
               deleting={deletingKey === `${entry.spaceId}:${entry.sessionId}`}

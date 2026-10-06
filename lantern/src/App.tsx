@@ -804,6 +804,8 @@ export default function App() {
       ready: daemonBySpace[id]?.status === 'running' && !pausedStoreIds.includes(id),
       startError: daemonBySpace[id]?.status === 'error' ? daemonBySpace[id].error || 'The agent could not start.' : undefined,
       onRetryStart: daemonBySpace[id]?.status === 'error' ? () => retryStart(id) : undefined,
+      paused: pausedStoreIds.includes(id),
+      onResume: pausedStoreIds.includes(id) ? () => void setStationPaused(id, false) : undefined,
     }))
   })
   const stationKeys = new Set(stationEntries.map((entry) => JSON.stringify([entry.spaceId, entry.sessionId])))
