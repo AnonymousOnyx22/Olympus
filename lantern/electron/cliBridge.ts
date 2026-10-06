@@ -179,7 +179,8 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse): Prom
   }
   const body = JSON.parse(await readBody(req)) as { model?: string; messages?: ChatMessage[]; stream?: boolean }
   const messages = body.messages ?? []
-  const model = body.model ?? 'default'
+  // The model name ends up on a command line, so only the names this bridge lists are ever accepted.
+  const model = ENGINES[engine].models.includes(String(body.model)) ? String(body.model) : ENGINES[engine].models[0]
   const id = `chatcmpl-${randomBytes(6).toString('hex')}`
   const stream = body.stream !== false
 

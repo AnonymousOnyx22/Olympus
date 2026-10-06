@@ -35,4 +35,9 @@ describe('cliBridge helpers', () => {
     expect(source).toContain('child.stdin?.end(prompt)')
     expect(source).not.toMatch(/args\.push\([^)]*prompt/)
   })
+  it('only ever passes a listed model name to a command line', () => {
+    const source = fs.readFileSync(path.join(process.cwd(), 'electron', 'cliBridge.ts'), 'utf8')
+    expect(source).toContain('ENGINES[engine].models.includes(String(body.model))')
+    expect(source).not.toMatch(/const model = body\.model/)
+  })
 })
