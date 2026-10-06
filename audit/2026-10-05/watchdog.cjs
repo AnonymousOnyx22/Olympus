@@ -10,7 +10,7 @@ const stores = [
   { name: 'chalkline', dir: 'C:\\Users\\Nick\\Downloads\\Stores\\build-me-a-muw0k7fb', session: 'ses_ef11fb2c2ffeFTdgW1F2NcHIvX' },
   { name: 'tools', dir: 'C:\\Users\\Nick\\Downloads\\Stores\\build-me-a-muw576gx', session: 'ses_ef0a8d475ffeUfP9Dl8lytNHjf' },
 ]
-const PROMPT = 'Continue where you stopped. Read your todo list and STORE-LOG.md, finish the next unfinished step, and keep going until the store is built, deployed to my connected Netlify account, and tested live at desktop and phone width. Write files in small pieces and use bounded commands. Never call Stripe and never place a Printful order. When everything is verified, update STORE-LOG.md and end your final message with the exact words STORE COMPLETE and the live address, plus an honest list of what is not wired up.'
+const PROMPT = 'Continue where you stopped. Read your todo list and STORE-LOG.md, finish the next unfinished step, and keep going until the store is built, deployed to my connected Netlify account, and tested live at desktop and phone width. Write files in small pieces and use bounded commands. Add the first-party visitor counter and token-protected report endpoint from the search playbook, and test it live. Never call Stripe and never place a Printful order. When everything is verified, update STORE-LOG.md and end your final message with the exact words STORE COMPLETE and the live address, plus an honest list of what is not wired up.'
 
 const log = (m) => fs.appendFileSync(process.env.TEMP + '/watchdog.log', new Date().toISOString() + ' ' + m + '\n')
 const state = Object.fromEntries(stores.map((s) => [s.name, { resumes: 0, last: 0, done: false }]))

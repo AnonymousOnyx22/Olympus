@@ -181,5 +181,6 @@ describe('Station store brief', () => {
     expect(brief).toContain('One page per search intent')
     expect(brief).toContain('sitemap.xml')
     expect(brief).toContain('Do not buy links')
+    expect(brief).toContain('first-party counter')
   })
 })

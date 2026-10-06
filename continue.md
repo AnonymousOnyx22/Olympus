@@ -119,7 +119,7 @@ isn't working, doubling down on what is.
     page per search phrase with a working in-browser tool, sitemap and robots, IndexNow submitted, structured
     data, Lighthouse and phone checks passed, search log started in STORE-LOG.md. Real traffic is judged in
     weeks and only from Search Console or analytics numbers, never guessed. `audit/2026-10-05/watchdog.cjs`
-    restarts a quiet store agent (log: `%TEMP%\watchdog.log`); it stops when the agent writes STORE COMPLETE.
+    restarts a quiet store agent, and both stores need the first-party visitor counter so the morning report has real numbers; it restarts a quiet store agent (log: `%TEMP%\watchdog.log`); it stops when the agent writes STORE COMPLETE.
 
 ## Store fine-tuning run
 
@@ -197,6 +197,15 @@ passes every row of the table with zero intervention - then try a different prod
 **Active dual-build watch (Codex, 2026-10-05):** read `audit/2026-10-05/codex-dual-build-watch.md`.
 Browser-tools agent printed live Stripe and Netlify credentials into its local transcript (values not
 copied); Chalkline's workbook verifier can report PASS despite calculation errors. These findings
-need attention during Claude's current runs. Codex is observing, without editing store files.
+need attention during Claude's current runs.
+
+**Overnight goal (Nick, 2026-10-06):** working public image converter with real organic search
+visitors. Nick explicitly authorized autonomous work and a goal, and has left for the night.
+Codex owns independent conversion/search-readiness tests, indexing research/submission, and traffic
+measurement for `build-me-a-muw576gx`; Claude owns the active store build and runtime recovery.
+Coordinate via this handoff and `audit/2026-10-05/codex-dual-build-watch.md`. Do not count our test
+requests as visitors or promise overnight indexing. Current browser-tools session has no files and
+stopped producing output at 03:54 UTC. Chalkline has both an external `opencode run` (PID 28420)
+and app daemons active, with two overlapping assistant streams; investigate duplicate execution.
 
 `cd lantern && npx tsc --noEmit -p . && npx vitest run && npm run build` - last run: 163 passing.
