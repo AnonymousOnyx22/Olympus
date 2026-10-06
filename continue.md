@@ -132,6 +132,13 @@ isn't working, doubling down on what is.
     improvements; the watchdog resumes the Olympus agent to deploy and verify. Chalkline was deleted by the
     owner; do not recreate it. Codex CLI needs Windows' Secondary Logon service running (the owner enabled it).
 
+21. PixelTrim security fix (2026-10-06): the site published its whole folder (store log, scripts, screenshots, report
+    token were public). Now `build-dist.mjs` builds a clean `dist/` of 28 public files and `netlify.toml` publishes
+    that. REPORT_TOKEN rotated (secret env var); the new token is in `REPORT-TOKEN.txt` in the store folder, never
+    published. Deploy route that works without the Olympus token: Netlify connector `deploy-site` returns a one-time
+    `npx @netlify/mcp` command to run in the folder. The counter shows 11 views that are all test traffic (no way to
+    reset Blobs without a reset endpoint); real traffic is zero. Any new store must publish a clean dist from day one.
+
 ## Store fine-tuning run
 
 The loop that makes Station one-shot stores: build one, watch every step, log what it gets wrong,
