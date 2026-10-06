@@ -4,6 +4,15 @@ Written 2026-10-05. Constraints: Shopify and Stripe only, no Etsy or Pinterest, 
 shipping, support, or disputes. Everything here is a hypothesis the agent must validate with research
 before committing (see the brief); none of it is a promise of income.
 
+## Free route (decided 2026-10-05: no monthly fee)
+
+Shopify cannot be free and sell for real (a development store only takes test orders), so the launch stack is:
+free host (Netlify, Cloudflare Pages or Vercel) + Stripe Checkout through a serverless function + a webhook
+that orders from the Printful API (or emails a download link for digital). Fixed cost $0. Per sale: Stripe's fee
+and Printful's price for that order. One-time owner steps: a free host account and token, Printful card on file
+(an order is charged when it is placed), and Stripe account activation (identity and bank). Shopify below only
+applies if the owner ever chooses to pay for a plan.
+
 ## What each tool actually does
 
 | Need | Answer | One-time owner step |

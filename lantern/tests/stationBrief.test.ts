@@ -123,6 +123,13 @@ describe('Station store brief', () => {
     expect(brief).toContain('Read STORE-PLAN.md')
   })
 
+  it('defaults to a free-to-run stack and only uses Shopify when it can really sell', () => {
+    const brief = buildStationBrief({ name: '', request: 'Build me a store' })
+    expect(brief).toContain('The free route comes first')
+    expect(brief).toContain('creates the order through the Printful API directly')
+    expect(brief).toContain('a trial or development store cannot take real orders')
+  })
+
   it('tells the agent not to wait forever on a task orphaned by an app restart or crash', () => {
     const brief = buildStationBrief({ name: 'Sticker Co.', request: 'Sell sticker packs' })
     const check = buildStationCheckBrief()
