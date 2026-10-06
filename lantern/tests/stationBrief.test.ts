@@ -108,9 +108,9 @@ describe('Station store brief', () => {
     expect(brief).toContain('Never describe a store as live, shipping, or earning when it only runs on this computer')
   })
 
-  it('builds on Shopify when it is connected instead of a custom checkout', () => {
+  it('builds on Shopify only when that store can really sell, without its own checkout', () => {
     const brief = buildStationBrief({ name: '', request: 'Build me a store' })
-    expect(brief).toContain('Shopify first')
+    expect(brief).toContain('If, and only if, the Shopify store can really sell')
     expect(brief).toContain('do not build your own checkout or add Stripe')
     expect(brief).toContain("use Shopify's staged uploads")
     expect(brief).toContain('a store with no traffic earns nothing')
