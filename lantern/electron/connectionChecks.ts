@@ -70,14 +70,6 @@ const CHECKS: Record<string, Check> = {
     required: ['PRINTIFY_API_TOKEN'],
     run: async (env, f) => judge('Printify', await probe(f, 'Printify', 'https://api.printify.com/v1/shops.json', bearer(env.PRINTIFY_API_TOKEN)), (j) => `Verified${Array.isArray(j) ? `, ${j.length} shop${j.length === 1 ? '' : 's'}` : ''}.`),
   },
-  openai: {
-    required: ['OPENAI_API_KEY'],
-    run: async (env, f) => judge('OpenAI', await probe(f, 'OpenAI', 'https://api.openai.com/v1/models', bearer(env.OPENAI_API_KEY)), (j) => `Verified${Array.isArray(j?.data) ? `, ${j.data.length} models available` : ''}.`),
-  },
-  anthropic: {
-    required: ['ANTHROPIC_API_KEY'],
-    run: async (env, f) => judge('Anthropic', await probe(f, 'Anthropic', 'https://api.anthropic.com/v1/models', { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' }), (j) => `Verified${Array.isArray(j?.data) ? `, ${j.data.length} models available` : ''}.`),
-  },
   openrouter: {
     required: ['OPENROUTER_API_KEY'],
     run: async (env, f) => judge('OpenRouter', await probe(f, 'OpenRouter', 'https://openrouter.ai/api/v1/auth/key', bearer(env.OPENROUTER_API_KEY)), (j) => `Verified${j?.data?.label ? `, key "${j.data.label}"` : ''}.`),

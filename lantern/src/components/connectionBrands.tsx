@@ -4,7 +4,6 @@
 
 import type { ReactElement } from 'react'
 import {
-  siAnthropic,
   siGooglegemini,
   siOpenrouter,
   siMistralai,
@@ -159,7 +158,6 @@ const Youtube = officialLogo(siYoutube)
 const Chart = svg(<path d="M4 20V10m6 10V4m6 16v-7m4 7H3" />)
 const LinkedIn = svg(<path d="M4 4h16v16H4V4Zm4 6v7m0-10.5v.01M12 17v-7m0 3c0-2 4-3 4 0v4" />)
 
-const Anthropic = officialLogo(siAnthropic)
 const GoogleGemini = officialLogo(siGooglegemini)
 const OpenRouter = officialLogo(siOpenrouter)
 const Mistral = officialLogo(siMistralai)
@@ -169,8 +167,6 @@ const Chip = svg(<path d="M8 8h8v8H8V8Zm2-5v3m4-3v3m-4 12v3m4-3v3M3 10h3m-3 4h3m
 /** Keyed by the `id` in electron/connections.ts's `CONNECTION_PROVIDERS`. */
 export const CONNECTION_LOGOS: Record<string, (p: LogoProps) => ReactElement> = {
   'opencode-zen': Chip,
-  openai: Chip,
-  anthropic: Anthropic,
   'google-gemini': GoogleGemini,
   openrouter: OpenRouter,
   mistral: Mistral,

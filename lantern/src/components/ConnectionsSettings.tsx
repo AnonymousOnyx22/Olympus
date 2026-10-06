@@ -178,19 +178,6 @@ export default function ConnectionsSettings() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId])
 
-  // Account sign-in for model providers (ChatGPT plan). The result arrives later, when the browser step ends.
-  const [modelSignIn, setModelSignIn] = useState<{ state: 'idle' | 'waiting' | 'done' | 'failed'; message: string }>({ state: 'idle', message: '' })
-  useEffect(() => window.electronAPI.onModelSignedIn((_providerId, ok, message) => setModelSignIn(ok ? { state: 'done', message: 'Signed in. GPT models are now available in the model picker (reopen it if it was already open).' } : { state: 'failed', message })), [])
-  const signInModel = async (providerId: string) => {
-    setModelSignIn({ state: 'waiting', message: 'Finish signing in in the browser window that just opened.' })
-    try {
-      const { instructions } = await window.electronAPI.signInModelProvider(providerId)
-      setModelSignIn((current) => (current.state === 'waiting' ? { state: 'waiting', message: instructions } : current))
-    } catch (reason) {
-      setModelSignIn({ state: 'failed', message: errorText(reason) })
-    }
-  }
-
   const signIn = async (providerId: string) => {
     setBusyId(providerId)
     setError('')
@@ -269,29 +256,6 @@ export default function ConnectionsSettings() {
                   <button type="button" onClick={() => void verify(selected.id)} disabled={busyId === selected.id} className="shrink-0 rounded-lg px-2 py-1 text-[11px] font-medium text-slate-600 transition hover:bg-slate-100 disabled:opacity-40">
                     {busyId === selected.id ? 'Checking…' : 'Check again'}
                   </button>
-                </div>
-              )}
-
-              {selected.id === 'openai' && (
-                <div className="mt-4 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-[11.5px] font-medium text-slate-700">Sign in with your ChatGPT plan</p>
-                      <p className="mt-0.5 text-[10.5px] leading-snug text-slate-500">
-                        Uses your ChatGPT Plus or Pro subscription, the same account login Codex uses, so no API key is needed.
-                        Your browser opens OpenAI's own login page. Olympus never sees your password.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => void signInModel('openai')}
-                      disabled={modelSignIn.state === 'waiting'}
-                      className="h-8 shrink-0 rounded-xl bg-aether-600 px-3 text-[11.5px] font-medium text-white transition hover:bg-aether-500 disabled:opacity-40"
-                    >
-                      {modelSignIn.state === 'waiting' ? 'Waiting…' : modelSignIn.state === 'done' ? 'Sign in again' : 'Sign in'}
-                    </button>
-                  </div>
-                  {modelSignIn.message && <p className={`mt-2 text-[11px] leading-snug ${modelSignIn.state === 'failed' ? 'text-rose-600' : modelSignIn.state === 'done' ? 'text-emerald-600' : 'text-slate-600'}`}>{modelSignIn.message}</p>}
                 </div>
               )}
 

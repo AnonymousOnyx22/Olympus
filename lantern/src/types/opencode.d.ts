@@ -343,9 +343,6 @@ export interface ElectronAPI {
   /** Saves (or, for an empty string, clears) field values for one connection, encrypted at rest. */
   setConnection(providerId: string, values: Record<string, string>): Promise<ConnectionStatus[]>
   /** Tests the saved values against the service now and returns the updated list. */
-  /** Signs in to a model provider with an account login (ChatGPT, Copilot) instead of an API key. */
-  signInModelProvider(providerId: string, spaceId?: string): Promise<{ instructions: string }>
-  onModelSignedIn(callback: (providerId: string, ok: boolean, message: string) => void): () => void
   verifyConnection(providerId: string): Promise<ConnectionStatus[]>
   /** Deletes every saved value for one connection. */
   clearConnection(providerId: string): Promise<ConnectionStatus[]>

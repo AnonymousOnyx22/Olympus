@@ -719,20 +719,6 @@ export const CONNECTION_PROVIDERS: ConnectionProvider[] = [
     fields: [{ key: 'OPENCODE_API_KEY', label: 'API key', secret: true }],
   },
   {
-    id: 'openai',
-    name: 'OpenAI',
-    category: 'AI models',
-    description: 'GPT and Codex models for the store agents.',
-    fields: [{ key: 'OPENAI_API_KEY', label: 'API key', secret: true, placeholder: 'sk-…' }],
-  },
-  {
-    id: 'anthropic',
-    name: 'Anthropic',
-    category: 'AI models',
-    description: 'Claude models for the store agents.',
-    fields: [{ key: 'ANTHROPIC_API_KEY', label: 'API key', secret: true, placeholder: 'sk-ant-…' }],
-  },
-  {
     id: 'google-gemini',
     name: 'Google Gemini',
     category: 'AI models',

@@ -63,8 +63,8 @@ export function describeTool(name: string, input: unknown): string {
 }
 
 const ENGINES: Record<CliEngine, { name: string; models: string[] }> = {
-  'claude-code': { name: 'Claude Code (your login)', models: ['default', 'sonnet', 'opus', 'haiku'] },
-  'codex-cli': { name: 'Codex (your ChatGPT login)', models: ['default'] },
+  'claude-code': { name: 'Claude Code (your login)', models: ['claude-sonnet-5-5', 'claude-opus-5-5', 'claude-haiku-4-5'] },
+  'codex-cli': { name: 'Codex (your ChatGPT login)', models: ['gpt-6-sol'] },
 }
 
 function onPath(names: string[]): string | null {
@@ -102,7 +102,7 @@ const started = new Set<string>()
 function runClaude(exe: string, cwd: string, model: string, prompt: string, handlers: RunHandlers): ChildProcess {
   const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash,Read,Write,Edit,Glob,Grep']
   if (started.has(cwd)) args.push('--continue')
-  if (model !== 'default') args.push('--model', model)
+  args.push('--model', model)
   const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe) })
   let buffer = ''
   let failure = ''
@@ -136,8 +136,8 @@ function runClaude(exe: string, cwd: string, model: string, prompt: string, hand
   return child
 }
 
-function runCodex(exe: string, cwd: string, prompt: string, handlers: RunHandlers): ChildProcess {
-  const args = ['exec', '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'sandbox_workspace_write.network_access=true', '-']
+function runCodex(exe: string, cwd: string, model: string, prompt: string, handlers: RunHandlers): ChildProcess {
+  const args = ['exec', '-m', model, '--skip-git-repo-check', '-s', 'workspace-write', '-c', 'sandbox_workspace_write.network_access=true', '-']
   const child = spawn(exe, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, shell: /\.cmd$/i.test(exe) })
   let output = ''
   let errors = ''
@@ -205,7 +205,7 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse): Prom
     text: (chunk) => { if (stream) res.write(sseChunk(id, model, chunk)); else collected += chunk },
     done: (error) => { if (keepAlive) clearInterval(keepAlive); finish(stream ? '' : collected, error) },
   }
-  const child = engine === 'claude-code' ? runClaude(exe, cwd, model, prompt, handlers) : runCodex(exe, cwd, prompt, handlers)
+  const child = engine === 'claude-code' ? runClaude(exe, cwd, model, prompt, handlers) : runCodex(exe, cwd, model, prompt, handlers)
   res.on('close', () => { if (keepAlive) clearInterval(keepAlive); if (!child.killed && child.exitCode === null) child.kill() })
 }
 
