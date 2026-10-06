@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { storeBrandName } from './storeBrand'
 import path from 'node:path'
 import { getSettings, updateSettings } from './settings'
 import type { ProjectInfo, ProjectMeta } from '../src/types/opencode'
@@ -204,7 +205,7 @@ export function findProject(id: string): ProjectInfo | undefined {
   const storeRoot = storeRoots(settings.projectRoots).find((candidate) => projectKey(path.dirname(target)) === projectKey(candidate))
   // Ids are lowercased keys on Windows; use the folder's real casing for the agent's cwd and the UI.
   const storeDir = storeRoot ? subfolders(storeRoot).find((dir) => projectKey(dir) === key) : undefined
-  if (storeDir) return describeProject(key, nameFromFolder(path.basename(storeDir)), storeDir, 'watched', null, settings)
+  if (storeDir) return describeProject(key, storeBrandName(storeDir) ?? nameFromFolder(path.basename(storeDir)), storeDir, 'watched', null, settings)
 
   return undefined
 }
@@ -347,7 +348,7 @@ export function listStores(): ProjectInfo[] {
     }
   }
   return [...byKey.values()].map((store) => ({
-    ...describeProject(store.id, store.name, store.path, store.discovered ? 'watched' : 'manual', null, settings),
+    ...describeProject(store.id, (isDir(store.path) ? storeBrandName(store.path) : null) ?? store.name, store.path, store.discovered ? 'watched' : 'manual', null, settings),
     ...(isDir(store.path) ? detect(store.path) : {}),
   }))
 }
