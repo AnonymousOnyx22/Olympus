@@ -32,9 +32,11 @@ Owner's instruction (2026-10-06): keep running this loop until the site gets rea
 - Real revenue cannot be proven without real visitors and a real buyer.
 
 ## Baseline (test traffic, not real)
+- NOTE for every audit: test with the default headless browser identity, which the counter ignores. Runs with a normal Chrome identity added 10 test views on 2026-10-07 (report total 34, real traffic still 0).
 - Report total at loop start (2026-10-06, all of it test visits by the agents and me, none real): REPORT TOTAL 24 pages 9
 
 ## Log
 | When | Ease score notes | Biggest gap | Action sent | Result |
 | --- | --- | --- | --- | --- |
 | 2026-10-06 17:50 | 3 steps to download, 4 option tabs, quality slider at 90, Unavailable label, 45 hyphens, 1 en dash, half the descriptions under 120 characters | Ease of use and copy rules | Fix brief: remove slider and tabs, auto convert, copy rules, SEO text, IndexNow, deploy and verify | Pending |
+| 2026-10-07 13:20 | MEASURED LIVE. Actions to a downloaded file: 2 (drop, Download) on desktop and phone. Controls before first conversion: 2 pickers (From, To) and a swap button, 0 sliders, 0 tabs. Time to result: 0.1 s for a 320 by 240 PNG, 0.9 s for a 4032 by 3024 photo to PNG (10.2 MB lossless). Outputs valid by file signature. Bad file gives one plain sentence. Skip link and logical Tab order. No sideways scroll. Drop zone about 260 px tall inside the first screen at 1280 by 720 and 375 by 740. Slow phone profile: LCP 1.45 to 1.7 s, CLS 0 to 0.005, 27 KB JavaScript, 14 requests. Copy and SEO across all 37 pages: 0 em or en dashes, 0 hyphens, 0 semicolons, every title 60 or fewer, every description 120 to 158, one h1, absolute canonical, valid JSON LD, alt text everywhere, lastmod on 37 of 37. | Checklist met. Small nits: a white background notice shows before any file is dropped, two phone icon buttons are 36 by 44 px. Growth is the real gap: report shows 34 views, all test visits, so real traffic is 0 | Brief 2: fix both nits, add 12 more conversion pages (HEIC to PDF, TIFF to PNG, BMP to PNG, ICO to PNG, SVG to JPG, SVG to WebP, GIF to JPG, GIF to WebP, WebP to GIF, PNG to GIF, AVIF to WebP, PDF to WebP), deploy, submit to IndexNow, test with the default headless identity so the counter ignores tests | Pending |
