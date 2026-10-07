@@ -26,6 +26,13 @@ Owner's instruction (2026-10-06): keep running this loop until the site gets rea
 4. Send the agent one focused brief through Olympus (never more than one job at a time), telling it to deploy itself and verify live.
 5. Update the log below and commit and push this file.
 
+## If the laptop dies and comes back (written 2026-10-07 while the battery was at 13 percent)
+1. Relaunch Olympus from `lantern` with `--remote-debugging-port=<free port>` and `OLYMPUS_BRIDGE_LOG=%TEMP%\bridge-app.log`, then repoint the scripts in `%TEMP%\drive`.
+2. Open the Fjordform card in Station. The chat may show the last request with no answer: send a short continue message that says not to start over.
+3. Job 3 (Merge PDF and Split PDF) may be unfinished: check the folder for the two tool pages and the live site, then finish deploy and verification.
+4. Then send the saved wave 1 brief: `audit/2026-10-05/fjordform-wave1-brief.txt` (documents and notebooks, ipynb to PDF first).
+5. The session cron and monitors die with the session. Recreate the cron from the 'One iteration' section if the Claude session was lost.
+
 ## Stop conditions
 - Real traffic: the report shows at least 50 views in a day on tool pages that did not come from test visits (the test baseline is below), or Search Console access is given and shows impressions and clicks. Then report the numbers and keep improving what draws the traffic.
 - Working paid product: an account plus payment flow that completes end to end in Stripe test mode with a test key the owner provides. The saved Stripe key is LIVE, so never call Stripe with it. Until a test key exists, this stays a plan: Fjordform Pro (bulk batches and no ads) as a candidate, built only after traffic proves demand.
