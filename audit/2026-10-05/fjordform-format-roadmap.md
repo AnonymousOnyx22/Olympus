@@ -52,5 +52,5 @@ Search demand first. The agent uses autocomplete and related searches to rank th
 | Wave | State |
 | --- | --- |
 | 0 images, PDF to images, images to PDF | live, 49 pages |
-| Merge PDF, Split PDF | agent running (job 3) |
-| 1 | next |
+| Merge PDF, Split PDF | live and verified (51 pages) |
+| 1 | sent to the agent 2026-10-07 |
