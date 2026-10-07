@@ -53,4 +53,5 @@ Search demand first. The agent uses autocomplete and related searches to rank th
 | --- | --- |
 | 0 images, PDF to images, images to PDF | live, 49 pages |
 | Merge PDF, Split PDF | live and verified (51 pages) |
-| 1 | sent to the agent 2026-10-07 |
+| 1 documents and notebooks | live and verified (63 pages, 21 document pairs) |
+| 2 data and code | sent to the agent 2026-10-07 |
