@@ -10,6 +10,8 @@ Owner's instruction (2026-10-06): keep running this loop until the site gets rea
 - Report endpoint: `/.netlify/functions/report` with the token in `REPORT-TOKEN.txt` (also copied to `%TEMP%\px-token.txt`). Never print it or publish it.
 - Audit scripts: `%TEMP%\seo_audit.py` (every sitemap page: title, description, h1, canonical, JSON-LD, dashes, hyphens, sliders) and `%TEMP%\drive\usability.cjs` (first-time visitor test, desktop and phone).
 
+- Format roadmap: `audit/2026-10-05/fjordform-format-roadmap.md` (copied into the store folder as ROADMAP.md, which is never published). After the current job, step 3 of every iteration takes the next wave from that file (one wave per job, deploy and verify each time) instead of ad hoc pages. Owner asked on 2026-10-07 for every format a browser can honestly convert, including ipynb to PDF.
+
 ## The owner's checklist (judge the live site against every line)
 1. No em dashes, en dashes or hyphens in visible copy, titles or descriptions (page addresses may keep hyphens).
 2. Drop and done: no quality slider, always maximum quality, converts automatically on drop, two steps to a downloaded file.
