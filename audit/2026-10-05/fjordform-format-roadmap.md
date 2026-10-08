@@ -55,4 +55,5 @@ Search demand first. The agent uses autocomplete and related searches to rank th
 | Merge PDF, Split PDF | live and verified (51 pages) |
 | 1 documents and notebooks | live and verified (63 pages, 21 document pairs) |
 | 2 data and code | live and verified (95 pages) |
-| 3 archives and fonts | sent to the agent 2026-10-07 |
+| 3 archives, fonts, ODT, RTF, FB2, Base64, PDF rotate and extract | live and verified (123 pages) |
+| 4 more images, vectors, OCR, report referrer share | sent to Codex 2026-10-08 |
