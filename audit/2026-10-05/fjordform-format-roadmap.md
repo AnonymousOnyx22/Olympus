@@ -56,4 +56,5 @@ Search demand first. The agent uses autocomplete and related searches to rank th
 | 1 documents and notebooks | live and verified (63 pages, 21 document pairs) |
 | 2 data and code | live and verified (95 pages) |
 | 3 archives, fonts, ODT, RTF, FB2, Base64, PDF rotate and extract | live and verified (123 pages) |
-| 4 more images, vectors, OCR, report referrer share | sent to Codex 2026-10-08 |
+| 4 OCR (image and scanned PDF to text), report with daily totals and referrer shares | live and verified (124 pages). New image and vector formats were not added: no search evidence and no library trusted (JPEG XL is experimental in browsers) |
+| 5 audio and video | sent to Codex 2026-10-08 with a 25 MB size budget |
