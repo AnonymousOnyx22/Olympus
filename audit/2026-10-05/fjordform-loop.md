@@ -33,7 +33,7 @@ Owner's instruction (2026-10-06): keep running this loop until the site gets rea
 4. Then send the saved wave 1 brief: `audit/2026-10-05/fjordform-wave1-brief.txt` (documents and notebooks, ipynb to PDF first).
 5. The session cron and monitors die with the session. Recreate the cron from the 'One iteration' section if the Claude session was lost.
 
-- Before sending a new job, confirm the previous Codex or Claude process has really exited (`Get-CimInstance Win32_Process`, name codex or claude). A done file can be written while the agent keeps running its final tests and commits, and two agents in one folder overlap. Delete `.engine-done` before each job and watch the process, not only the file. Lesson from 2026-10-08: wave 3 Codex wrote the done file at 11:43, kept running until 12:14 (extra commits: two more pages, 7z limit, final sweep) while wave 4 started.
+- A done file is not proof that an agent has finished: confirm the process has exited (`Get-CimInstance Win32_Process`, name codex or claude) before auditing or deploying, and delete `.engine-done` before each job. Lesson from 2026-10-08: wave 3 Codex wrote its done file at 11:43 and kept committing until about 12:05 (two more pages, a 7z size limit, a final test sweep), so my 11:50 deploy missed those commits; the wave 4 run then wrote a stale looking done file at 12:14 right after it started. Watch the process, not only the file.
 
 ## Stop conditions
 - Real traffic: the report shows at least 50 views in a day on tool pages that did not come from test visits (the test baseline is below), or Search Console access is given and shows impressions and clicks. Then report the numbers and keep improving what draws the traffic.
