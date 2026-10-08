@@ -141,6 +141,15 @@ isn't working, doubling down on what is.
 
 22. **Fjordform growth loop (owner, 2026-10-06):** keep iterating until real traffic or a working paid product. Rules, checklist, stop conditions and log are in `audit/2026-10-05/fjordform-loop.md`. A session cron (job fires at minutes 7 and 37) runs one iteration each time; it dies when the Claude session ends or after 7 days, so a new session must re-create it from that file.
 
+23. **Design test page (2026-10-08):** `olympus-web/delete.html` is a scratch homepage — Kern's dark minimal structure with the Olympus agenda, CSS/JS animations (hero dot-field with play/pause, scroll reveal, provider marquee), one gold greek-rule as the Greek nod. Self-contained; `noindex`. Delete when the design direction is decided.
+
+23. **Fjordform wave 3 is built and committed locally but NOT deployed (2026-10-08).** Store commit `f3b70a6` in
+    `Storesuild-me-a-muw576gx` (124 pages, all checks pass, see its STORE-LOG.md). Live is still wave 2. Deploy
+    needs the Netlify CLI logged in (`npx netlify login` in the store folder) or the Olympus agent with its token;
+    Olympus will not start while the other Olympus copy (Kern, `Project - Copy - Copy`) is running, because of the
+    single instance lock. After deploy: IndexNow, audit live with the two scripts, update `fjordform-loop.md`.
+    A headless run works when Olympus cannot start: `claude -p` from the VS Code extension binary, see the wave 3 notes.
+
 ## Store fine-tuning run
 
 The loop that makes Station one-shot stores: build one, watch every step, log what it gets wrong,
