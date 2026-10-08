@@ -33,6 +33,8 @@ Owner's instruction (2026-10-06): keep running this loop until the site gets rea
 4. Then send the saved wave 1 brief: `audit/2026-10-05/fjordform-wave1-brief.txt` (documents and notebooks, ipynb to PDF first).
 5. The session cron and monitors die with the session. Recreate the cron from the 'One iteration' section if the Claude session was lost.
 
+- Before sending a new job, confirm the previous Codex or Claude process has really exited (`Get-CimInstance Win32_Process`, name codex or claude). A done file can be written while the agent keeps running its final tests and commits, and two agents in one folder overlap. Delete `.engine-done` before each job and watch the process, not only the file. Lesson from 2026-10-08: wave 3 Codex wrote the done file at 11:43, kept running until 12:14 (extra commits: two more pages, 7z limit, final sweep) while wave 4 started.
+
 ## Stop conditions
 - Real traffic: the report shows at least 50 views in a day on tool pages that did not come from test visits (the test baseline is below), or Search Console access is given and shows impressions and clicks. Then report the numbers and keep improving what draws the traffic.
 - Working paid product: an account plus payment flow that completes end to end in Stripe test mode with a test key the owner provides. The saved Stripe key is LIVE, so never call Stripe with it. Until a test key exists, this stays a plan: Fjordform Pro (bulk batches and no ads) as a candidate, built only after traffic proves demand.
