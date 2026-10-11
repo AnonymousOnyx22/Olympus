@@ -25,7 +25,11 @@ Edit page content in `build.mjs`, then run `node build.mjs`. Tests: `npm install
 - the whole site in Chromium, Firefox and WebKit with a mouse (every page, hover, scroll, nav and every demo);
 - iPhone and iPad profiles in WebKit and a Pixel profile in Chromium, with touch input and no hover;
 - an axe accessibility audit of every page on desktop and on a phone;
-- reduced motion, and JavaScript switched off. CI runs it on Linux, macOS and Windows and checks the generated pages are up to date. Preview with `npx --yes serve .` or open
+- reduced motion, and JavaScript switched off.
+
+On macOS, `node tests/safari/real-safari.mjs` drives the real Safari application through safaridriver (run
+`sudo safaridriver --enable` once), and `node tests/safari/ios-simulator.mjs` loads the pages in real Mobile Safari in the
+iOS Simulator and saves screenshots. CI runs both on a macOS runner. CI runs it on Linux, macOS and Windows and checks the generated pages are up to date. Preview with `npx --yes serve .` or open
 `index.html` directly.
 
 Kern is not publicly distributed, so the site has no download, pricing or waitlist. Add them when that

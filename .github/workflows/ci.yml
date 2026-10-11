@@ -86,3 +86,40 @@ jobs:
       - run: npx playwright install chromium firefox webkit
         if: matrix.os != 'ubuntu-latest'
       - run: npm test
+
+  real-safari:
+    name: real Safari on macOS (safaridriver)
+    runs-on: macos-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci
+      - run: sudo safaridriver --enable
+      - run: node tests/safari/real-safari.mjs
+
+  mobile-safari:
+    name: real Mobile Safari in the iOS Simulator
+    runs-on: macos-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+      - run: node tests/safari/ios-simulator.mjs ios-screenshots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-mobile-safari-screenshots
+          path: website/ios-screenshots
