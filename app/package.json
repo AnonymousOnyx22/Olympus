@@ -5,6 +5,9 @@
   "description": "A clear workspace for independent AI agents.",
   "author": "Nick",
   "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",

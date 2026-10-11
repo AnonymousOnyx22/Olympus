@@ -1,4 +1,4 @@
-// Generates the site's HTML pages. Run `node build.mjs` from this folder (Node 18+, no dependencies).
+// Generates the site's HTML pages. Run `node build.mjs` from this folder (Node 18 or newer, no dependencies).
 // The shared header, footer and page shell live here once; each page's content is below.
 import fs from 'node:fs'
 import path from 'node:path'
@@ -360,7 +360,7 @@ pages.push({
 <h2>The engine</h2>
 <p>Kern starts nothing when it opens. When you connect a chat, it starts an engine quietly in the background for that chat. Today that engine is opencode, which you install once:</p>
 <pre><code>npm i -g opencode-ai</code></pre>
-<p>It needs Node 20 or newer. If it lives somewhere unusual, set <code>KERN_OPENCODE_BIN</code> to its path.</p>
+<p>You can also install it from opencode.ai. If it lives somewhere unusual, set <code>KERN_OPENCODE_BIN</code> to its path.</p>
 <h2>Optional</h2>
 <ul><li><code>git</code> on your PATH for the Git controls.</li></ul>
 </div></section>`,

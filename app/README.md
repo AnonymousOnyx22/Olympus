@@ -28,7 +28,8 @@ lists providers you configured in opencode, and bridges to the Claude and Codex 
 
 ## Requirements
 
-- Node 20+ (see `.nvmrc`) and `opencode` on your `PATH` (`npm i -g opencode-ai`), or set
+- To build or develop the app: Node 22.22 or newer (see `.nvmrc`).
+- `opencode` on your `PATH` (`npm i -g opencode-ai`, or any install method from opencode.ai), or set
   `KERN_OPENCODE_BIN` to the executable.
 - At least one local model server running, or a provider already configured in opencode.
 
