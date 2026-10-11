@@ -50,7 +50,10 @@ function killTree(pid) {
   const env = { ...process.env, KERN_USER_DATA: userData }
   delete env.ELECTRON_RUN_AS_NODE
   const port = 9444
-  child = spawn(electronBin, ['.', `--remote-debugging-port=${port}`], { cwd: app, env, stdio: 'ignore' })
+  // CI containers cannot use Chromium's sandbox; a developer machine keeps it.
+  const args = ['.', `--remote-debugging-port=${port}`]
+  if (process.platform === 'linux' && process.env.CI) args.push('--no-sandbox')
+  child = spawn(electronBin, args, { cwd: app, env, stdio: 'ignore' })
   try {
     let page
     for (let i = 0; i < 60 && !page; i++) {

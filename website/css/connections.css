@@ -1,7 +1,7 @@
 /* Connections replica: mirrors app/src/components/ConnectionsSettings.tsx with the app's tokens. */
 .cx { height: 100%; overflow-y: auto; background: var(--control); }
 .cx-page { max-width: 56rem; margin-inline: auto; padding: 28px 28px 40px; }
-.cx-page h1 { font-size: 22px; letter-spacing: -0.01em; }
+.cx-title { font-size: 22px; letter-spacing: -0.01em; }
 .cx-lede { max-width: 32rem; margin-top: 4px; font-size: 12px; line-height: 1.6; color: var(--text-2); }
 .cx button, .cx input { font: inherit; color: inherit; }
 .cx-view { margin-top: 24px; }

@@ -30,5 +30,52 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
-      - run: npm test
       - run: npm run build
+      - run: npm test
+
+  lazy-start:
+    name: opening the app starts no engine (ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm i -g opencode-ai
+      - run: xvfb-run -a npm run check:lazy-start
+
+  website:
+    name: website (${{ matrix.os }}, Chromium, Firefox, WebKit)
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci
+      - name: The committed pages match what build.mjs generates
+        if: matrix.os == 'ubuntu-latest'
+        run: node build.mjs && git diff --exit-code -- .
+      - run: npx playwright install --with-deps chromium firefox webkit
+        if: matrix.os == 'ubuntu-latest'
+      - run: npx playwright install chromium firefox webkit
+        if: matrix.os != 'ubuntu-latest'
+      - run: npm test

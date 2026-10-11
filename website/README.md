@@ -21,7 +21,9 @@ js/agents-loop.js     The four home page agent windows: always working, three gl
 assets/kern-mark.svg  Logo and favicon
 ```
 
-Edit page content in `build.mjs`, then run `node build.mjs`. Preview with `npx --yes serve .` or open
+Edit page content in `build.mjs`, then run `node build.mjs`. Tests: `npm install`, `npx playwright install`, then
+`npm test` runs the whole site in real Chromium, Firefox and WebKit (every page at desktop and phone width, hover,
+scroll, nav, and every demo). CI runs it on Linux, macOS and Windows and checks the generated pages are up to date. Preview with `npx --yes serve .` or open
 `index.html` directly.
 
 Kern is not publicly distributed, so the site has no download, pricing or waitlist. Add them when that

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 // The renderer ships with a strict CSP injected at build time by vite.config.ts.
 // That injection used to fail silently, so this asserts the built artifact
@@ -35,8 +35,13 @@ function directive(policy: string, name: string): string | undefined {
 }
 
 describe.skipIf(!built)('built renderer CSP', () => {
-  const html = fs.readFileSync(distIndex, 'utf8')
-  const policy = readCsp(html)
+  // Read in a hook, not while collecting: a skipped suite's body still runs, and the file may not exist.
+  let html = ''
+  let policy = ''
+  beforeAll(() => {
+    html = fs.readFileSync(distIndex, 'utf8')
+    policy = readCsp(html)
+  })
 
   it('carries a Content-Security-Policy meta tag', () => {
     expect(html).toMatch(/<meta\s+http-equiv=["']Content-Security-Policy["']/i)

@@ -119,7 +119,7 @@ ${isConnected && s.check ? `<div class="cx-verify${flash}"><p class="${LOOK[s.ch
     function render(focusAfter) {
       const active = document.activeElement
       const keep = root.contains(active) && active.id ? { id: active.id, s: active.selectionStart, e: active.selectionEnd } : null
-      root.innerHTML = `<div class="cx-page"><h1>Connections</h1><p class="cx-lede">Saved API keys are encrypted by this computer. Every project's agent gets each saved connection unless you uncheck that project on the connection's page. Saving tests the key where the service has a test. A running agent picks up changes the next time it starts.</p>${state.view === 'detail' ? detailView() : listView()}</div>`
+      root.innerHTML = `<div class="cx-page"><h2 class="cx-title">Connections</h2><p class="cx-lede">Saved API keys are encrypted by this computer. Every project's agent gets each saved connection unless you uncheck that project on the connection's page. Saving tests the key where the service has a test. A running agent picks up changes the next time it starts.</p>${state.view === 'detail' ? detailView() : listView()}</div>`
       state.animate = false
       state.flash = false
       const target = focusAfter ? root.querySelector(focusAfter) : keep ? root.querySelector('#' + CSS.escape(keep.id)) : null
