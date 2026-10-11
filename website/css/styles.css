@@ -290,6 +290,7 @@ td { color: var(--text-2); }
   .hero { padding: 72px 0 56px; }
   .foot__cols { grid-template-columns: 1fr 1fr; }
   .foot__brand { grid-column: 1 / -1; }
+  .foot li a { display: block; padding: 7px 0; }
 
   .navtoggle { display: grid; }
   .nav { position: fixed; inset: var(--nav-h) 0 0 0; margin: 0; padding: 12px 24px 40px; flex-direction: column; align-items: stretch; gap: 0; overflow-y: auto; background: var(--canvas); opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out), visibility 0s linear 220ms; }

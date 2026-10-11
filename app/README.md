@@ -42,6 +42,7 @@ npm test           # vitest
 npm run lint       # eslint
 npm run build      # typecheck + bundle renderer, main and preload
 npm start          # run the production build
+npm run check:lazy-start  # after a build: opening the app starts no engine, Connect starts one
 npm run dist       # unsigned installer for this OS (build:win / build:mac / build:linux)
 ```
 

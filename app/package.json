@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "check:lazy-start": "node scripts/check-lazy-start.cjs",
     "dist": "electron-builder",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
