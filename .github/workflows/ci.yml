@@ -34,9 +34,13 @@ jobs:
       - run: npm test
 
   lazy-start:
-    name: opening the app starts no engine (ubuntu)
-    runs-on: ubuntu-latest
+    name: opening the app starts no engine (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     defaults:
       run:
         working-directory: app
@@ -51,6 +55,9 @@ jobs:
       - run: npm run build
       - run: npm i -g opencode-ai
       - run: xvfb-run -a npm run check:lazy-start
+        if: matrix.os == 'ubuntu-latest'
+      - run: npm run check:lazy-start
+        if: matrix.os != 'ubuntu-latest'
 
   website:
     name: website (${{ matrix.os }}, Chromium, Firefox, WebKit)
