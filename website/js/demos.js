@@ -37,7 +37,16 @@
     const open = (state) => {
       pop.classList.toggle('is-open', state)
       btn.setAttribute('aria-expanded', String(state))
-      if (state) { search.value = ''; draw(); setTimeout(() => search.focus({ preventScroll: true }), 30) }
+      if (state) {
+        search.value = ''
+        draw()
+        // Opens upward by default; flips downward when there is more room below the button than above it.
+        const room = btn.getBoundingClientRect()
+        const need = pop.offsetHeight + 12
+        const below = window.innerHeight - room.bottom
+        pop.classList.toggle('is-below', room.top < need && below > room.top)
+        setTimeout(() => search.focus({ preventScroll: true }), 30)
+      }
     }
     const choose = (name) => {
       const how = (flat.find(([n]) => n === name) || [])[1] || ''

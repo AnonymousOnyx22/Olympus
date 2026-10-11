@@ -20,6 +20,7 @@
 .mp__name.is-swap { animation: swap 280ms var(--ease-out) both; }
 @keyframes swap { from { opacity: 0; transform: translateY(5px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
 .mp__pop { position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 20; width: min(360px, 86vw); border: 1px solid var(--border); border-radius: 6px; background: var(--raised); box-shadow: 0 8px 24px rgb(0 0 0 / 0.4); opacity: 0; visibility: hidden; transform: translateY(6px) scale(0.97); transform-origin: bottom left; transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), visibility 0s linear 160ms; }
+.mp__pop.is-below { top: calc(100% + 8px); bottom: auto; transform-origin: top left; }
 .mp__pop.is-open { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
 .mp__search { display: block; width: 100%; padding: 12px 14px; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); font: 13px var(--font); outline: none; }
 .mp__list { max-height: 280px; overflow-y: auto; padding: 6px; }

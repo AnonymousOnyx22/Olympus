@@ -132,16 +132,22 @@ test.describe('navigation', () => {
 })
 
 test.describe('demos', () => {
-  test('model picker opens inside the viewport and switches the window to Kimi', async ({ page }) => {
-    await page.goto('/models.html')
-    await page.locator('.mp__btn').scrollIntoViewIfNeeded()
-    await page.locator('.mp__btn').click()
-    await expect(page.locator('.mp__pop')).toBeVisible()
-    const box = await page.locator('.mp__pop').boundingBox()
-    expect(box.y).toBeGreaterThanOrEqual(0)
-    await page.locator('.mp__opt[data-model="Kimi"]').click()
-    await expect(page.locator('[data-name]')).toHaveText('Kimi')
-  })
+  for (const where of ['start', 'end']) {
+    test(`model picker stays inside the viewport with its button at the ${where === 'start' ? 'top' : 'bottom'} of the screen, and switches to Kimi`, async ({ page }) => {
+      await page.goto('/models.html')
+      await page.locator('.mp__btn').evaluate((el, block) => el.scrollIntoView({ block }), where)
+      await page.waitForTimeout(200)
+      await page.locator('.mp__btn').click()
+      await expect(page.locator('.mp__pop')).toBeVisible()
+      await page.waitForTimeout(250)
+      const box = await page.locator('.mp__pop').boundingBox()
+      const height = await page.evaluate(() => innerHeight)
+      expect(box.y).toBeGreaterThanOrEqual(0)
+      expect(box.y + box.height).toBeLessThanOrEqual(height + 1)
+      await page.locator('.mp__opt[data-model="Kimi"]').click()
+      await expect(page.locator('[data-name]')).toHaveText('Kimi')
+    })
+  }
 
   test('connections: open a service, save a key, see it verified, per project access changes the env panel', async ({ page }) => {
     await page.goto('/connections.html')
