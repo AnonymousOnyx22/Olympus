@@ -64,7 +64,7 @@ export function describeTool(name: string, input: unknown): string {
 
 const ENGINES: Record<CliEngine, { name: string; models: string[] }> = {
   'claude-code': { name: 'Claude Code (your login)', models: ['claude-sonnet-5-5', 'claude-opus-5-5', 'claude-haiku-4-5'] },
-  'codex-cli': { name: 'Codex (your ChatGPT login)', models: ['gpt-6-astra', 'gpt-6-sol', 'gpt-6-luna', 'gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna'] },
+  'codex-cli': { name: 'Codex (your ChatGPT login)', models: ['gpt-6-luna', 'gpt-5.6-terra', 'gpt-5.6-luna', 'gpt-5.5'] },
 }
 
 function onPath(names: string[]): string | null {

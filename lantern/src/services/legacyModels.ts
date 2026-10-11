@@ -7,7 +7,7 @@ import type { ModelRef } from '../types/opencode'
  */
 const LEGACY: Record<string, Record<string, string>> = {
   'claude-code': { default: 'claude-sonnet-5-5', sonnet: 'claude-sonnet-5-5', opus: 'claude-opus-5-5', haiku: 'claude-haiku-4-5' },
-  'codex-cli': { default: 'gpt-6-sol' },
+  'codex-cli': { default: 'gpt-6-luna', 'gpt-6-sol': 'gpt-6-luna', 'gpt-6-astra': 'gpt-6-luna', 'gpt-5.6-sol': 'gpt-6-luna' },
 }
 
 export function migrateModelRef<T extends ModelRef | null | undefined>(ref: T): T {

@@ -5,7 +5,8 @@ describe('migrateModelRef', () => {
   it('maps the old short names to the real versions', () => {
     expect(migrateModelRef({ providerID: 'claude-code', modelID: 'sonnet' })).toEqual({ providerID: 'claude-code', modelID: 'claude-sonnet-5-5' })
     expect(migrateModelRef({ providerID: 'claude-code', modelID: 'haiku' }).modelID).toBe('claude-haiku-4-5')
-    expect(migrateModelRef({ providerID: 'codex-cli', modelID: 'default' }).modelID).toBe('gpt-6-sol')
+    expect(migrateModelRef({ providerID: 'codex-cli', modelID: 'default' }).modelID).toBe('gpt-6-luna')
+    expect(migrateModelRef({ providerID: 'codex-cli', modelID: 'gpt-6-sol' }).modelID).toBe('gpt-6-luna')
   })
   it('leaves everything else alone', () => {
     const ref = { providerID: 'opencode', modelID: 'big-pickle' }
