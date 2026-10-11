@@ -39,10 +39,14 @@ try {
   const lit = await js('const c=document.querySelector("canvas.dots--hero");const d=c.getContext("2d").getImageData(0,0,c.width,c.height).data;let n=0;for(let i=3;i<d.length;i+=160)if(d[i]>0)n++;return n')
   check('the dot grid paints in Safari', lit > 200, `(${lit} lit samples)`)
 
-  // the four agent windows are working
+  // the four agent windows: working dots, unless macOS has Reduce Motion on (then they stay still, by design)
   await sleep(2500)
+  const reduced = await js('return matchMedia("(prefers-reduced-motion: reduce)").matches')
   const marks = await js('return document.querySelectorAll("[data-mark] .think-dots").length')
-  check('the four agent windows show the working dots', marks === 4, `(${marks})`)
+  const title = await js('return document.querySelector("[data-agent] [data-title]").textContent')
+  console.log(`Reduce Motion is ${reduced ? 'ON' : 'off'} on this machine`)
+  check(reduced ? 'with Reduce Motion on, the agent windows stay on their first state' : 'the four agent windows show the working dots',
+    reduced ? marks === 0 && title === 'Homepage headline' : marks === 4, `(${marks} dots, "${title}")`)
 
   // app preview: switch to Connections and see all 21 services
   await css('[data-tab="connections"]').click()
@@ -57,6 +61,7 @@ try {
   check('hovering Product opens its menu', await js('return getComputedStyle(document.querySelector("div.nav__group .menu")).visibility') === 'visible')
   await js('document.querySelector("div.nav__group .menu a[href=\\"models.html\\"]").click()')
   await driver.wait(until.urlContains('models.html'), 5000)
+  await driver.wait(until.elementLocated(By.css('.mp__btn')), 10000)
   check('a menu item navigates', (await driver.getCurrentUrl()).includes('models.html'))
 
   // model picker
