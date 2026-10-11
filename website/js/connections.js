@@ -1,4 +1,4 @@
-// Interactive replica of Kern's Connections page (lantern/src/components/ConnectionsSettings.tsx).
+// Interactive replica of Kern's Connections page (app/src/components/ConnectionsSettings.tsx).
 // Same providers, same layout, same states: not connected, checking, verified, failed, incomplete and
 // saved without a test. Nothing here talks to a network; the "check" is a short simulated delay.
 (() => {

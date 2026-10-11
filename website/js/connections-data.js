@@ -1,4 +1,4 @@
-// Generated from lantern/electron/connections.ts and connectionChecks.ts: the same providers the app lists.
+// Generated from app/electron/connections.ts and connectionChecks.ts: the same providers the app lists.
 window.KERN_CONNECTIONS = [
  {
   "id": "stripe",

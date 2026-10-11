@@ -5,11 +5,11 @@ local models and more) so you can work on separate projects at the same time, on
 Kern is not an agent itself.
 
 ```
-lantern/    The desktop app (Electron, React, TypeScript). See lantern/README.md
+app/    The desktop app (Electron, React, TypeScript). See app/README.md
 website/    The marketing site (static HTML/CSS/JS). See website/README.md
 .github/    CI for the app
 ```
 
-Verify the app: `cd lantern && npx tsc --noEmit -p . && npx vitest run && npm run build`.
+Verify the app: `cd app && npx tsc --noEmit -p . && npx vitest run && npm run build`.
 
-Kern is proprietary; see `lantern/LICENSE`. Third-party notices are in `lantern/NOTICE.md`.
+Kern is proprietary; see `app/LICENSE`. Third-party notices are in `app/NOTICE.md`.
