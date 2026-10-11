@@ -169,7 +169,10 @@ a.card .link { margin-top: 18px; color: var(--lavender); }
 .page-head { position: relative; overflow: hidden; padding: 88px 0 56px; }
 .page-head > .wrap { position: relative; z-index: 1; }
 .prose { padding-bottom: 96px; }
+.section .prose { padding-bottom: 0; }
 .prose > * { max-width: 70ch; }
+.prose > table { max-width: none; }
+.prose th[scope="row"] { width: 30%; }
 .prose h2 { margin: 56px 0 14px; font-size: 1.5rem; }
 .prose h3 { margin: 28px 0 8px; }
 .prose p, .prose li { color: var(--text-2); }
@@ -274,6 +277,8 @@ td { color: var(--text-2); }
 }
 @media (max-width: 860px) {
   .grid--3, .grid--2 { grid-template-columns: 1fr; }
+  .dots--hero { opacity: 0.38; }
+  .dots--head { opacity: 0.32; }
   .app { grid-template-columns: 1fr; height: auto; }
   .app__side { border-right: 0; border-bottom: 1px solid var(--border); }
   .app__label, .app__proj, .app__status { display: none; }

@@ -44,19 +44,26 @@
     nav.querySelectorAll('.menu a').forEach((el, i) => el.style.setProperty('--k', String(i + links.length)))
 
     const currentLink = () => links.find((l) => l.getAttribute('aria-current') === 'page') || (nav.querySelector('.nav__group.is-current > .nav__link'))
-    const moveTo = (el) => {
+    const moveTo = (el, instant) => {
       if (!ind || !el || window.innerWidth <= 860) return
       const a = nav.getBoundingClientRect(), b = el.getBoundingClientRect()
+      if (instant) ind.style.transition = 'none'
       ind.style.width = `${b.width}px`
       ind.style.transform = `translateX(${b.left - a.left}px)`
       ind.style.opacity = '1'
+      if (instant) { void ind.offsetWidth; ind.style.transition = '' }
     }
-    const rest = () => { const c = currentLink(); if (c) moveTo(c); else if (ind) ind.style.opacity = '0' }
+    // Placed without sliding on load and on resize; it only slides when you move between links.
+    const rest = (instant) => { const c = currentLink(); if (c) moveTo(c, instant === true); else if (ind) ind.style.opacity = '0' }
+    const settle = () => rest(true)
     links.forEach((el) => { el.addEventListener('pointerenter', () => finePointer && moveTo(el)); el.addEventListener('focus', () => moveTo(el)) })
     nav.addEventListener('pointerleave', rest)
     nav.addEventListener('focusout', (event) => { if (!nav.contains(event.relatedTarget)) rest() })
-    rest()
-    window.addEventListener('resize', rest)
+    settle()
+    window.addEventListener('resize', settle)
+    window.addEventListener('load', settle)
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle)
+    if ('ResizeObserver' in window) new ResizeObserver(settle).observe(nav)
 
     let closeTimer = 0
     const setOpen = (group, open) => {

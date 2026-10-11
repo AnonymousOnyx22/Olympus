@@ -77,6 +77,11 @@ function page({ file, title, description, body, scripts = [] }) {
 <meta name="description" content="${description}">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#181818">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kern">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${description}">
+<meta name="twitter:card" content="summary">
 <link rel="icon" type="image/svg+xml" href="assets/kern-mark.svg">
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/connections.css">
@@ -443,7 +448,7 @@ pages.push({
 <h2>Not yet</h2>
 <ul>
 <li>Agents do not resume on their own after a model failure. A Continue button restarts the work.</li>
-<li>Installers are unsigned, and there is no automatic updates.</li>
+<li>Installers are unsigned, and there are no automatic updates.</li>
 <li>No public download.</li>
 </ul>
 </div></section>`,

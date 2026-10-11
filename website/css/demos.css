@@ -78,24 +78,25 @@
 .lib__search input { width: 100%; height: 40px; padding: 0 12px 0 36px; border: 0; border-radius: 6px; background: var(--control); box-shadow: 0 0 0 1px var(--border); color: var(--text); font: 14px var(--font); outline: none; transition: box-shadow 160ms ease; }
 .lib__search input:focus { box-shadow: 0 0 0 2px #dedede; }
 .lib__list { display: grid; gap: 8px; }
-.lib__list.is-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
-.pj { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--control); animation: pjin 320ms var(--ease-out) both; animation-delay: calc(var(--n, 0) * 36ms); transition: border-color 200ms ease, background-color 300ms ease; }
+.lib__list.is-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.pj { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--control); animation: pjin 320ms var(--ease-out) both; animation-delay: calc(var(--n, 0) * 36ms); transition: border-color 200ms ease, background-color 300ms ease; }
 @keyframes pjin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.lib__list.is-grid .pj { grid-template-columns: 1fr auto; min-height: 132px; align-content: space-between; }
 .pj.is-flash { border-color: var(--lavender); background: #26233a; }
-.pj h3 { font-size: 14px; display: flex; align-items: center; gap: 8px; }
-.pj small { grid-column: 2; font: 12px var(--mono); color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pj__tag { font: 11px var(--mono); padding: 2px 6px; border-radius: 3px; background: var(--selected); color: var(--text-2); }
-.pj__pin { grid-row: span 2; width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 4px; background: transparent; color: var(--text-3); cursor: pointer; transition: color 160ms ease, transform 200ms var(--ease-out), background-color 160ms ease; }
+.pj__main { display: grid; gap: 4px; min-width: 0; }
+.pj h3 { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.pj__path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 12px var(--mono); color: var(--text-3); }
+.pj__tag { padding: 2px 6px; border-radius: 3px; background: var(--selected); color: var(--text-2); font: 11px var(--mono); }
+.pj__side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.pj__pin { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 4px; background: transparent; color: var(--text-3); cursor: pointer; transition: color 160ms ease, transform 200ms var(--ease-out), background-color 160ms ease; }
 .pj__pin:active { transform: scale(0.88); }
 .pj__pin[aria-pressed='true'] { color: var(--lavender); }
 .pj__pin svg { width: 16px; height: 16px; }
 @media (hover: hover) and (pointer: fine) { .pj__pin:hover { background: var(--selected); color: var(--text); } .pj:hover { border-color: #4a4a4a; } }
+.lib__list.is-grid .pj { flex-direction: column; align-items: stretch; justify-content: space-between; min-height: 132px; }
+.lib__list.is-grid .pj__side { justify-content: space-between; }
 .lib__empty { padding: 28px 8px; color: var(--text-3); }
-.pj__status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
 .lib__missing { grid-column: 1 / -1; padding: 14px 16px; border: 1px dashed var(--border); border-radius: 6px; font-size: 13px; color: var(--text-3); animation: drop 300ms var(--ease-out) both; }
 
-@media (max-width: 860px) { .pj { grid-template-columns: auto 1fr auto; } .pj small { grid-column: 1 / -1; } }
 /* Home page agent windows that are always working (js/agents-loop.js) */
 .agent__head [data-mark] { display: inline-grid; place-items: center; min-width: 18px; height: 16px; flex-shrink: 0; }
 .agent__body { overflow: hidden; align-content: start; flex: 1; min-height: 0; transition: opacity 220ms ease; }
