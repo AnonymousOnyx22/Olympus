@@ -2,17 +2,17 @@ import { migrateModelRef } from '../src/services/legacyModels'
 import { app } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
-import type { OlympusSettings, LocalEndpoint, ModelRef, PermissionMode, ProjectMeta, ProjectRef } from '../src/types/opencode'
+import type { KernSettings, LocalEndpoint, ModelRef, PermissionMode, ProjectMeta, ProjectRef } from '../src/types/opencode'
 
-const DEFAULTS: OlympusSettings = {
+const DEFAULTS: KernSettings = {
   lastProject: null,
   selectedModel: null,
   customEndpoints: [],
   projects: [],
-  stores: [],
   projectRoots: [],
   hiddenProjects: [],
   projectMeta: {},
+  connectionOptOut: {},
   lastSpace: null,
   permissionMode: 'ask',
   selectedVariants: {},
@@ -72,12 +72,22 @@ function projectMeta(value: unknown): Record<string, ProjectMeta> {
   return out
 }
 
+function connectionOptOut(value: unknown): Record<string, string[]> {
+  if (!value || typeof value !== 'object') return {}
+  const out: Record<string, string[]> = {}
+  for (const [id, list] of Object.entries(value as Record<string, unknown>)) {
+    const ids = strings(list)
+    if (ids.length) out[id] = ids
+  }
+  return out
+}
+
 const strings = (value: unknown): string[] =>
   Array.isArray(value) ? [...new Set(value.filter((item): item is string => typeof item === 'string' && item.length > 0))] : []
 
 const settingsPath = () => path.join(app.getPath('userData'), 'settings.json')
 
-let cache: OlympusSettings | null = null
+let cache: KernSettings | null = null
 
 function modelRef(value: unknown): ModelRef | null {
   if (!value || typeof value !== 'object') return null
@@ -96,13 +106,13 @@ function endpoint(value: unknown): LocalEndpoint | null {
   return { id: candidate.id, name: candidate.name, baseURL: candidate.baseURL, custom: true }
 }
 
-function normalize(value: unknown): OlympusSettings {
+function normalize(value: unknown): KernSettings {
   if (!value || typeof value !== 'object') return { ...DEFAULTS }
-  const raw = value as Partial<OlympusSettings>
+  const raw = value as Partial<KernSettings>
   const selectedVariants = raw.selectedVariants && typeof raw.selectedVariants === 'object'
     ? Object.fromEntries(Object.entries(raw.selectedVariants).filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
     : {}
-  const legacy = raw as Partial<OlympusSettings> & { permissionBypass?: boolean }
+  const legacy = raw as Partial<KernSettings> & { permissionBypass?: boolean }
   const permissionMode: PermissionMode = raw.permissionMode === 'edit' || raw.permissionMode === 'bypass'
     ? raw.permissionMode
     : legacy.permissionBypass === true ? 'bypass' : 'ask'
@@ -115,19 +125,17 @@ function normalize(value: unknown): OlympusSettings {
     projects: Array.isArray(raw.projects)
       ? raw.projects.map(project).filter((item): item is ProjectRef => item !== null)
       : [],
-    stores: Array.isArray(raw.stores)
-      ? raw.stores.map(project).filter((item): item is ProjectRef => item !== null)
-      : [],
     projectRoots: strings(raw.projectRoots),
     hiddenProjects: strings(raw.hiddenProjects),
     projectMeta: projectMeta(raw.projectMeta),
+    connectionOptOut: connectionOptOut(raw.connectionOptOut),
     lastSpace: typeof raw.lastSpace === 'string' ? raw.lastSpace : null,
     permissionMode,
     selectedVariants,
   }
 }
 
-function load(): OlympusSettings {
+function load(): KernSettings {
   if (cache) return cache
   try {
     const raw = JSON.parse(fs.readFileSync(settingsPath(), 'utf8')) as Record<string, unknown>
@@ -141,7 +149,7 @@ function load(): OlympusSettings {
     if (recovered) {
       try {
         cache = normalize(migrateSettings(recovered))
-        console.error('[olympus] settings.json was unreadable; recovered from settings.json.bak')
+        console.error('[kern] settings.json was unreadable; recovered from settings.json.bak')
       } catch {
         cache = { ...DEFAULTS }
       }
@@ -149,7 +157,7 @@ function load(): OlympusSettings {
       const stray = `${settingsPath()}.corrupt-${Date.now()}`
       try {
         fs.renameSync(settingsPath(), stray)
-        console.error(`[olympus] settings.json was corrupt and has been moved to ${stray}`)
+        console.error(`[kern] settings.json was corrupt and has been moved to ${stray}`)
       } catch {
         // Nothing more we can do; the file is still in the app's data directory.
       }
@@ -170,9 +178,9 @@ function recoverFromBackup(): Record<string, unknown> | null {
 /**
  * Writes atomically. A crash or power loss mid-write used to leave a truncated settings.json
  * and take every saved project with it. Write a temp file, keep the previous good copy as a
- * backup, then rename over the target - rename is atomic on every platform Olympus ships on.
+ * backup, then rename over the target - rename is atomic on every platform Kern ships on.
  */
-function persist(settings: OlympusSettings): void {
+function persist(settings: KernSettings): void {
   const target = settingsPath()
   const temp = `${target}.tmp`
   const body = JSON.stringify({ ...settings, schemaVersion: SETTINGS_SCHEMA_VERSION }, null, 2)
@@ -187,15 +195,15 @@ function persist(settings: OlympusSettings): void {
     } catch {
       // Best-effort cleanup of the temp file.
     }
-    console.error('[olympus] failed to save settings:', error)
+    console.error('[kern] failed to save settings:', error)
   }
 }
 
-export function getSettings(): OlympusSettings {
+export function getSettings(): KernSettings {
   return { ...load() }
 }
 
-export function updateSettings(patch: Partial<OlympusSettings>): OlympusSettings {
+export function updateSettings(patch: Partial<KernSettings>): KernSettings {
   cache = normalize({ ...load(), ...patch })
   persist(cache)
   return getSettings()

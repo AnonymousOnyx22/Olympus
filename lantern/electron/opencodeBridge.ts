@@ -57,7 +57,7 @@ export class OpencodeBridge {
     this.baseUrl = baseUrl
     this.credentials = credentials
     if (baseUrl && credentials) void this.runEventStream(baseUrl, credentials)
-    else if (baseUrl) this.log('[olympus] bridge attached without credentials; the daemon will refuse requests')
+    else if (baseUrl) this.log('[kern] bridge attached without credentials; the daemon will refuse requests')
   }
 
   detach() {
@@ -157,13 +157,13 @@ export class OpencodeBridge {
               // /global/event wraps events in { directory, payload }; /event does not.
               this.onEvent(parsed.payload ?? parsed)
             } catch {
-              this.log(`[olympus] dropped malformed event: ${data.slice(0, 200)}`)
+              this.log(`[kern] dropped malformed event: ${data.slice(0, 200)}`)
             }
           }
         }
       } catch (err) {
         if (abort.signal.aborted) return
-        this.log(`[olympus] event stream error: ${(err as Error).message}; reconnecting`)
+        this.log(`[kern] event stream error: ${(err as Error).message}; reconnecting`)
       }
       if (!abort.signal.aborted) await new Promise((r) => setTimeout(r, 1000))
       // A dropped stream can have swallowed a `session.idle`. Tell the renderer to

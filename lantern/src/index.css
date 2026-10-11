@@ -5,25 +5,22 @@
 :root {
   color-scheme: dark;
 
-  /*
-   * Aether Blue - the app's one accent, and the single place it is defined.
-   *
-   * These are bare RGB channel triplets (not hex) precisely so the two consumers can
-   * compose an alpha: tailwind.config.js wraps them as `rgb(var(--accent-N) / <alpha-value>)`
-   * for the `aether-*` utilities, and the raw CSS below uses them directly. Anything that
-   * renders to a canvas or a plain string instead of a stylesheet (xterm, Monaco, the app
-   * icon) cannot read custom properties and repeats the hex deliberately.
-   */
-  /* Dark theme ramp: 50–200 are deep cobalt washes for selected/active surfaces, 400–600 are
-     Soft Cobalt (#3B82F6) for buttons, rings and hover, 700 is light type on those washes. */
-  --accent-50: 23 37 84;
-  --accent-100: 30 50 105;
-  --accent-200: 37 70 150;
-  --accent-300: 59 130 246;
-  --accent-400: 96 165 250;
-  --accent-500: 96 165 250;
-  --accent-600: 59 130 246;
-  --accent-700: 147 197 253;
+  --surface-canvas: #181818;
+  --surface-control: #202020;
+  --surface-selected: #282828;
+  --surface-raised: #303030;
+  --border-subtle: #343434;
+  --text-primary: #f2f2f2;
+  --text-secondary: #b0b0b0;
+  --text-quiet: #929292;
+  --accent-50: 40 40 40;
+  --accent-100: 48 48 48;
+  --accent-200: 64 64 64;
+  --accent-300: 119 119 119;
+  --accent-400: 222 222 222;
+  --accent-500: 198 198 198;
+  --accent-600: 242 242 242;
+  --accent-700: 222 222 222;
 }
 
 html,
@@ -34,7 +31,7 @@ body,
 
 body {
   @apply font-sans text-slate-900 antialiased;
-  background-color: #0f172a;
+  background-color: var(--surface-canvas);
   overflow: hidden;
   user-select: none;
 }
@@ -48,7 +45,7 @@ code,
 }
 
 ::selection {
-  background: rgb(59 130 246 / 0.35);
+  background: rgb(138 180 248 / 0.25);
 }
 
 ::-webkit-scrollbar {
@@ -93,7 +90,7 @@ code,
   @apply text-[14px];
 }
 .md a {
-  @apply text-aether-600 underline decoration-aether-600/30 underline-offset-2 hover:decoration-aether-600;
+  @apply text-accent-600 underline decoration-accent-600/30 underline-offset-2 hover:decoration-accent-600;
 }
 .md strong {
   @apply font-semibold text-slate-900;
@@ -108,7 +105,7 @@ code,
   @apply m-0;
 }
 .md blockquote {
-  @apply border-l-2 border-aether-300 pl-3 text-slate-500;
+  @apply border-l-2 border-accent-300 pl-3 text-slate-500;
 }
 .md :not(pre) > code {
   @apply rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[12px] text-slate-700;
@@ -167,82 +164,156 @@ code,
 
 /* The workspace uses one neutral surface hierarchy; status colors carry meaning. */
 button:focus-visible, a:focus-visible, summary:focus-visible, [role="tab"]:focus-visible {
-  outline: 2px solid rgb(var(--accent-500));
+  outline: 2px solid #b7a5ff;
   outline-offset: 2px;
 }
 .workspace-body { display: flex; min-height: 0; flex: 1; gap: 10px; position: relative; }
-.workspace-center { border: 1px solid rgb(59 130 246 / 0.14); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgb(2 6 23 / 0.45); }
-.context-panel { width: 350px; min-width: 280px; max-width: 42%; flex-shrink: 0; border: 1px solid rgb(59 130 246 / 0.14); border-radius: 16px; overflow: hidden; background: #1e293b; box-shadow: 0 8px 30px rgb(2 6 23 / 0.45); }
+.workspace-center { border: 1px solid var(--border-subtle); border-radius: 0; overflow: hidden; }
+.context-panel { width: 350px; min-width: 280px; max-width: 42%; flex-shrink: 0; border: 1px solid var(--border-subtle); border-radius: 0; overflow: hidden; background: var(--surface-control); }
 .agent-transcript .md { font-size: 13px; line-height: 1.7; }
 .agent-transcript .md > * + * { margin-top: 8px; }
 .agent-transcript .tool-row { border-radius: 0; background: transparent; box-shadow: none; }
 .agent-transcript .tool-row > button { padding: 3px 6px; }
-.agent-transcript .prompt-line { justify-content: flex-start; border-block: 1px solid #334155; background: #172235; padding: 7px 10px; }
-.agent-transcript .prompt-line > div { max-width: 100%; border-radius: 0; padding: 0; background: none; box-shadow: none; font-family: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; }
-.agent-transcript .prompt-line > div::before { content: '\203a '; color: #94a3b8; }
+.agent-transcript .prompt-line { justify-content: flex-start; border: 0; background: transparent; padding: 0; margin-block: 24px; }
+.agent-transcript .prompt-line > div { max-width: 100%; border-radius: 0; padding: 0; background: none; box-shadow: none; font-family: inherit; font-size: 14px; line-height: 1.75; }
+.agent-transcript .prompt-line > div::before { content: 'You'; display: block; margin-bottom: 10px; font-size: 11px; color: var(--text-secondary); }
 @media (max-width: 1100px) {
-  .context-panel { position: absolute; z-index: 30; right: 0; top: 0; bottom: 0; max-width: calc(100% - 16px); width: 360px; box-shadow: -20px 0 50px rgb(2 6 23 / 0.6); }
-}
-@media (max-width: 700px) {
-  .workspace-shell { padding: 6px; }
-  .workspace-body { gap: 6px; }
-  .workspace-title { display: none; }
+  .context-panel { position: absolute; z-index: 30; right: 0; top: 0; bottom: 0; max-width: calc(100% - 16px); width: 360px; box-shadow: -4px 0 16px rgb(0 0 0 / 0.24); }
 }
 
 /* Each project owns a grid of independent, scrollable agent conversations. */
 .agent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); grid-auto-rows: minmax(400px, 1fr); gap: 8px; }
 .agent-grid-cell { display: flex; min-width: 0; min-height: 0; }
 
-/* Status orb: a radar ping while a daemon boots, an orbiting ring while an agent thinks. */
-@keyframes olympus-radar { 0% { transform: scale(0.55); opacity: 0.65; } 100% { transform: scale(2.4); opacity: 0; } }
-@keyframes olympus-orbit { to { transform: rotate(360deg); } }
-@keyframes olympus-orbit-reverse { to { transform: rotate(-360deg); } }
-@keyframes olympus-breathe { 0%, 100% { opacity: 0.55; transform: scale(0.82); } 50% { opacity: 1; transform: scale(1); } }
-@media (prefers-reduced-motion: reduce) {
-  .status-orb * { animation: none !important; }
-}
+/* Activity remains legible without decorative shimmer, halos or pulsing surfaces. */
+.text-gloss { color: var(--text-secondary); }
+.todo-active { border-color: var(--border-subtle); }
 
-/* A light sweeping across text instead of the whole label blinking in and out. */
-@keyframes olympus-gloss { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-.text-gloss {
-  background-image: linear-gradient(100deg, rgb(var(--accent-600)) 35%, rgb(var(--accent-300)) 50%, rgb(var(--accent-600)) 65%);
-  background-size: 250% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: olympus-gloss 1.8s linear infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .text-gloss { animation: none; background: none; -webkit-background-clip: unset; background-clip: unset; -webkit-text-fill-color: unset; color: rgb(var(--accent-600)); }
-}
-
-/* The plan's in-progress todo gets a slow, lit-up glow. */
-@keyframes olympus-todo-glow { 0%, 100% { box-shadow: 0 0 0 0 rgb(var(--accent-500) / 0); } 50% { box-shadow: 0 0 14px 1px rgb(var(--accent-500) / 0.35); } }
-.todo-active { animation: olympus-todo-glow 2.2s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .todo-active { animation: none; }
-}
-
-/* Secondary text on the dark theme: Cool Muted Slate. */
-.text-slate-400{color:#94a3b8}
-.placeholder\:text-slate-400::placeholder{color:#7d8ca3}
+/* Secondary text on charcoal surfaces. */
+.text-slate-400{color:var(--text-quiet)}
+.placeholder\:text-slate-400::placeholder{color:var(--text-quiet)}
 /* `white` is the card colour in tailwind.config.js; type set in "white" stays crisp white. */
-.text-white,.hover\:text-white:hover{color:#f8fafc}
+.text-white,.hover\:text-white:hover{color:var(--text-primary)}
 
 /*
- * A bare global `:focus-visible` outline painted a hard blue box around every text field on
- * screen, including search inputs the moment you clicked them. Chromium matches
- * `:focus-visible` on text inputs even for a mouse click, so it was unavoidable in use and
- * read as a bug rather than a focus indicator. It is gone. Buttons, links, summaries and tabs
- * keep their ring from the rule above, which is where a keyboard user actually needs it;
- * text fields get their position from the caret and the field's own border.
+ * Text fields get a thin neutral outline, never a bold box: Chromium matches `:focus-visible` on
+ * text inputs even for a mouse click, so the ring used for buttons would read as a bug here.
+ * Buttons, links, summaries and tabs keep their ring from the rule above.
  */
-input:focus-visible,
 textarea:focus-visible,
-[contenteditable]:focus-visible {
-  outline: none;
-}
+[contenteditable]:focus-visible { outline: none; }
+input:focus-visible { outline: 1px solid var(--text-secondary); outline-offset: 0; }
 
-.workspace-title{color:#94a3b8}
-.text-slate-300{color:#7d8ca3}
+.workspace-title{color:var(--text-secondary)}
+.text-slate-300{color:var(--text-quiet)}
+
+/* Light neutral actions; dark surface utility names retain existing component semantics. */
+.bg-accent-600.text-white, .bg-accent-600 .text-white { color: #181818; }
+.app-sidebar > div:nth-child(2), .app-sidebar > nav { background: transparent; border-radius: 0; --tw-ring-shadow: 0 0 #0000; }
+.app-sidebar nav > button { min-height: 44px; font-size: 14px; }
+.app-sidebar nav > button[aria-pressed="true"] { background: var(--surface-selected); --tw-ring-shadow: 0 0 #0000; }
+.app-sidebar nav > button:first-child { background: transparent; color: var(--text-primary); }
+.app-sidebar nav > button:first-child:hover { background: var(--surface-selected); }
+.app-sidebar { border-right: 1px solid var(--border-subtle); padding-right: 12px; }
+
+.bg-amber-400.text-white, .bg-emerald-500.text-white, .bg-rose-600.text-white { color: #181818; }
+
+/* Conversation rhythm: one header, a readable column, and a separate writing area. */
+.agent-transcript { background: var(--surface-canvas); }
+.model-menu input[type="search"]:focus-visible { outline: none; }
+.agent-header { gap: 12px; min-height: 60px; padding: 12px 24px; background: var(--surface-canvas); }
+.agent-header > span:nth-child(2) { font-size: 14px; }
+.agent-header > [role="status"] { max-width: 140px; }
+.conversation-content { width: 100%; max-width: 880px; padding: 32px 28px 48px; }
+.composer-dock { padding: 24px 28px 16px; background: var(--surface-canvas); }
+.composer-content { max-width: 824px; }
+.chat-composer { padding: 16px; background: var(--surface-control); border-radius: 6px; }
+.chat-composer > div:last-child { margin-top: 12px; gap: 12px; flex-wrap: wrap; }
+.chat-composer textarea { min-height: 44px; }
+.model-picker { margin-left: auto; max-width: 100%; flex-wrap: wrap; justify-content: flex-end; }
+.model-menu { border-radius: 6px; background: var(--surface-raised); max-height: min(560px, 75dvh); }
+.model-menu-options { max-height: min(360px, 45dvh); }
+.model-menu button { min-height: 32px; }
+.model-menu svg { animation: none; }
+.reasoning-menu { max-height: 55dvh; }
+.composer-help { font-size: 11px; margin-top: 10px; }
+
+/* Shared controls and overlays. Portals keep menus clear of scroll containers. */
+.app-popover { position: fixed; z-index: 70; overflow: auto; overscroll-behavior: contain; border: 1px solid var(--border-subtle); border-radius: 6px; background: var(--surface-raised); box-shadow: 0 8px 24px rgb(0 0 0 / .24); color: var(--text-primary); }
+.app-popover:focus, .app-popover:focus-visible { outline: none; }
+.app-popover button { min-height: 36px; border-radius: 4px; font-size: 13px; }
+.app-popover button:hover { background-color: var(--surface-selected); }
+.app-popover button[aria-pressed="true"] { background: var(--surface-selected); color: var(--text-primary); }
+.app-popover input { font-size: 13px; }
+.popover-content { padding: 8px; }
+.popover-heading { padding: 12px 12px 8px; font-size: 13px; font-weight: 500; }
+.popover-item { display: flex; align-items: center; width: 100%; gap: 8px; padding: 8px 12px; text-align: left; }
+.sidebar-refined .sidebar-brand { display: flex; flex-shrink: 0; align-items: center; gap: 10px; min-height: 56px; padding: 10px 12px; }
+.sidebar-refined .sidebar-new { display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin: 8px 12px 16px; min-height: 40px; padding: 8px 10px; border: 1px solid var(--border-subtle); border-radius: 4px; font-size: 13px; }
+.sidebar-refined .sidebar-destinations { padding: 0 12px 16px; border-bottom: 1px solid var(--border-subtle); }
+.sidebar-refined .sidebar-destination { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 10px; border-radius: 4px; font-size: 13px; color: var(--text-secondary); }
+.sidebar-refined .sidebar-destination[aria-pressed="true"] { background: var(--surface-selected); color: var(--text-primary); }
+.sidebar-library-row[aria-current="true"] { background: var(--surface-selected); }
+.sidebar-refined .sidebar-destination:hover, .sidebar-refined .sidebar-library-row:hover { background: var(--surface-control); }
+.sidebar-search { padding: 16px 12px 4px; }
+.sidebar-search input { width: 100%; min-height: 36px; padding: 8px 10px; border: 1px solid var(--border-subtle); border-radius: 4px; background: transparent; font-size: 12px; }
+.sidebar-library { flex: 1; min-height: 0; overflow: auto; padding: 4px 12px 16px; }
+.sidebar-section-toggle { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 12px 8px 8px; text-align: left; font-size: 12px; color: var(--text-secondary); }
+.sidebar-section-toggle > span:first-child { margin-left: auto; }
+.sidebar-library-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; padding: 8px; border-radius: 4px; font-size: 12px; text-align: left; color: var(--text-primary); }
+.sidebar-empty { padding: 4px 8px 12px; font-size: 12px; color: var(--text-secondary); }
+.sidebar-footer { border-top: 1px solid var(--border-subtle); padding: 0 12px 12px; }
+.sidebar-skills { max-height: 120px; overflow: auto; padding: 0 8px 8px; font-size: 12px; color: var(--text-secondary); }
+.sidebar-skills p { padding-block: 4px; }
+.sidebar-status { display: flex; align-items: center; gap: 8px; padding: 12px 8px 0; font-size: 11px; color: var(--text-secondary); }
+
+.app-choice-dialog { border-radius: 6px; background: var(--surface-raised); }
+.app-choice-dialog button { min-height: 36px; border-radius: 4px; }
+.app-choice-dialog input { font-size: 14px; }
+.permission-card { border-radius: 6px; }
+.permission-card > div:last-child { flex-wrap: wrap; }
+.queued-messages { border-radius: 4px; }
+.queued-messages button[title="Remove queued message"] { min-width: 32px; min-height: 32px; }
+
+.conversation-content .md > p, .conversation-content .prompt-line { max-width: 76ch; }
+
+.sidebar-refined { padding-right: 0; }
+
+.permission-card { background: var(--surface-control); border: 1px solid var(--border-subtle); box-shadow: none; }
+.approval-status-button { color: inherit; font: inherit; white-space: nowrap; }
+.approval-status-button:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.sidebar-collapsed .sidebar-destinations { padding-inline: 8px; }
+.sidebar-collapsed .sidebar-destination { justify-content: center; gap: 0; padding-inline: 8px; }
+.sidebar-collapsed .sidebar-new { justify-content: center; margin-inline: 8px; padding-inline: 8px; }
+
+/* Compact navigation and one writing toolbar. */
+.chat-composer > .composer-controls { flex-wrap: nowrap; gap: 8px; margin-top: 8px; }
+.composer-controls .model-picker { margin-left: 0; flex: 1; min-width: 0; justify-content: flex-start; }
+.composer-controls .model-picker > button { min-width: 0; max-width: 100%; }
+.composer-actions { display: flex; flex-shrink: 0; gap: 8px; margin-left: auto; }
+.composer-send, .composer-stop { display: grid; place-items: center; min-width: 36px; min-height: 36px; border-radius: 4px; }
+.composer-send { background: #f2f2f2; color: #181818; }
+.composer-send:disabled { background: var(--surface-selected); color: var(--text-secondary); }
+.composer-stop { border: 1px solid var(--border-subtle); color: var(--text-primary); }
+.composer-stop:hover { background: var(--surface-selected); }
+.model-reasoning-link { border-top: 1px solid var(--border-subtle); margin-top: 8px; }
+.interface-state { padding: 24px; color: var(--text-secondary); }
+.interface-state-compact { padding: 12px; margin-block: 12px; border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--surface-control); }
+.interface-state-heading { display: flex; align-items: center; gap: 8px; }
+.interface-state-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.interface-state-description { max-width: 62ch; margin-top: 8px; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.interface-state-action { display: flex; gap: 8px; margin-top: 12px; }
+.interface-state-action button { min-height: 36px; padding: 8px 12px; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-primary); font-size: 13px; }
+.interface-state-action button:hover { background: var(--surface-selected); }
+.interface-state-error { color: #f0a0a0; font-size: 14px; }
+.interface-state-spinner { width: 12px; height: 12px; border: 2px solid var(--border-subtle); border-top-color: var(--text-secondary); border-radius: 50%; animation: state-spin 1s linear infinite; }
+@keyframes state-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .interface-state-spinner { animation: none; } }
+
+/* Working indicator (ThinkingMark.tsx): three glowing dots that pulse in turn, same as the website. */
+.think-dots { display: inline-flex; align-items: center; justify-content: center; gap: calc(var(--dot, 4px) * 0.75); flex-shrink: 0; }
+.think-dots i { width: var(--dot, 4px); height: var(--dot, 4px); border-radius: 50%; background: #e3d8ff; box-shadow: 0 0 6px 1px rgb(201 184 255 / 0.7); animation: think-pulse 1.2s ease-in-out infinite; }
+.think-dots i:nth-child(2) { animation-delay: 0.16s; }
+.think-dots i:nth-child(3) { animation-delay: 0.32s; }
+@keyframes think-pulse { 0%, 70%, 100% { transform: scale(0.65); opacity: 0.4; } 35% { transform: scale(1.25); opacity: 1; } }

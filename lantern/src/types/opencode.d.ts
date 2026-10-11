@@ -1,4 +1,4 @@
-// Types for the subset of the opencode server API (v1.18) that Olympus uses,
+// Types for the subset of the opencode server API (v1.18) that Kern uses,
 // plus the contract of the preload bridge exposed as `window.electronAPI`.
 
 // ---------- opencode: sessions & messages ----------
@@ -136,7 +136,7 @@ export interface Pty {
   exitCode?: number
 }
 
-/** Events delivered over the `/event` SSE stream. Only the ones Olympus reacts to are typed. */
+/** Events delivered over the `/event` SSE stream. Only the ones Kern reacts to are typed. */
 export type OpencodeEvent =
   | { type: 'server.connected'; properties: Record<string, never> }
   | { type: 'session.created'; properties: { info: Session } }
@@ -157,7 +157,7 @@ export type OpencodeEvent =
   | { type: 'permission.replied'; properties: { sessionID: string; requestID: string; reply: PermissionReply } }
   | { type: 'pty.exited'; properties: { id: string; exitCode: number } }
 
-// ---------- Olympus: local models & daemon ----------
+// ---------- Kern: local models & daemon ----------
 
 export interface LocalEndpoint {
   /** Provider id used in opencode config, e.g. "ollama" */
@@ -204,7 +204,7 @@ export interface ProjectRef {
 export interface ProjectMeta {
   pinned?: boolean
   lastOpened?: number
-  /** When Olympus first noticed this folder - drives the "New" badge. */
+  /** When Kern first noticed this folder - drives the "New" badge. */
   firstSeen?: number
 }
 
@@ -217,7 +217,7 @@ export interface ConnectionField {
   placeholder?: string
 }
 
-/** A real API/service a store's agent can be given access to - never through the chat. */
+/** A real API/service a project's agent can be given access to - never through the chat. */
 export interface ConnectionProvider {
   id: string
   name: string
@@ -245,12 +245,6 @@ export interface ConnectionStatus {
   fields: ConnectionField[]
   /** Field keys that currently have a saved value. */
   configuredFields: string[]
-  /** True for providers where "Sign in" (a real logged-in browser session) is offered as an
-   * alternative to an API key - currently Pinterest and Etsy, whose app-approval process is
-   * slow enough that most people never get an API key at all. */
-  supportsBrowserSignIn: boolean
-  /** Whether a signed-in browser session is currently saved for this provider. */
-  browserSessionConnected: boolean
   /** Last real test of the saved values; null until one has run (or after the values changed). */
   verification: ConnectionCheck | null
 }
@@ -280,13 +274,11 @@ export interface Skill {
 
 export type PermissionMode = 'ask' | 'edit' | 'bypass'
 
-export interface OlympusSettings {
+export interface KernSettings {
   lastProject: string | null
   selectedModel: ModelRef | null
   customEndpoints: LocalEndpoint[]
   projects: ProjectRef[]
-  /** Store workspaces live beside project roots and are managed only by Station. */
-  stores: ProjectRef[]
   /** Folders whose immediate subfolders are each treated as a project. */
   projectRoots: string[]
   /** Detected project paths the user chose to hide. */
@@ -297,6 +289,8 @@ export interface OlympusSettings {
   lastSpace: string | null
   /** Controls which agent actions pause for approval. */
   permissionMode: PermissionMode
+  /** Connection ids withheld from a project's agent, keyed by project id. Absent means it gets every saved connection. */
+  connectionOptOut: Record<string, string[]>
   /** Last selected OpenCode variant, keyed by provider/model. */
   selectedVariants: Record<string, string>
 }
@@ -323,8 +317,8 @@ export interface ElectronAPI {
   onDaemonState(callback: (spaceId: string, state: DaemonState) => void): () => void
 
   discoverModels(): Promise<LocalProvider[]>
-  addEndpoint(endpoint: { name: string; baseURL: string }): Promise<OlympusSettings>
-  removeEndpoint(id: string): Promise<OlympusSettings>
+  addEndpoint(endpoint: { name: string; baseURL: string }): Promise<KernSettings>
+  removeEndpoint(id: string): Promise<KernSettings>
 
   /**
    * Focuses a space's Code/Preview/Terminal tabs and starts its daemon if needed (GENERAL_SPACE
@@ -346,15 +340,6 @@ export interface ElectronAPI {
   verifyConnection(providerId: string): Promise<ConnectionStatus[]>
   /** Deletes every saved value for one connection. */
   clearConnection(providerId: string): Promise<ConnectionStatus[]>
-
-  /**
-   * Opens a real, visible browser window on the provider's own login page (Pinterest, Etsy).
-   * Olympus never sees the password - only the resulting session, which the user ends by
-   * closing the window. Resolves once that session has been captured for later use.
-   */
-  openConnectionSignIn(providerId: string): Promise<ConnectionStatus[]>
-  /** Forgets a saved browser session for a provider (cookies and the exported session file). */
-  forgetConnectionSignIn(providerId: string): Promise<ConnectionStatus[]>
   /** Stops a background space's daemon, e.g. when its multi-project tab is closed. */
   closeSpace(spaceId: string): Promise<void>
   listProjects(): Promise<ProjectInfo[]>
@@ -365,10 +350,6 @@ export interface ElectronAPI {
   pinProject(id: string, pinned: boolean): Promise<ProjectInfo[]>
   /** Creates a new, empty folder inside a watched projects folder. Returns the new project's id. */
   createProject(root: string, name: string): Promise<{ id: string; projects: ProjectInfo[] }>
-  createStore(projectRoot: string, folderName: string, displayName?: string): Promise<{ id: string; stores: ProjectInfo[] }>
-  listStores(): Promise<ProjectInfo[]>
-  /** Stops the store's agent, unlists it, and - if `deleteFiles` is true - deletes its folder from disk. */
-  removeStore(id: string, deleteFiles: boolean): Promise<ProjectInfo[]>
   revealProject(id: string): Promise<void>
   listProjectRoots(): Promise<string[]>
   addProjectRoot(path: string): Promise<{ roots: string[]; projects: ProjectInfo[] }>
@@ -376,8 +357,8 @@ export interface ElectronAPI {
   /** Fires when a watched folder gains or loses a project folder. */
   onProjectsChanged(callback: (projects: ProjectInfo[]) => void): () => void
 
-  getSettings(): Promise<OlympusSettings>
-  setSettings(patch: Partial<OlympusSettings>): Promise<OlympusSettings>
+  getSettings(): Promise<KernSettings>
+  setSettings(patch: Partial<KernSettings>): Promise<KernSettings>
 
   request<T = unknown>(spaceId: string, method: string, path: string, body?: unknown): Promise<BridgeResponse<T>>
   /** Every space's opencode event stream, tagged with which space it came from. */
@@ -414,18 +395,8 @@ export interface ElectronAPI {
    * closing, so unsaved work is never discarded by a stray window close.
    */
   onBeforeClose(handler: () => boolean | Promise<boolean>): () => void
-  /** Whether `opencode` is installed and whether its version is one Olympus supports. */
+  /** Whether `opencode` is installed and whether its version is one Kern supports. */
   opencodeStatus(): Promise<{ version: string | null; supported: boolean; available: boolean }>
-  /** Display-only licence state. Contains no key and no signing secret. */
-  licenseState(): Promise<{
-    product: string
-    model: string
-    valid: boolean
-    trial: boolean
-    expired: boolean
-    daysLeft: number
-    email: string | null
-  }>
   /**
    * Forwards a renderer crash or unhandled rejection to the main-process log. Kept free of
    * anything identifying, and never leaves the machine.

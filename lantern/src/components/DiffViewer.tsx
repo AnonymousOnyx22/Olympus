@@ -3,6 +3,7 @@ import { DiffEditor } from '@monaco-editor/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { applyPatch, parsePatch, type StructuredPatch } from 'diff'
 import { api } from '../services/api'
+import { ensureMonaco } from './monacoSetup'
 import type { PermissionReply, PermissionRequest } from '../types/opencode'
 
 interface DiffViewerProps {
@@ -84,6 +85,14 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
   const [busy, setBusy] = useState<PermissionReply | null>(null)
   const [feedback, setFeedback] = useState('')
   const [error, setError] = useState<string | null>(null)
+  // The editor must come from the local bundle (the CSP blocks its default CDN), so it is not
+  // rendered until that has been set up - otherwise opening a diff before the Code view hangs on "Loading...".
+  const [monacoReady, setMonacoReady] = useState(false)
+  useEffect(() => {
+    let cancelled = false
+    void ensureMonaco().then(() => { if (!cancelled) setMonacoReady(true) }, () => undefined)
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -142,7 +151,7 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
               key={f.path}
               onClick={() => setActive(i)}
               className={`shrink-0 rounded-xl px-2 py-0.5 font-mono text-[11px] transition ${
-                i === active ? 'bg-aether-50 text-aether-700 ring-1 ring-aether-200' : 'text-slate-500 hover:bg-slate-100'
+                i === active ? 'bg-accent-50 text-accent-700 ring-1 ring-accent-200' : 'text-slate-500 hover:bg-slate-100'
               }`}
             >
               {f.path.split(/[\\/]/).pop()}
@@ -152,7 +161,7 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
       )}
 
       <div className="relative min-h-0 flex-1">
-        {file ? (
+        {file && monacoReady ? (
           <DiffEditor
             keepCurrentOriginalModel
             keepCurrentModifiedModel
@@ -168,7 +177,7 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
             original={file.original}
             modified={file.modified}
             language={languageFor(file.path)}
-            theme="olympus-light"
+            theme="kern-dark"
             options={{
               readOnly: true,
               renderSideBySide: false,
@@ -196,7 +205,7 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
           placeholder="Optional: tell the agent why you're rejecting…"
-          className="w-full rounded-xl bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-aether-400"
+          className="w-full rounded-xl bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-accent-400"
         />
         {error && <div className="text-xs text-rose-600">{error}</div>}
         <div className="flex items-center gap-2">
@@ -249,8 +258,8 @@ export default function DiffViewer({ spaceId, requests }: DiffViewerProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-aether-50 ring-1 ring-aether-100">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="text-aether-500">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-accent-50 ring-1 ring-accent-100">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="text-accent-500">
                 <path d="M8 3v12M16 9v12M5 6l3-3 3 3M13 18l3 3 3-3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>

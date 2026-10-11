@@ -21,10 +21,10 @@ function gitAvailable(): boolean {
 const gitEnv = {
   ...process.env,
   GIT_CONFIG_NOSYSTEM: '1',
-  GIT_AUTHOR_NAME: 'Olympus Test',
-  GIT_AUTHOR_EMAIL: 'test@olympus.invalid',
-  GIT_COMMITTER_NAME: 'Olympus Test',
-  GIT_COMMITTER_EMAIL: 'test@olympus.invalid',
+  GIT_AUTHOR_NAME: 'Kern Test',
+  GIT_AUTHOR_EMAIL: 'test@kern.invalid',
+  GIT_COMMITTER_NAME: 'Kern Test',
+  GIT_COMMITTER_EMAIL: 'test@kern.invalid',
   GIT_TERMINAL_PROMPT: '0',
 }
 
@@ -33,7 +33,7 @@ const run = (...args: string[]) => execFileSync('git', args, { cwd: repo, env: g
 const write = (name: string, body: string) => fs.writeFileSync(path.join(repo, name), body, 'utf8')
 
 beforeAll(() => {
-  repo = fs.mkdtempSync(path.join(os.tmpdir(), 'olympus-git-'))
+  repo = fs.mkdtempSync(path.join(os.tmpdir(), 'kern-git-'))
   // `init` with an explicit branch, because the default initial branch name
   // differs between git versions and is user-configurable. Relying on the
   // default made this test fail on a machine with init.defaultBranch set.
@@ -135,7 +135,7 @@ describe.skipIf(!gitAvailable())('gitStatus', () => {
   })
 
   it('rejects for a directory that is not a repository at all', async () => {
-    const notARepo = fs.mkdtempSync(path.join(os.tmpdir(), 'olympus-notrepo-'))
+    const notARepo = fs.mkdtempSync(path.join(os.tmpdir(), 'kern-notrepo-'))
     try {
       await expect(gitStatus(notARepo)).rejects.toThrow()
     } finally {

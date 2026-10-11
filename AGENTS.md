@@ -1,12 +1,13 @@
 # Agent instructions
 
-This repo is worked on by several agents at once (Claude Code, Codex, Kilo). Shared handoff lives in
-[continue.md](continue.md).
+Kern is a desktop workspace that connects all your AI agents and models so you can work on separate
+projects at the same time. It is not an agent itself. This repo holds the app (`lantern/`) and its
+marketing site (`website/`). Several agents (Claude Code, Codex, Kilo) may edit it at once.
 
-- **When the user says "continue"**, read `continue.md` and resume from its **Next up** list without
-  asking what to do.
-- **Before you end a session**, update `continue.md`: move finished items into **Current state**,
-  add anything new to **Next up**. Edit only the parts you changed - another agent may be updating
-  it at the same time, so re-read it right before writing and never replace it wholesale.
 - Re-read any file immediately before editing it. Never blanket-revert someone else's changes.
-- Verify before claiming done: `cd lantern && npx tsc --noEmit -p . && npx vitest run && npm run build`.
+- Verify the app before claiming done: `cd lantern && npx tsc --noEmit -p . && npx vitest run && npm run lint && npm run build`.
+- The website's pages are generated: edit `website/build.mjs`, then run `node build.mjs` in `website/`.
+  Preview with `cd website && npx --yes serve .`.
+- Do not launch Electron from a shell that has `ELECTRON_RUN_AS_NODE=1` (Claude Code's shell does):
+  use `cd lantern && env -u ELECTRON_RUN_AS_NODE npm run dev`.
+- No handoff file is kept. Put durable notes in `lantern/README.md`, `website/README.md` or the commit.

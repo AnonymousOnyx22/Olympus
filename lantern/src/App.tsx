@@ -1,8 +1,7 @@
-import { migrateModelRef } from './services/legacyModels'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Sidebar from './components/Sidebar'
-import OlympusBoot from './components/OlympusBoot'
+import KernBoot from './components/KernBoot'
 import AllAgentsGrid, { type AgentGridEntry } from './components/AllAgentsGrid'
 import { agentDisplayTitle } from './components/AgentWorkspace'
 import DiffViewer from './components/DiffViewer'
@@ -14,24 +13,15 @@ import ProjectsPage from './components/ProjectsPage'
 import ConnectionsSettings from './components/ConnectionsSettings'
 import TerminalPanel from './components/TerminalPanel'
 import WorkspaceBar, { type WorkspaceView } from './components/WorkspaceBar'
-import StationView, { type StationTarget } from './components/StationView'
-import { buildStationCheckBrief } from './services/stationBrief'
 import { api } from './services/api'
 import { useSessionStream } from './services/streamHandler'
 import { GENERAL_SPACE } from './constants'
 import type { DaemonState, LocalProvider, ModelRef, PermissionMode, ProjectInfo, Session, Skill } from './types/opencode'
+import { errorText } from './errorText'
 
 const STOPPED: DaemonState = { status: 'stopped', port: null, cwd: null }
 /** Automatic restarts for a project whose daemon keeps failing, before waiting for the user. */
 const MAX_START_RETRIES = 3
-/**
- * How often a managed store gets another management pass while Olympus is open and the store
- * is idle. The point of turning management on is that the store is watched continuously, not
- * polled once a day, so this stays short - a managed store with nothing new to do just gets a
- * quick "still fine" pass and goes back to idle.
- */
-const MANAGEMENT_CHECK_INTERVAL_MS = 5 * 60 * 1000
-
 const providersKey = (providers: LocalProvider[]) =>
   JSON.stringify(providers.filter((p) => p.online).map((p) => [p.id, p.baseURL, p.models, p.variants, p.access]))
 
@@ -93,7 +83,7 @@ export default function App() {
   // for both that project's own view and the cross-project "All agents" grid.
   const [openIdsBySpace, setOpenIdsBySpace] = useState<Record<string, string[]>>(() => {
     try {
-      const saved: unknown = JSON.parse(localStorage.getItem('olympus.agentWindows') ?? '{}')
+      const saved: unknown = JSON.parse(localStorage.getItem('kern.agentWindows') ?? '{}')
       if (!saved || typeof saved !== 'object') return {}
       return Object.fromEntries(
         Object.entries(saved as Record<string, unknown>).map(([id, ids]) => [
@@ -106,13 +96,13 @@ export default function App() {
   const setSpaceOpenIds = (id: string, ids: string[]) =>
     setOpenIdsBySpace((prev) => {
       const next = { ...prev, [id]: ids }
-      try { localStorage.setItem('olympus.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
+      try { localStorage.setItem('kern.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
       return next
     })
 
   const [windowOrder, setWindowOrder] = useState<string[]>(() => {
     try {
-      const saved: unknown = JSON.parse(localStorage.getItem('olympus.agentWindowOrder') ?? 'null')
+      const saved: unknown = JSON.parse(localStorage.getItem('kern.agentWindowOrder') ?? 'null')
       if (Array.isArray(saved)) return saved.filter((key): key is string => typeof key === 'string')
     } catch { /* migrate existing windows */ }
     return Object.entries(openIdsBySpace).flatMap(([id, ids]) => ids.map((sessionId) => JSON.stringify([id, sessionId])))
@@ -121,36 +111,14 @@ export default function App() {
     const keys = Object.entries(openIdsBySpace).flatMap(([id, ids]) => ids.map((sessionId) => JSON.stringify([id, sessionId])))
     const next = [...windowOrder.filter((key) => keys.includes(key)), ...keys.filter((key) => !windowOrder.includes(key))]
     if (JSON.stringify(next) !== JSON.stringify(windowOrder)) setWindowOrder(next)
-    try { localStorage.setItem('olympus.agentWindowOrder', JSON.stringify(next)) } catch { /* best effort */ }
+    try { localStorage.setItem('kern.agentWindowOrder', JSON.stringify(next)) } catch { /* best effort */ }
   }, [openIdsBySpace, windowOrder])
 
   const [providers, setProviders] = useState<LocalProvider[]>([])
   const [rescanning, setRescanning] = useState(false)
   const [model, setModel] = useState<ModelRef | null>(null)
-  const [stationIdsBySpace, setStationIdsBySpace] = useState<Record<string, string[]>>(() => {
-    try {
-      const saved: unknown = JSON.parse(localStorage.getItem('olympus.stationSessions') ?? '{}')
-      if (saved && typeof saved === 'object') return Object.fromEntries(Object.entries(saved).map(([id, ids]) => [id, Array.isArray(ids) ? ids.filter((value): value is string => typeof value === 'string') : []]))
-    } catch { /* start with an empty Station */ }
-    return {}
-  })
-  const [stationModels, setStationModels] = useState<Record<string, { model: ModelRef; variant: string | null }>>(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('olympus.stationModels') ?? '{}') as Record<string, { model: ModelRef; variant: string | null }>
-      return Object.fromEntries(Object.entries(saved).map(([key, choice]) => [key, { ...choice, model: migrateModelRef(choice.model) }]))
-    }
-    catch { return {} }
-  })
   const [appError, setAppError] = useState<string | null>(null)
   const [projects, setProjects] = useState<ProjectInfo[]>([])
-  const [stores, setStores] = useState<ProjectInfo[]>([])
-  const [pausedStoreIds, setPausedStoreIds] = useState<string[]>(() => {
-    try { const saved = JSON.parse(localStorage.getItem('olympus.pausedStores') ?? '[]'); return Array.isArray(saved) ? saved.filter((id): id is string => typeof id === 'string') : [] } catch { return [] }
-  })
-  const [managedStoreChecks, setManagedStoreChecks] = useState<Record<string, number>>(() => {
-    try { const saved = JSON.parse(localStorage.getItem('olympus.managedStoreChecks') ?? '{}'); return saved && typeof saved === 'object' ? saved : {} } catch { return {} }
-  })
-  const checkInFlight = useRef<Set<string>>(new Set())
   const [spaceId, setSpaceId] = useState<string>(GENERAL_SPACE)
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>('workspace')
   const [screen, setScreen] = useState<'workspace' | 'projects' | 'connections'>('workspace')
@@ -159,13 +127,13 @@ export default function App() {
   useEffect(() => {
     let alive = true
     void window.electronAPI.listConnections().then((list) => {
-      if (alive) setConnectionCount(list.filter((c) => (c.configuredFields.length > 0 || c.browserSessionConnected) && c.verification?.status !== 'failed').length)
+      if (alive) setConnectionCount(list.filter((c) => c.configuredFields.length > 0 && c.verification?.status !== 'failed').length)
     }).catch(() => undefined)
     return () => { alive = false }
   }, [screen])
   // The picker either adds a window or changes the originating window's folder.
   const [picker, setPicker] = useState<{ purpose: 'agent' | 'pane'; inId: string; sessionId?: string } | null>(null)
-  const [contextOpen, setContextOpen] = useState(() => localStorage.getItem('olympus.contextOpen') !== 'false' && window.innerWidth >= 1100)
+  const [contextOpen, setContextOpen] = useState(() => localStorage.getItem('kern.contextOpen') !== 'false' && window.innerWidth >= 1100)
   const [terminalOpen, setTerminalOpen] = useState(false)
   const [runCommand, setRunCommand] = useState<string | null>(null)
   const [runNonce, setRunNonce] = useState(0)
@@ -173,7 +141,7 @@ export default function App() {
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({})
   const [skills, setSkills] = useState<Skill[]>([])
   /**
-   * Whether this machine can actually run Olympus. A missing `opencode` used to present as an
+   * Whether this machine can actually run Kern. A missing `opencode` used to present as an
    * empty model picker with no explanation, which is indistinguishable from "no models found".
    */
   const [envIssue, setEnvIssue] = useState<{ version: string | null; supported: boolean; available: boolean } | null>(null)
@@ -181,7 +149,7 @@ export default function App() {
   const booted = useRef(false)
   /** Shows the boot screen until settings, the project list, and the first space have loaded. */
   const [ready, setReady] = useState(false)
-  const [bootProgress, setBootProgress] = useState(6)
+  const [bootProgress, setBootProgress] = useState(4)
   const openRequested = useRef(new Set<string>())
   const startFailures = useRef(new Map<string, { count: number; notBefore: number }>())
   const [retryTick, setRetryTick] = useState(0)
@@ -272,24 +240,32 @@ export default function App() {
   useEffect(() => {
     if (booted.current) return
     booted.current = true
+    // The startup screen must never be the thing that hangs: after this long, show the app and
+    // let each project window report its own connection state.
+    const bootStarted = performance.now()
+    const giveUp = window.setTimeout(() => { setBootProgress(100); setReady(true) }, 45_000)
     void (async () => {
       setBootProgress(20)
-      const [settings, projectList, storeList] = await Promise.all([window.electronAPI.getSettings(), window.electronAPI.listProjects(), window.electronAPI.listStores()])
+      const [settings, projectList] = await Promise.all([window.electronAPI.getSettings(), window.electronAPI.listProjects()])
       setBootProgress(55)
       setProjects(projectList)
-      setStores(storeList)
       setPermissionMode(settings.permissionMode)
       setSelectedVariants(settings.selectedVariants)
-      // Starting the local agent process is the slowest step (it can take tens of seconds on
-      // a cold start) and used to leave the bar sitting dead on 55% the whole time it ran -
-      // this checkpoint exists purely so the number itself still moves during that wait.
+      // Starting the local agent process is the slowest step (it can take tens of seconds on a
+      // cold start). The startup screen keeps its bar moving from this checkpoint while it runs.
       setBootProgress(70)
       // Start straight into a space so you can chat immediately (General by default).
       await startSpace(settings.lastSpace ?? GENERAL_SPACE)
-      setBootProgress(100)
     })()
-      .catch((error) => setAppError(error instanceof Error ? error.message : String(error)))
-      .finally(() => setReady(true))
+      .catch((error) => setAppError(errorText(error)))
+      .then(async () => {
+        // A fast start still shows the bar climbing, then visibly finishing, before the fade.
+        const shownFor = performance.now() - bootStarted
+        if (shownFor < 1200) await new Promise((resolve) => window.setTimeout(resolve, 1200 - shownFor))
+        setBootProgress(100)
+        await new Promise((resolve) => window.setTimeout(resolve, 600))
+      })
+      .finally(() => { window.clearTimeout(giveUp); setReady(true) })
     void api.opencodeStatus().then(setEnvIssue).catch(() => {})
   }, [startSpace])
 
@@ -307,41 +283,11 @@ export default function App() {
   // Spaces with open agent windows are pinned in the main process so the daemon cap never
   // evicts them. Declared before the reopen effect below so the pin lands first.
   useEffect(() => {
-    const pinned = [...new Set([...Object.entries(openIdsBySpace), ...Object.entries(stationIdsBySpace)]
-      .filter(([id, ids]) => ids.length > 0 && !pausedStoreIds.includes(id))
-      .map(([id]) => id))]
+    const pinned = Object.entries(openIdsBySpace).filter(([, ids]) => ids.length > 0).map(([id]) => id)
     void window.electronAPI.setPinnedSpaces(pinned).catch(() => {})
-  }, [openIdsBySpace, stationIdsBySpace, pausedStoreIds])
+  }, [openIdsBySpace])
 
-  // A store found on disk may already have a Station conversation Olympus never recorded -
-  // started by another tool, or resumed outside the app. Adopt its most recent top-level
-  // session rather than showing "Manager setup unfinished", which invites starting a second,
-  // competing build in the same folder. Attempted once per store per run.
-  const adoptAttempted = useRef(new Set<string>())
-  useEffect(() => {
-    for (const store of stores) {
-      if (!store.exists || stationIdsBySpace[store.id]?.length || adoptAttempted.current.has(store.id)) continue
-      adoptAttempted.current.add(store.id)
-      void (async () => {
-        try {
-          const opened = await window.electronAPI.openSpace(store.id)
-          setDaemonBySpace((prev) => ({ ...prev, [store.id]: opened.state }))
-          if (opened.state.status !== 'running') return
-          const existing = topLevelByRecent(await api.listSessions(store.id))[0]
-          if (!existing) return
-          onSessionCreated(store.id, existing)
-          setStationIdsBySpace((prev) => {
-            if (prev[store.id]?.length) return prev
-            const next = { ...prev, [store.id]: [existing.id] }
-            try { localStorage.setItem('olympus.stationSessions', JSON.stringify(next)) } catch { /* best effort */ }
-            return next
-          })
-        } catch {
-          // Left as unfinished; Continue setup still works.
-        }
-      })()
-    }
-  }, [stores, stationIdsBySpace])
+  const onSessionCreated = (id: string, session: Session) => setSessionsBySpace((prev) => ({ ...prev, [id]: topLevelByRecent([session, ...(prev[id] ?? []).filter((item) => item.id !== session.id)]) }))
 
   // Any project with open agent windows needs its daemon running, even if you've never
   // focused it this session (e.g. windows restored from a previous run) - otherwise its
@@ -349,9 +295,8 @@ export default function App() {
   // backoff (2s, 4s, 8s) and then left alone, so a broken project cannot spin in a loop;
   // its windows show the error and a Retry button instead.
   useEffect(() => {
-    const ids = new Set([...Object.keys(openIdsBySpace), ...Object.keys(stationIdsBySpace)])
-    for (const id of ids) {
-      if (!(openIdsBySpace[id]?.length || stationIdsBySpace[id]?.length) || (pausedStoreIds.includes(id) && !openIdsBySpace[id]?.length) || openRequested.current.has(id)) continue
+    for (const [id, ids] of Object.entries(openIdsBySpace)) {
+      if (!ids.length || openRequested.current.has(id)) continue
       const state = daemonBySpace[id]
       if (state?.status === 'running' || state?.status === 'starting') {
         if (state.status === 'running') startFailures.current.delete(id)
@@ -367,11 +312,11 @@ export default function App() {
         })
         .catch((error) => {
           noteStartFailure(id)
-          setDaemonBySpace((prev) => ({ ...prev, [id]: { status: 'error', port: null, cwd: prev[id]?.cwd ?? null, error: error instanceof Error ? error.message : String(error) } }))
+          setDaemonBySpace((prev) => ({ ...prev, [id]: { status: 'error', port: null, cwd: prev[id]?.cwd ?? null, error: errorText(error) } }))
         })
         .finally(() => openRequested.current.delete(id))
     }
-  }, [openIdsBySpace, stationIdsBySpace, daemonBySpace, retryTick, pausedStoreIds])
+  }, [openIdsBySpace, daemonBySpace, retryTick])
 
   /** Clears a space's failure record and starts its daemon again, for the window's Retry button. */
   const retryStart = (id: string) => {
@@ -390,7 +335,7 @@ export default function App() {
         setSessionsBySpace((prev) => ({ ...prev, [spaceId]: topLevelByRecent(list) }))
       })
       .catch((error) => {
-        if (!cancelled) setAppError(error instanceof Error ? error.message : String(error))
+        if (!cancelled) setAppError(errorText(error))
       })
     return () => {
       cancelled = true
@@ -419,21 +364,25 @@ export default function App() {
         sessionsBySpace[id] ? ids.filter((sessionId) => sessionsBySpace[id].some((session) => session.id === sessionId)) : ids,
       ]))
       if (JSON.stringify(next) === JSON.stringify(prev)) return prev
-      try { localStorage.setItem('olympus.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
+      try { localStorage.setItem('kern.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
       return next
     })
   }, [sessionsBySpace])
 
+  // A project whose folder was deleted drops out of the list; its agent windows go with it
+  // instead of sitting on "Connecting" for a daemon that can never start.
   useEffect(() => {
-    setStationIdsBySpace((prev) => {
-      const next = Object.fromEntries(Object.entries(prev).map(([id, ids]) => [id,
-        sessionsBySpace[id] ? ids.filter((sessionId) => sessionsBySpace[id].some((session) => session.id === sessionId)) : ids,
-      ]))
-      if (JSON.stringify(next) === JSON.stringify(prev)) return prev
-      try { localStorage.setItem('olympus.stationSessions', JSON.stringify(next)) } catch { /* best effort */ }
+    if (!ready) return
+    const known = new Set(projects.map((item) => item.id))
+    setOpenIdsBySpace((prev) => {
+      const stale = Object.keys(prev).filter((id) => id !== GENERAL_SPACE && !known.has(id) && prev[id].length > 0)
+      if (!stale.length) return prev
+      const next = { ...prev }
+      for (const id of stale) next[id] = []
+      try { localStorage.setItem('kern.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
       return next
     })
-  }, [sessionsBySpace])
+  }, [ready, projects])
 
   // Keeps the focused session pointed at something that still exists in that space.
   useEffect(() => {
@@ -453,7 +402,7 @@ export default function App() {
       setScreen('workspace')
       return
     }
-    void startSpace(id).catch((error) => setAppError(error instanceof Error ? error.message : String(error)))
+    void startSpace(id).catch((error) => setAppError(errorText(error)))
   }
 
   /** The pane's folder chip changes that pane, not the focused project in the sidebar. */
@@ -478,7 +427,7 @@ export default function App() {
       if (openAfterAdd && id) await startSpace(id)
       return id
     } catch (error) {
-      setAppError(error instanceof Error ? error.message : String(error))
+      setAppError(errorText(error))
       return null
     }
   }
@@ -498,7 +447,7 @@ export default function App() {
       setModel(pickModel(found, model ?? settings.selectedModel))
       if (changed && daemon.cwd) await startSpace(spaceId, true)
     } catch (error) {
-      setAppError(error instanceof Error ? error.message : String(error))
+      setAppError(errorText(error))
     } finally {
       setRescanning(false)
     }
@@ -552,7 +501,7 @@ export default function App() {
       setWorkspaceView('workspace')
       await addAgentToSpace(id)
     } catch (error) {
-      setAppError(error instanceof Error ? error.message : String(error))
+      setAppError(errorText(error))
     }
   }
 
@@ -573,7 +522,7 @@ export default function App() {
       setPermissionMode(next)
       await startSpace(spaceId, true)
     } catch (error) {
-      setAppError(error instanceof Error ? error.message : String(error))
+      setAppError(errorText(error))
     }
   }
 
@@ -591,12 +540,11 @@ export default function App() {
       setTerminalOpen(true)
       if (command.endsWith('run dev')) setContextOpen(true)
     } catch (error) {
-      setAppError(error instanceof Error ? error.message : String(error))
+      setAppError(errorText(error))
       setWorkspaceView('workspace')
     }
   }
 
-  const onSessionCreated = (id: string, session: Session) => setSessionsBySpace((prev) => ({ ...prev, [id]: topLevelByRecent([session, ...(prev[id] ?? []).filter((item) => item.id !== session.id)]) }))
   /** Adds a new agent to a project directly from the Workspace hub, starting its daemon first if needed. */
   const addAgentToSpace = async (id: string) => {
     const result = await window.electronAPI.openSpace(id)
@@ -605,7 +553,7 @@ export default function App() {
     onSessionCreated(id, session)
     setOpenIdsBySpace((prev) => {
       const next = { ...prev, [id]: [...(prev[id] ?? []), session.id] }
-      try { localStorage.setItem('olympus.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
+      try { localStorage.setItem('kern.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
       return next
     })
   }
@@ -632,117 +580,14 @@ export default function App() {
           [fromId]: (prev[fromId] ?? []).filter((item) => item !== sessionId),
           [toId]: [...(prev[toId] ?? []), replacement.id],
         }
-        try { localStorage.setItem('olympus.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
+        try { localStorage.setItem('kern.agentWindows', JSON.stringify(next)) } catch { /* best effort */ }
         return next
       })
       setWorkspaceView('workspace')
       setScreen('workspace')
     } catch (error) {
-      setAppError(`Could not change agent folder: ${error instanceof Error ? error.message : String(error)}`)
+      setAppError(`Could not change agent folder: ${errorText(error)}`)
     }
-  }
-  /** Station conversations are deliberately separate from Workspace windows. */
-  const launchStation = async (target: StationTarget, title: string, brief: string, selectedModel: ModelRef, variant: string | null): Promise<string> => {
-    let id: string
-    if ('projectId' in target) id = target.projectId
-    else {
-      const created = await window.electronAPI.createStore(target.root, target.name, title)
-      // Mark it handled before it enters the list: otherwise the adoption effect opens its daemon
-      // at the same moment this flow does, the second start cancels the first, and the new store
-      // never starts ("That project could not start").
-      adoptAttempted.current.add(created.id)
-      setStores(created.stores)
-      id = created.id
-    }
-    const result = await window.electronAPI.openSpace(id)
-    setDaemonBySpace((prev) => ({ ...prev, [id]: result.state }))
-    if (result.state.status !== 'running') throw new Error(result.state.error || 'That project could not start.')
-    const session = await api.createSession(id, title)
-    onSessionCreated(id, session)
-    const key = JSON.stringify([id, session.id])
-    setStationModels((prev) => {
-      const next = { ...prev, [key]: { model: selectedModel, variant } }
-      try { localStorage.setItem('olympus.stationModels', JSON.stringify(next)) } catch { /* best effort */ }
-      return next
-    })
-    setStationIdsBySpace((prev) => {
-      const next = { ...prev, [id]: [...(prev[id] ?? []), session.id] }
-      try { localStorage.setItem('olympus.stationSessions', JSON.stringify(next)) } catch { /* best effort */ }
-      return next
-    })
-    try { await api.prompt(id, session.id, brief, selectedModel, variant) }
-    catch (error) { setAppError(`Store request was not sent: ${error instanceof Error ? error.message : String(error)}. Your Station chat is saved; send the request again there.`) }
-    // Stores exist to run unattended, so management starts on by default. Stamped with now
-    // rather than 0 so the first check-in waits a full interval instead of interrupting the build.
-    setManagedStoreChecks((current) => {
-      if (Object.hasOwn(current, id)) return current
-      const next = { ...current, [id]: Date.now() }
-      try { localStorage.setItem('olympus.managedStoreChecks', JSON.stringify(next)) } catch { /* best effort */ }
-      return next
-    })
-    return key
-  }
-  const setStationPaused = async (id: string, paused: boolean) => {
-    setPausedStoreIds((current) => {
-      const next = paused ? [...new Set([...current, id])] : current.filter((item) => item !== id)
-      localStorage.setItem('olympus.pausedStores', JSON.stringify(next))
-      return next
-    })
-    if (paused) {
-      try {
-        for (const sessionId of stationIdsBySpace[id] ?? []) {
-          if (busySessionsBySpace[id]?.[sessionId]) await api.abort(id, sessionId).catch(() => {})
-        }
-        await window.electronAPI.closeSpace(id)
-      } catch (error) {
-        setPausedStoreIds((current) => {
-          const next = current.filter((item) => item !== id)
-          localStorage.setItem('olympus.pausedStores', JSON.stringify(next))
-          return next
-        })
-        throw error
-      }
-    }
-    if (!paused) retryStart(id)
-  }
-  /** Stops the store's agent, unlists it, and prunes every bit of renderer-side state keyed by
-   * its id - otherwise a deleted store's ghost lingers in the 24/7 management loop or the
-   * paused-stores list until the next full reload. */
-  const deleteStore = async (id: string, deleteFiles: boolean) => {
-    for (const sessionId of stationIdsBySpace[id] ?? []) {
-      if (busySessionsBySpace[id]?.[sessionId]) await api.abort(id, sessionId).catch(() => {})
-    }
-    await window.electronAPI.closeSpace(id).catch(() => {})
-    const nextStores = await window.electronAPI.removeStore(id, deleteFiles)
-    setStores(nextStores)
-    setStationIdsBySpace((prev) => {
-      if (!(id in prev)) return prev
-      const next = { ...prev }
-      delete next[id]
-      try { localStorage.setItem('olympus.stationSessions', JSON.stringify(next)) } catch { /* best effort */ }
-      return next
-    })
-    setPausedStoreIds((current) => {
-      if (!current.includes(id)) return current
-      const next = current.filter((item) => item !== id)
-      localStorage.setItem('olympus.pausedStores', JSON.stringify(next))
-      return next
-    })
-    setManagedStoreChecks((current) => {
-      if (!(id in current)) return current
-      const next = { ...current }
-      delete next[id]
-      try { localStorage.setItem('olympus.managedStoreChecks', JSON.stringify(next)) } catch { /* best effort */ }
-      return next
-    })
-    setStationModels((prev) => {
-      const staleKeys = Object.keys(prev).filter((key) => JSON.parse(key)[0] === id)
-      if (!staleKeys.length) return prev
-      const next = { ...prev }
-      for (const key of staleKeys) delete next[key]
-      try { localStorage.setItem('olympus.stationModels', JSON.stringify(next)) } catch { /* best effort */ }
-      return next
-    })
   }
   const onSessionDeleted = (id: string, sessionId: string) => {
     setSessionsBySpace((prev) => ({ ...prev, [id]: (prev[id] ?? []).filter((item) => item.id !== sessionId) }))
@@ -798,126 +643,23 @@ export default function App() {
     return rank(a) - rank(b)
   })
 
-  const stationEntries: AgentGridEntry[] = Object.entries(stationIdsBySpace).flatMap(([id, ids]) => {
-    const stationProject = stores.find((item) => item.id === id) ?? projects.find((item) => item.id === id)
-    return ids.map((sessionId) => ({
-      spaceId: id, sessionId,
-      title: sessionsBySpace[id]?.find((session) => session.id === sessionId)?.title || 'Store project',
-      projectName: stationProject?.name ?? id,
-      projectPath: stationProject?.path,
-      ready: daemonBySpace[id]?.status === 'running' && !pausedStoreIds.includes(id),
-      startError: daemonBySpace[id]?.status === 'error' ? daemonBySpace[id].error || 'The agent could not start.' : undefined,
-      onRetryStart: daemonBySpace[id]?.status === 'error' ? () => retryStart(id) : undefined,
-      paused: pausedStoreIds.includes(id),
-      onResume: pausedStoreIds.includes(id) ? () => void setStationPaused(id, false) : undefined,
-    }))
-  })
-  const stationKeys = new Set(stationEntries.map((entry) => JSON.stringify([entry.spaceId, entry.sessionId])))
-  const stationWorkingCount = stationEntries.filter((entry) => busySessionsBySpace[entry.spaceId]?.[entry.sessionId]).length
-  useEffect(() => {
-    const runChecks = async () => {
-      for (const [id, lastRun] of Object.entries(managedStoreChecks)) {
-        if (pausedStoreIds.includes(id) || Date.now() - lastRun < MANAGEMENT_CHECK_INTERVAL_MS || checkInFlight.current.has(id)) continue
-        const agent = stationEntries.find((entry) => entry.spaceId === id && entry.ready)
-        if (!agent) continue
-        const assigned = stationModels[JSON.stringify([id, agent.sessionId])]?.model ?? model
-        if (!assigned) continue
-        checkInFlight.current.add(id)
-        try {
-          const status = await api.sessionStatus(id)
-          if (status[agent.sessionId] && status[agent.sessionId].type !== 'idle') continue
-          setManagedStoreChecks((current) => {
-            const next = { ...current, [id]: Date.now() }
-            localStorage.setItem('olympus.managedStoreChecks', JSON.stringify(next))
-            return next
-          })
-          await api.prompt(id, agent.sessionId, buildStationCheckBrief(), assigned, stationModels[JSON.stringify([id, agent.sessionId])]?.variant)
-        } catch (error) {
-          setAppError(`Store check failed for ${agent.title}: ${error instanceof Error ? error.message : String(error)}`)
-        } finally { checkInFlight.current.delete(id) }
-      }
-    }
-    void runChecks()
-    const interval = window.setInterval(() => void runChecks(), 60_000)
-    return () => window.clearInterval(interval)
-  }, [managedStoreChecks, pausedStoreIds, daemonBySpace, stationModels, model, stationIdsBySpace, sessionsBySpace])
-  // A model request that errors (a provider timeout, a dropped connection) ends the agent's turn
-  // and nothing restarts it, so a store that should run unattended just stops. Resume it right
-  // away with a targeted prompt instead of waiting for the next 5-minute management pass, a few
-  // times at most so a store that fails for a real reason cannot loop forever.
-  const errorResumes = useRef(new Map<string, { count: number; at: number }>())
-  useEffect(() => {
-    const MAX_RESUMES = 5
-    const MIN_GAP_MS = 45_000
-    const tick = async () => {
-      for (const agent of stationEntries) {
-        const id = agent.spaceId
-        if (!agent.ready || pausedStoreIds.includes(id) || checkInFlight.current.has(id)) continue
-        const assigned = stationModels[JSON.stringify([id, agent.sessionId])]?.model ?? model
-        if (!assigned) continue
-        const record = errorResumes.current.get(id) ?? { count: 0, at: 0 }
-        if (record.count >= MAX_RESUMES || Date.now() - record.at < MIN_GAP_MS) continue
-        try {
-          const status = await api.sessionStatus(id)
-          if (status[agent.sessionId] && status[agent.sessionId].type !== 'idle') continue
-          const last = (await api.messages(id, agent.sessionId)).filter((message) => message.info.role === 'assistant').at(-1)?.info
-          if (!last || last.role !== 'assistant') continue
-          if (!last.error) { errorResumes.current.delete(id); continue }
-          errorResumes.current.set(id, { count: record.count + 1, at: Date.now() })
-          await api.prompt(id, agent.sessionId, 'Your last request failed with a transient model error (for example "The operation timed out"). It was not your mistake. Continue exactly where you left off. Check what is already on disk, do not redo finished work, and keep every shell call bounded with an explicit timeout.', assigned, stationModels[JSON.stringify([id, agent.sessionId])]?.variant)
-        } catch {
-          // Daemon not reachable right now; the next tick tries again.
-        }
-      }
-    }
-    const interval = window.setInterval(() => void tick(), 30_000)
-    return () => window.clearInterval(interval)
-  }, [stationEntries, pausedStoreIds, stationModels, model])
-  const setStoreManaged = (id: string, enabled: boolean) => {
-    setManagedStoreChecks((current) => {
-      const next = { ...current }
-      if (enabled) next[id] = 0
-      else delete next[id]
-      localStorage.setItem('olympus.managedStoreChecks', JSON.stringify(next))
-      return next
-    })
-  }
-  const workspaceProjects = projects.filter((item) => !(stationIdsBySpace[item.id]?.length))
-  const sidebarStores = [...stores, ...projects.filter((item) => stationIdsBySpace[item.id]?.length && !stores.some((store) => store.id === item.id))]
-
   const savedConversations = Object.entries(sessionsBySpace).flatMap(([id, sessions]) =>
-    sessions.filter((session) => !stationKeys.has(JSON.stringify([id, session.id]))).map((session) => ({ spaceId: id, sessionId: session.id, title: session.title,
+    sessions.map((session) => ({ spaceId: id, sessionId: session.id, title: session.title,
       projectName: projects.find((project) => project.id === id)?.name ?? 'General',
+      updated: session.time.updated,
       open: (openIdsBySpace[id] ?? []).includes(session.id) })),
-  )
+  ).sort((a, b) => b.updated - a.updated)
   const openConversation = (id: string, sessionId: string) => {
     setSpaceOpenIds(id, [...new Set([...(openIdsBySpace[id] ?? []), sessionId])])
     setScreen('workspace')
     setWorkspaceView('workspace')
   }
 
-  const toggleContext = () => setContextOpen((open) => { localStorage.setItem('olympus.contextOpen', String(!open)); return !open })
-
-  const [stationOverviewSignal, setStationOverviewSignal] = useState(0)
-  /** Opens Station straight to its overview grid, e.g. from the sidebar's Stores label. */
-  // Opening a specific store: the store's id, plus a counter so opening the same store
-  // twice in a row still re-selects it rather than looking like a no-op.
-  const [stationFocus, setStationFocus] = useState<{ id: string; signal: number } | null>(null)
-  const openStationStore = (storeId: string) => {
-    setScreen('workspace')
-    setWorkspaceView('station')
-    setStationFocus((prev) => ({ id: storeId, signal: (prev?.signal ?? 0) + 1 }))
-  }
-
-  const openStationOverview = () => {
-    setScreen('workspace')
-    setWorkspaceView('station')
-    setStationOverviewSignal((n) => n + 1)
-  }
+  const toggleContext = () => setContextOpen((open) => { localStorage.setItem('kern.contextOpen', String(!open)); return !open })
 
   const pickerRows = useMemo(
-    () => pickerSpaces(workspaceProjects, { busyBySpace, openIdsBySpace }),
-    [workspaceProjects, busyBySpace, openIdsBySpace],
+    () => pickerSpaces(projects, { busyBySpace, openIdsBySpace }),
+    [projects, busyBySpace, openIdsBySpace],
   )
 
   // Panel toggles live here, not in the header: Ctrl/⌘ J terminal, Ctrl/⌘ B preview.
@@ -931,7 +673,7 @@ export default function App() {
       } else if (key === 'b') {
         event.preventDefault()
         setContextOpen((open) => {
-          localStorage.setItem('olympus.contextOpen', String(!open))
+          localStorage.setItem('kern.contextOpen', String(!open))
           return !open
         })
       }
@@ -942,44 +684,42 @@ export default function App() {
 
   return (
     <>
-    <AnimatePresence>{!ready && <OlympusBoot progress={bootProgress} />}</AnimatePresence>
+    <AnimatePresence>{!ready && <KernBoot progress={bootProgress} />}</AnimatePresence>
     <div className="workspace-shell flex h-screen w-screen gap-3 overflow-hidden bg-midnight p-2 text-slate-900">
-      <Sidebar daemon={daemon} projects={workspaceProjects.filter((item) => !item.hidden)} stores={sidebarStores} projectsActive={screen === 'projects'} spaceId={spaceId}
+      <Sidebar daemon={daemon} projects={projects.filter((item) => !item.hidden)} projectsActive={screen === 'projects'} spaceId={spaceId}
         busy={busy || !!busyBySpace[spaceId]} busyBySpace={busyBySpace} runningBySpace={runningBySpace} openIdsBySpace={openIdsBySpace} navigationLocked={navigationLocked}
         workspaceActive={screen === 'workspace' && workspaceView === 'workspace'} workspaceAgentCount={agentGridEntries.length}
-        stationActive={screen === 'workspace' && workspaceView === 'station'} stationAgentCount={stationEntries.length} stationWorkingCount={stationWorkingCount}
         onOpenWorkspace={() => { setScreen('workspace'); setWorkspaceView('workspace') }}
-        onOpenStation={openStationOverview}
-        onOpenStore={openStationStore}
         onOpenProjects={() => setScreen('projects')}
+        onOpenProject={switchSpace}
         onOpenConnections={() => setScreen('connections')} connectionsActive={screen === 'connections'} connectionCount={connectionCount}
         onNewAgent={() => openPicker('agent')} skills={skills} />
       <div className="flex min-w-0 flex-1 flex-col">
-        {screen === 'workspace' ? <WorkspaceBar projectId={hasProject ? spaceId : null} editCount={editRequests.length} view={workspaceView} title={workspaceView === 'station' ? 'Station' : workspaceTitle || 'General'}
+        {screen === 'workspace' ? <WorkspaceBar projectId={hasProject ? spaceId : null} editCount={editRequests.length} view={workspaceView} title={workspaceView === 'workspace' ? 'Agents' : workspaceTitle || 'General'}
           permissionMode={permissionMode} permissionDisabled={navigationLocked || busy || !!busyBySpace[spaceId]} onPermissionModeChange={(mode) => void changePermissionMode(mode)}
           onChange={setWorkspaceView}
-        /> : <header className="flex h-11 shrink-0 items-center px-2 text-xs text-slate-500"><span>{screen === 'connections' ? 'Connections' : 'Project manager'}</span></header>}
+        /> : <header className="app-section-label flex h-11 shrink-0 items-center px-2 text-xs text-slate-500"><span>{screen === 'connections' ? 'Connections' : 'Project manager'}</span></header>}
         {envIssue && !envIssue.available && (
           <div role="alert" className="mb-2 rounded-md border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-800">
-            <strong className="font-semibold">opencode was not found.</strong> Olympus runs the opencode agent, so it needs that installed first:{' '}
-            <code className="rounded bg-white/70 px-1 py-0.5 font-mono text-[11px]">npm i -g opencode-ai</code> - then restart Olympus. If opencode lives somewhere else, point{' '}
-            <code className="rounded bg-white/70 px-1 py-0.5 font-mono text-[11px]">OLYMPUS_OPENCODE_BIN</code> at it.
+            <strong className="font-semibold">opencode was not found.</strong> Kern runs the opencode agent, so it needs that installed first:{' '}
+            <code className="rounded bg-white/70 px-1 py-0.5 font-mono text-[11px]">npm i -g opencode-ai</code> - then restart Kern. If opencode lives somewhere else, point{' '}
+            <code className="rounded bg-white/70 px-1 py-0.5 font-mono text-[11px]">KERN_OPENCODE_BIN</code> at it.
           </div>
         )}
         {envIssue?.available && !envIssue.supported && (
           <div role="alert" className="mb-2 rounded-md border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs text-amber-800">
-            <strong className="font-semibold">opencode {envIssue.version} is outside the range Olympus was built against.</strong> Olympus targets opencode 1.18 and later. It may still work, but if a project behaves oddly, update opencode or install 1.18 with{' '}
+            <strong className="font-semibold">opencode {envIssue.version} is outside the range Kern was built against.</strong> Kern targets opencode 1.18 and later. It may still work, but if a project behaves oddly, update opencode or install 1.18 with{' '}
             <code className="rounded bg-white/70 px-1 py-0.5 font-mono text-[11px]">npm i -g opencode-ai@1.18</code>.
           </div>
         )}
         {appError && <div role="alert" className="mb-2 flex items-start gap-3 rounded-md border border-rose-400/20 bg-rose-400/5 px-3 py-2 text-xs text-rose-600"><span className="flex-1">{appError}</span><button aria-label="Dismiss error" className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded hover:bg-slate-100" onClick={() => setAppError(null)}><svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg></button></div>}
-        {screen === 'projects' && <div className="workspace-center min-h-0 flex-1"><ProjectsPage projects={workspaceProjects} activeId={hasProject && project?.exists ? spaceId : null} openAgentsByProject={openAgentsByProject} onProjectsChange={setProjects} onOpen={switchSpace} onAdd={() => void addProject(false)} /></div>}
-        {screen === 'connections' && <div className="workspace-center min-h-0 flex-1"><ConnectionsSettings /></div>}
+        {screen === 'projects' && <div className="workspace-center min-h-0 flex-1"><ProjectsPage projects={projects} activeId={hasProject && project?.exists ? spaceId : null} openAgentsByProject={openAgentsByProject} onProjectsChange={setProjects} onOpen={switchSpace} onAdd={() => void addProject(false)} /></div>}
+        {screen === 'connections' && <div className="workspace-center min-h-0 flex-1"><ConnectionsSettings projects={projects.filter((item) => !item.hidden)} /></div>}
         <div className="workspace-body" style={{ display: screen === 'workspace' ? 'flex' : 'none' }}>
           <div className="workspace-center flex min-w-0 flex-1 flex-col bg-slate-50">
             <div className="relative min-h-0 flex-1">
               <div className="absolute inset-0" style={{ display: workspaceView === 'workspace' ? 'block' : 'none' }}>
-                <AllAgentsGrid conversations={savedConversations} onOpenConversation={openConversation} entries={agentGridEntries} hasProjects={workspaceProjects.some((item) => !item.hidden)} mode="agent"
+                <AllAgentsGrid conversations={savedConversations} onOpenConversation={openConversation} entries={agentGridEntries} hasProjects={projects.some((item) => !item.hidden)} mode="agent"
                   defaultModel={model} defaultVariant={selectedVariant} providers={providers} rescanning={rescanning} onRescan={rescan}
                   onAddEndpoint={async (name, baseURL) => { await window.electronAPI.addEndpoint({ name, baseURL }); await rescan() }}
                   onRemoveEndpoint={async (endpointId) => { await window.electronAPI.removeEndpoint(endpointId); await rescan() }}
@@ -991,24 +731,12 @@ export default function App() {
               <div className="absolute inset-0" style={{ display: workspaceView === 'code' ? 'block' : 'none' }}>
                 <EditorWorkspace spaceId={spaceId} visible={workspaceView === 'code'} switchGuardRef={editorSwitchGuard} projectKey={`${spaceId}:${daemon.cwd ?? ''}`} available={hasProject && running} onRun={() => void runProject()} runDisabled={!running} />
               </div>
-              <div className="absolute inset-0" style={{ display: workspaceView === 'station' ? 'block' : 'none' }}>
-                <StationView visible={workspaceView === 'station'} focusStoreId={stationFocus?.id ?? null} focusSignal={stationFocus?.signal ?? 0} overviewSignal={stationOverviewSignal} agents={stationEntries} busy={busySessionsBySpace} pausedStoreIds={pausedStoreIds} onSetPaused={setStationPaused} onDeleteStore={deleteStore} managedStoreChecks={managedStoreChecks} onSetManaged={setStoreManaged} model={model} variant={selectedVariant} stationModels={stationModels}
-                  stores={sidebarStores} providers={providers} rescanning={rescanning} onRescan={rescan}
-                  onAddEndpoint={async (name, baseURL) => { await window.electronAPI.addEndpoint({ name, baseURL }); await rescan() }}
-                  onRemoveEndpoint={async (endpointId) => { await window.electronAPI.removeEndpoint(endpointId); await rescan() }}
-                  onLaunch={launchStation}
-                  onModelChange={(key, nextModel, variant) => setStationModels((prev) => {
-                    const next = { ...prev, [key]: { model: nextModel, variant } }
-                    try { localStorage.setItem('olympus.stationModels', JSON.stringify(next)) } catch { /* best effort */ }
-                    return next
-                  })} />
-              </div>
             </div>
-            <div className="h-[34%] min-h-[160px] shrink-0 border-t border-slate-200" style={{ display: terminalOpen && workspaceView !== 'station' ? 'block' : 'none' }}>
+            <div className="h-[34%] min-h-[160px] shrink-0 border-t border-slate-200" style={{ display: terminalOpen ? 'block' : 'none' }}>
               <TerminalPanel key={spaceId} spaceId={spaceId} connected={running} daemonKey={String(daemon.port)} visible={screen === 'workspace' && terminalOpen} initialView="shell" runNonce={runNonce} runCommand={runCommand} onClose={() => setTerminalOpen(false)} />
             </div>
           </div>
-          {hasProject && project && <aside aria-label="Preview" className="context-panel flex flex-col" style={{ display: contextOpen && workspaceView !== 'station' ? 'flex' : 'none' }}>
+          {hasProject && project && <aside aria-label="Preview" className="context-panel flex flex-col" style={{ display: contextOpen ? 'flex' : 'none' }}>
             <ContextPanel projectId={spaceId} onClose={toggleContext}>
               <PreviewPanel projectKey={`${spaceId}:${daemon.cwd ?? ''}`} available={running} visible={screen === 'workspace' && contextOpen} />
             </ContextPanel>

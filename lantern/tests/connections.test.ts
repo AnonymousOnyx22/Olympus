@@ -19,7 +19,7 @@ vi.mock('electron', () => {
 
 let dir: string
 beforeEach(async () => {
-  dir = fs.mkdtempSync(path.join(os.tmpdir(), 'olympus-connections-test-'))
+  dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kern-connections-test-'))
   const electron = await import('electron')
   ;(electron.app as unknown as { __setUserData: (d: string) => void }).__setUserData(dir)
   vi.resetModules()
@@ -32,7 +32,7 @@ describe('connections', () => {
     const list = listConnectionStatus()
     // The library has grown well past these four - just confirm the originals are still in it,
     // rather than pinning the exact list (and its order) as new providers get added over time.
-    expect(list.map((p) => p.id)).toEqual(expect.arrayContaining(['stripe', 'shopify', 'etsy', 'pinterest', 'printful', 'netlify', 'vercel']))
+    expect(list.map((p) => p.id)).toEqual(expect.arrayContaining(['stripe', 'resend', 'netlify', 'vercel', 'openrouter']))
     expect(list.every((p) => p.configuredFields.length === 0)).toBe(true)
   })
 
@@ -51,16 +51,16 @@ describe('connections', () => {
   it('decrypts back to the original value for the daemon env, and only for enabled connections', async () => {
     const { setConnectionValues, envForConnections } = await import('../electron/connections')
     setConnectionValues('stripe', { STRIPE_SECRET_KEY: 'sk_test_abc', STRIPE_PUBLISHABLE_KEY: 'pk_test_abc' })
-    setConnectionValues('etsy', { ETSY_API_KEY: 'etsy-key' })
+    setConnectionValues('resend', { RESEND_API_KEY: 're_key' })
 
     expect(envForConnections(['stripe'])).toEqual({ STRIPE_SECRET_KEY: 'sk_test_abc', STRIPE_PUBLISHABLE_KEY: 'pk_test_abc' })
     // A connection that exists but was never enabled for this project contributes nothing.
     expect(envForConnections([])).toEqual({})
     // Enabling both merges their env vars.
-    expect(envForConnections(['stripe', 'etsy'])).toEqual({
+    expect(envForConnections(['stripe', 'resend'])).toEqual({
       STRIPE_SECRET_KEY: 'sk_test_abc',
       STRIPE_PUBLISHABLE_KEY: 'pk_test_abc',
-      ETSY_API_KEY: 'etsy-key',
+      RESEND_API_KEY: 're_key',
     })
   })
 
@@ -75,10 +75,21 @@ describe('connections', () => {
   it('clearConnection removes every field for that provider only', async () => {
     const { setConnectionValues, clearConnection } = await import('../electron/connections')
     setConnectionValues('stripe', { STRIPE_SECRET_KEY: 'sk_test_y' })
-    setConnectionValues('etsy', { ETSY_API_KEY: 'etsy-key' })
+    setConnectionValues('resend', { RESEND_API_KEY: 're_key' })
     const after = clearConnection('stripe')
     expect(after.find((p) => p.id === 'stripe')!.configuredFields).toEqual([])
-    expect(after.find((p) => p.id === 'etsy')!.configuredFields).toEqual(['ETSY_API_KEY'])
+    expect(after.find((p) => p.id === 'resend')!.configuredFields).toEqual(['RESEND_API_KEY'])
+  })
+
+  it('gives a project every connection except the ones withheld from it', async () => {
+    const { connectionIdsForProject, CONNECTION_PROVIDERS } = await import('../electron/connections')
+    const all = CONNECTION_PROVIDERS.map((provider) => provider.id)
+    expect(connectionIdsForProject('a', {})).toEqual(all)
+    const some = connectionIdsForProject('a', { a: ['stripe', 'resend'], b: ['netlify'] })
+    expect(some).not.toContain('stripe')
+    expect(some).not.toContain('resend')
+    expect(some).toContain('netlify')
+    expect(some).toHaveLength(all.length - 2)
   })
 
   it('rejects an unknown provider id rather than silently writing it', async () => {

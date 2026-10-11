@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDialogFocus } from './useDialogFocus'
 import { AgentPane, type AgentPaneShared } from './AgentWorkspace'
+import { errorText } from '../errorText'
 
 export interface AgentGridEntry {
   spaceId: string
@@ -12,9 +13,6 @@ export interface AgentGridEntry {
   /** Why this project's agent could not start, if it failed; replaces an endless "Connecting". */
   startError?: string
   onRetryStart?: () => void
-  /** True while a store is paused on purpose: its agent is stopped, which is not the same as connecting. */
-  paused?: boolean
-  onResume?: () => void
 }
 
 interface Conversation {
@@ -22,6 +20,8 @@ interface Conversation {
   sessionId: string
   projectName: string
   title: string
+  /** When the conversation last changed, in ms. */
+  updated: number
   open: boolean
 }
 
@@ -35,6 +35,15 @@ interface Props extends AgentPaneShared {
   /** Always opens the project picker - never guesses which project you meant. */
   onRequestAddAgent: () => void
   onOpenProjects: () => void
+}
+
+/** "just now", "5m ago", "3h ago", "2d ago" - enough to tell identically titled chats apart. */
+function timeAgo(time: number): string {
+  const seconds = Math.max(0, Math.floor((Date.now() - time) / 1000))
+  if (seconds < 60) return 'just now'
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
+  return `${Math.floor(seconds / 86400)}d ago`
 }
 
 const buttonClass = 'rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 transition hover:bg-slate-50 disabled:opacity-40'
@@ -52,7 +61,7 @@ export default function AllAgentsGrid({ entries, hasProjects, conversations, onO
     setError('')
     try {
       await onDelete(spaceId, sessionId)
-    } catch (reason) { setError(String(reason)) }
+    } catch (reason) { setError(errorText(reason)) }
     finally { setDeletingKey(null) }
   }
 
@@ -77,7 +86,7 @@ export default function AllAgentsGrid({ entries, hasProjects, conversations, onO
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
           <h1 className="text-lg font-medium text-slate-900">No agents open yet</h1>
           <p className="max-w-sm text-xs leading-relaxed text-slate-500">
-            Pick a project above and add an agent. Every project's agents show up here together.
+            Choose Add agent, pick a project, and give it a task. Agents from every project show up here side by side.
           </p>
           {!hasProjects && (
             <button onClick={shared.onOpenProjects} className="mt-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 transition hover:bg-slate-50">
@@ -105,8 +114,6 @@ export default function AllAgentsGrid({ entries, hasProjects, conversations, onO
               ready={entry.ready}
               startError={entry.startError}
               onRetryStart={entry.onRetryStart}
-              paused={entry.paused}
-              onResume={entry.onResume}
               onClose={() => onClose(entry.spaceId, entry.sessionId)}
               onDelete={() => void deleteAgent(entry.spaceId, entry.sessionId)}
               deleting={deletingKey === `${entry.spaceId}:${entry.sessionId}`}
@@ -132,14 +139,14 @@ function ConversationPicker({ conversations, onPick, onClose }: {
   }, [onClose])
   const matches = conversations.filter((entry) => `${entry.projectName} ${entry.title}`.toLowerCase().includes(query.toLowerCase()))
   return <div className="fixed inset-0 z-50 flex items-center justify-center bg-midnight/70 p-4" onClick={onClose}>
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="conversation-title" tabIndex={-1} onClick={(event) => event.stopPropagation()} className="flex max-h-[80vh] w-full max-w-xl flex-col rounded-2xl bg-white p-5 shadow-aegean-lg">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="conversation-title" tabIndex={-1} onClick={(event) => event.stopPropagation()} className="flex max-h-[80vh] w-full max-w-xl flex-col rounded-2xl bg-white p-5 shadow-float-lg">
       <h2 id="conversation-title" className="text-lg font-medium">Open conversation</h2>
       <p className="mt-1 text-xs text-slate-500">Reopen a saved conversation alongside your other agents. Open a project to load its saved conversations.</p>
       <input aria-label="Search conversations" placeholder="Search conversations" value={query} onChange={(event) => setQuery(event.target.value)} className="my-4 rounded-lg border border-slate-200 p-2 text-sm" />
       <div className="min-h-0 overflow-auto">
         {matches.map((entry) => <button key={`${entry.spaceId}:${entry.sessionId}`} onClick={() => onPick(entry)} className="mb-1 block w-full rounded-lg p-3 text-left hover:bg-slate-50">
-          <span className="block text-sm font-medium">{entry.title}{entry.open ? ' ? Open' : ''}</span>
-          <span className="text-xs text-slate-500">{entry.projectName}</span>
+          <span className="block text-sm font-medium">{entry.title}{entry.open && <span className="ml-2 rounded bg-slate-100 px-1.5 py-px align-middle text-[10px] font-normal text-slate-500">Open</span>}</span>
+          <span className="text-xs text-slate-500">{entry.projectName} · <span title={new Date(entry.updated).toLocaleString()}>{timeAgo(entry.updated)}</span></span>
         </button>)}
         {!matches.length && <p className="py-4 text-sm text-slate-500">No saved conversations found.</p>}
       </div>

@@ -130,7 +130,7 @@ function InteractiveShell({ spaceId, connected, daemonKey, runNonce = 0, runComm
 
     ;(async () => {
       try {
-        const pty = await api.createPty(spaceId, 'Olympus shell')
+        const pty = await api.createPty(spaceId, 'Kern shell')
         if (disposed) return void api.removePty(spaceId, pty.id).catch(() => {})
         ptyRef.current = pty.id
         offs.push(
@@ -172,6 +172,7 @@ function InteractiveShell({ spaceId, connected, daemonKey, runNonce = 0, runComm
       termRef.current = null
       setFit(null)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the terminal is rebuilt only when its daemon or space changes, never on a new run command
   }, [connected, daemonKey, spaceId])
 
   useEffect(() => {
@@ -215,7 +216,7 @@ export default function TerminalPanel({ spaceId, connected, daemonKey, visible, 
             key={v}
             onClick={() => setView(v)}
             className={`rounded-xl px-2.5 py-0.5 text-[11px] transition ${
-              view === v ? 'bg-white text-slate-900 shadow-aegean' : 'text-slate-500 hover:bg-white hover:text-slate-700'
+              view === v ? 'bg-white text-slate-900 shadow-float' : 'text-slate-500 hover:bg-white hover:text-slate-700'
             }`}
           >
             {v === 'agent' ? 'Agent output' : 'Shell'}

@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import { storeBrandName } from './storeBrand'
 import path from 'node:path'
 import { getSettings, updateSettings } from './settings'
 import type { ProjectInfo, ProjectMeta } from '../src/types/opencode'
@@ -8,6 +7,8 @@ import type { ProjectInfo, ProjectMeta } from '../src/types/opencode'
 const SKIPPED_FOLDERS = new Set(['node_modules', '$recycle.bin', 'system volume information'])
 const IGNORED_FOR_MTIME = new Set(['.git', 'node_modules', 'dist', 'build', 'out', '.next', 'target', '.venv', '__pycache__'])
 const NEW_BADGE_MS = 3 * 24 * 60 * 60 * 1000
+// Control characters are exactly what a Windows file name must not contain.
+// eslint-disable-next-line no-control-regex
 const INVALID_NAME = /[<>:"/\\|?*\u0000-\u001f]/
 const RESERVED_NAME = /^(con|prn|aux|nul|com\d|lpt\d)(\..*)?$/i
 
@@ -126,7 +127,6 @@ export function listProjects(): ProjectInfo[] {
     const existing = byKey.get(key)
     byKey.set(key, { path: proj.path, source: 'manual', root: existing?.root ?? null, name: proj.name })
   }
-  for (const store of settings.stores) byKey.delete(projectKey(store.path))
 
   // Record first sighting of newly detected folders so they can get a "New" badge, and
   // forget folders that are no longer part of the picture. Without the prune, pointing the
@@ -155,8 +155,10 @@ export function listProjects(): ProjectInfo[] {
   if (metaChanged) updateSettings({ projectMeta: meta })
   seededRoots.clear()
 
-  return [...byKey.entries()].map(([key, item]) => {
-    const exists = isDir(item.path)
+  // A project whose folder is gone is not listed at all. Its entry stays in settings, so it comes
+  // back untouched if the folder does (an unplugged drive, a renamed parent).
+  return [...byKey.entries()].filter(([, item]) => isDir(item.path)).map(([key, item]) => {
+    const exists = true
     const m = meta[key] ?? {}
     return {
       id: item.source === 'manual' ? settings.projects.find((p) => projectKey(p.path) === key)!.id : key,
@@ -194,18 +196,8 @@ export function findProject(id: string): ProjectInfo | undefined {
   const manual = settings.projects.find((p) => p.id === id || projectKey(p.path) === key)
   if (manual) return describeProject(manual.id, manual.name, manual.path, 'manual', null, settings)
 
-  const store = settings.stores.find((p) => p.id === id || projectKey(p.path) === key)
-  if (store) return describeProject(store.id, store.name, store.path, 'manual', null, settings)
-
   const root = settings.projectRoots.find((candidate) => projectKey(path.dirname(target)) === projectKey(candidate))
   if (root) return describeProject(key, path.basename(target) || target, target, 'watched', root, settings)
-
-  // A store listStores() discovered on disk but nobody registered. Without this, opening one
-  // resolves to nothing and its agent starts in the General chats folder instead of its own.
-  const storeRoot = storeRoots(settings.projectRoots).find((candidate) => projectKey(path.dirname(target)) === projectKey(candidate))
-  // Ids are lowercased keys on Windows; use the folder's real casing for the agent's cwd and the UI.
-  const storeDir = storeRoot ? subfolders(storeRoot).find((dir) => projectKey(dir) === key) : undefined
-  if (storeDir) return describeProject(key, storeBrandName(storeDir) ?? nameFromFolder(path.basename(storeDir)), storeDir, 'watched', null, settings)
 
   return undefined
 }
@@ -307,101 +299,6 @@ export function createProject(root: string, rawName: string): { id: string; proj
   const settings = getSettings()
   updateSettings({ projectMeta: { ...settings.projectMeta, [key]: { firstSeen: Date.now() } } })
   return { id: key, projects: listProjects() }
-}
-
-/** Every known Projects root's sibling "Stores" folder - the same path createStore writes into. */
-function storeRoots(projectRoots: string[]): string[] {
-  const roots = new Map<string, string>()
-  for (const root of projectRoots) {
-    const storesRoot = path.join(path.dirname(root), 'Stores')
-    if (projectKey(storesRoot) !== projectKey(root)) roots.set(projectKey(storesRoot), storesRoot)
-  }
-  return [...roots.values()]
-}
-
-/** A readable name from a bare folder, e.g. "harbor-desk-muucj959" -> "Harbor Desk". */
-function nameFromFolder(dirName: string): string {
-  const trimmed = dirName.replace(/-[a-z0-9]{6,10}$/i, '') || dirName
-  return trimmed
-    .split(/[-_\s]+/)
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ') || dirName
-}
-
-/**
- * Registered stores, plus any folder sitting directly in a Stores root that was never created
- * through Olympus's own "New store" flow - e.g. one an agent or another tool wrote straight to
- * disk. Without this, a store that exists as real files is invisible here simply because
- * nothing ever called createStore for it.
- */
-export function listStores(): ProjectInfo[] {
-  const settings = getSettings()
-  const hiddenStores = new Set(settings.hiddenProjects.map(projectKey))
-  const byKey = new Map<string, { id: string; name: string; path: string; discovered: boolean }>()
-  for (const store of settings.stores) byKey.set(projectKey(store.path), { id: store.id, name: store.name, path: store.path, discovered: false })
-  for (const root of storeRoots(settings.projectRoots)) {
-    for (const dir of subfolders(root)) {
-      const key = projectKey(dir)
-      if (hiddenStores.has(key)) continue
-      if (!byKey.has(key)) byKey.set(key, { id: key, name: nameFromFolder(path.basename(dir)), path: dir, discovered: true })
-    }
-  }
-  return [...byKey.values()].map((store) => ({
-    ...describeProject(store.id, (isDir(store.path) ? storeBrandName(store.path) : null) ?? store.name, store.path, store.discovered ? 'watched' : 'manual', null, settings),
-    ...(isDir(store.path) ? detect(store.path) : {}),
-  }))
-}
-
-/** Creates a Store workspace beside a watched Projects root, never inside it. */
-export function createStore(projectRoot: string, rawName: string, displayName?: string): { id: string; stores: ProjectInfo[] } {
-  const name = String(rawName ?? '').trim()
-  if (!name || name === '.' || name === '..' || name.length > 120 || INVALID_NAME.test(name) || RESERVED_NAME.test(name) || /[. ]$/.test(name)) {
-    throw new Error('Use a simple store folder name without \\ / : * ? " < > |')
-  }
-  const settings = getSettings()
-  const known = settings.projectRoots.find((root) => projectKey(root) === projectKey(projectRoot))
-  if (!known) throw new Error('Choose a watched Projects folder first')
-  const storesRoot = path.join(path.dirname(known), 'Stores')
-  if (projectKey(storesRoot) === projectKey(known)) throw new Error('Choose a Projects folder beside Stores')
-  fs.mkdirSync(storesRoot, { recursive: true })
-  const target = path.join(storesRoot, name)
-  if (fs.existsSync(target)) throw new Error(`"${name}" already exists in Stores`)
-  fs.mkdirSync(target)
-  const id = projectKey(target)
-  updateSettings({ stores: [...settings.stores, { id, name: displayName?.trim().slice(0, 120) || name, path: target }] })
-  return { id, stores: listStores() }
-}
-
-/**
- * Unlists a store. With `deleteFiles`, its folder is also removed from disk - unlike a regular
- * project (which may be a folder the user already had elsewhere), a store only ever exists
- * because Olympus created it inside the Stores folder, so deleting it for real is a reasonable
- * option here, not just a hide. Best-effort: an unlist always happens even if the delete fails
- * (e.g. a file is locked), so the store never gets stuck half-removed.
- */
-export function removeStore(id: string, deleteFiles: boolean): ProjectInfo[] {
-  const settings = getSettings()
-  const store = settings.stores.find((s) => s.id === id)
-  // A discovered store (never created through Olympus's own flow) has nothing to unlist from
-  // settings.stores, but its folder is still real - find it the same way listStores() does.
-  const targetPath = store?.path ?? storeRoots(settings.projectRoots).flatMap(subfolders).find((dir) => projectKey(dir) === id)
-  let failure: string | null = null
-  if (deleteFiles && targetPath && isDir(targetPath)) {
-    try {
-      // A just-stopped agent can hold its folder for a moment on Windows, so retry.
-      fs.rmSync(targetPath, { recursive: true, force: true, maxRetries: 8, retryDelay: 400 })
-    } catch (error) {
-      failure = error instanceof Error ? error.message : String(error)
-    }
-    if (isDir(targetPath) && !failure) failure = 'the folder is still in use'
-  }
-  // Unlist it. If the folder is still on disk, hide it too, or discovery would list it again.
-  const stillThere = !!targetPath && isDir(targetPath)
-  const hidden = stillThere && !settings.hiddenProjects.some((p) => projectKey(p) === id) ? [...settings.hiddenProjects, targetPath] : settings.hiddenProjects
-  updateSettings({ stores: settings.stores.filter((s) => s.id !== id), hiddenProjects: hidden })
-  if (failure) throw new Error(`Removed from Olympus, but its folder could not be deleted (${failure}). Close anything using it and delete it by hand.`)
-  return listStores()
 }
 
 export function addRoot(dir: string): string[] {

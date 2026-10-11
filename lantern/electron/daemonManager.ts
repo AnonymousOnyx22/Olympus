@@ -16,13 +16,13 @@ const PORT_RANGE_MIN = 20_000
 const PORT_RANGE_MAX = 60_000
 const HEALTH_TIMEOUT_MS = 45_000
 
-/** Credentials Olympus uses for the daemon's HTTP basic auth. */
+/** Credentials Kern uses for the daemon's HTTP basic auth. */
 export interface DaemonCredentials {
   username: string
   password: string
 }
 
-const BASIC_AUTH_USERNAME = 'olympus'
+const BASIC_AUTH_USERNAME = 'kern'
 
 /** A fresh, unguessable password for every daemon launch. */
 function newCredentials(): DaemonCredentials {
@@ -90,7 +90,7 @@ export function buildOpencodeConfig(providers: LocalProvider[], selected: ModelR
 
 /** Locates the opencode executable, strongly preferring a real binary so it can be spawned without a shell. */
 function resolveOpencodeBinary(): { command: string; shell: boolean } {
-  const override = process.env.OLYMPUS_OPENCODE_BIN
+  const override = process.env.KERN_OPENCODE_BIN
   if (override) return { command: override, shell: false }
 
   if (process.platform === 'win32') {
@@ -157,7 +157,7 @@ export function detectOpencodeVersion(): string | null {
 }
 
 /**
- * The environment every `opencode serve` Olympus starts runs under.
+ * The environment every `opencode serve` Kern starts runs under.
  *
  * `OPENCODE_SERVER_PASSWORD` is the important one: it puts HTTP basic auth in front of the
  * daemon, so a web page the user visits cannot post to it (a CORS-"simple" request is sent
@@ -281,7 +281,7 @@ export class DaemonManager extends EventEmitter {
       attempt++
       const port = await findFreePort()
       this.setState({ status: 'starting', cwd, port })
-      this.log(`[olympus] spawning ${command} serve --port ${port} in ${cwd}${attempt > 1 ? ' (retry)' : ''}`)
+      this.log(`[kern] spawning ${command} serve --port ${port} in ${cwd}${attempt > 1 ? ' (retry)' : ''}`)
 
       const child = spawn(command, ['serve', '--port', String(port), '--hostname', '127.0.0.1'], {
         cwd,
@@ -321,16 +321,16 @@ export class DaemonManager extends EventEmitter {
         const code = (err as NodeJS.ErrnoException).code
         const hint =
           code === 'ENOENT'
-            ? ' - opencode is not installed or not on your PATH. Install it with "npm i -g opencode-ai", or set OLYMPUS_OPENCODE_BIN to its full path.'
+            ? ' - opencode is not installed or not on your PATH. Install it with "npm i -g opencode-ai", or set KERN_OPENCODE_BIN to its full path.'
             : ''
-        this.log(`[olympus] failed to start opencode: ${err.message}${hint}`)
+        this.log(`[kern] failed to start opencode: ${err.message}${hint}`)
         this.setState({ status: 'error', error: err.message + hint })
       })
 
       child.once('exit', (code, signal) => {
         if (this.proc !== child) return
         this.proc = null
-        this.log(`[olympus] opencode exited (code ${code ?? 'null'}, signal ${signal ?? 'none'})`)
+        this.log(`[kern] opencode exited (code ${code ?? 'null'}, signal ${signal ?? 'none'})`)
         if (attempt === 1 && code !== 0 && Date.now() - startedAt < 3000) {
           retrying = true
           return
@@ -348,7 +348,7 @@ export class DaemonManager extends EventEmitter {
       }
       if (healthy) {
         if (this.proc !== child) return this.getState()
-        this.log(`[olympus] opencode is ready on http://127.0.0.1:${port}`)
+        this.log(`[kern] opencode is ready on http://127.0.0.1:${port}`)
         this.setState({ status: 'running' })
         return this.getState()
       }
@@ -398,7 +398,7 @@ export class DaemonManager extends EventEmitter {
       return this.getState()
     }
     this.proc = null
-    this.log('[olympus] stopping opencode…')
+    this.log('[kern] stopping opencode…')
 
     const exited = new Promise<void>((resolve) => {
       if (child.exitCode !== null || child.signalCode !== null) return resolve()
@@ -461,7 +461,7 @@ export async function probeInstalledProviders(): Promise<
   const credentials = newCredentials()
   const headers = { authorization: basicAuthHeader(credentials) }
   const { command, shell } = resolveOpencodeBinary()
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'olympus-probe-'))
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'kern-probe-'))
   const child = spawn(command, ['serve', '--port', String(port), '--hostname', '127.0.0.1'], {
     cwd: scratch,
     // No OPENCODE_CONFIG_CONTENT here on purpose: this probe exists to read the providers

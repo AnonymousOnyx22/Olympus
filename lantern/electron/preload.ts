@@ -33,11 +33,6 @@ const api: ElectronAPI = {
   setConnection: (providerId, values) => ipcRenderer.invoke('connections:set', providerId, values),
   verifyConnection: (providerId) => ipcRenderer.invoke('connections:verify', providerId),
   clearConnection: (providerId) => ipcRenderer.invoke('connections:clear', providerId),
-  openConnectionSignIn: (providerId) => ipcRenderer.invoke('connections:openSignIn', providerId),
-  forgetConnectionSignIn: (providerId) => ipcRenderer.invoke('connections:forgetSignIn', providerId),
-  listStores: () => ipcRenderer.invoke('stores:list'),
-  createStore: (root, name, displayName) => ipcRenderer.invoke('stores:create', root, name, displayName),
-  removeStore: (id, deleteFiles) => ipcRenderer.invoke('stores:remove', id, deleteFiles),
   revealProject: (id) => ipcRenderer.invoke('projects:reveal', id),
   listProjectRoots: () => ipcRenderer.invoke('projects:roots'),
   addProjectRoot: (path) => ipcRenderer.invoke('projects:addRoot', path),
@@ -74,7 +69,6 @@ const api: ElectronAPI = {
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
   opencodeStatus: () => ipcRenderer.invoke('app:opencodeStatus'),
   /** Display-only licence state. Never contains the key or the signing secret. */
-  licenseState: () => ipcRenderer.invoke('license:state'),
   /** Forwards a renderer crash or unhandled rejection to the main-process log. */
   reportError: (error: { message: string; stack: string | null; componentStack: string | null }) =>
     ipcRenderer.invoke('app:reportError', error),

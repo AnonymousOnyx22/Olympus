@@ -241,7 +241,7 @@ export function useSessionStream(spaceId: string, sessionID: string | null, conn
   const [loaded, setLoaded] = useState(false)
   const pendingEvents = useRef<OpencodeEvent[] | null>([])
   const revision = useRef(0)
-  const lastProgress = useRef(Date.now())
+  const lastProgress = useRef(0) // set when the session effect starts
   const [quietSeconds, setQuietSeconds] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
   const [syncError, setSyncError] = useState<string | null>(null)

@@ -7,13 +7,17 @@ type Fetch = typeof fetch
 const TIMEOUT_MS = 10_000
 
 const ok = (detail: string): Result => ({ status: 'verified', detail })
+// Provider responses are arbitrary JSON; each check reads only the fields it needs.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json = any
+
 const fail = (detail: string): Result => ({ status: 'failed', detail })
 
 /** One authenticated GET. Never throws: a network problem is a failed check, not a crash. */
-async function probe(fetchFn: Fetch, name: string, url: string, headers: Record<string, string> = {}): Promise<{ res: Response; json: any } | Result> {
+async function probe(fetchFn: Fetch, name: string, url: string, headers: Record<string, string> = {}): Promise<{ res: Response; json: Json } | Result> {
   try {
     const res = await fetchFn(url, { headers: { accept: 'application/json', ...headers }, signal: AbortSignal.timeout(TIMEOUT_MS) })
-    let json: any = null
+    let json: Json = null
     try { json = await res.json() } catch { /* not JSON */ }
     return { res, json }
   } catch (error) {
@@ -25,7 +29,7 @@ async function probe(fetchFn: Fetch, name: string, url: string, headers: Record<
 const isResult = (value: unknown): value is Result => !!value && typeof value === 'object' && 'status' in (value as object)
 
 /** Turns a plain "was I let in" response into a result, with the provider's own message on refusal. */
-function judge(name: string, got: { res: Response; json: any } | Result, success: (json: any) => string): Result {
+function judge(name: string, got: { res: Response; json: Json } | Result, success: (json: Json) => string): Result {
   if (isResult(got)) return got
   const { res, json } = got
   if (res.ok) return ok(success(json))
@@ -53,22 +57,6 @@ const CHECKS: Record<string, Check> = {
       if (result.status !== 'verified') return result
       return ok(mode === 'live' ? 'Verified, LIVE mode. Checkouts will take real money.' : 'Verified, test mode. No real money moves.')
     },
-  },
-  printful: {
-    required: ['PRINTFUL_API_KEY'],
-    run: async (env, f) => {
-      const headers = bearer(env.PRINTFUL_API_KEY)
-      const first = await probe(f, 'Printful', 'https://api.printful.com/stores', headers)
-      if (!isResult(first) && first.res.ok) return ok(`Verified${Array.isArray(first.json?.result) ? `, ${first.json.result.length} store${first.json.result.length === 1 ? '' : 's'} on this account` : ''}.`)
-      // A store-level token is refused on the account endpoint but accepted on its own store.
-      const second = await probe(f, 'Printful', 'https://api.printful.com/store', headers)
-      if (!isResult(second) && second.res.ok) return ok('Verified (store-level key).')
-      return judge('Printful', second, () => '')
-    },
-  },
-  printify: {
-    required: ['PRINTIFY_API_TOKEN'],
-    run: async (env, f) => judge('Printify', await probe(f, 'Printify', 'https://api.printify.com/v1/shops.json', bearer(env.PRINTIFY_API_TOKEN)), (j) => `Verified${Array.isArray(j) ? `, ${j.length} shop${j.length === 1 ? '' : 's'}` : ''}.`),
   },
   openrouter: {
     required: ['OPENROUTER_API_KEY'],
@@ -105,46 +93,11 @@ const CHECKS: Record<string, Check> = {
     required: ['RENDER_API_KEY'],
     run: async (env, f) => judge('Render', await probe(f, 'Render', 'https://api.render.com/v1/owners?limit=1', bearer(env.RENDER_API_KEY)), () => 'Verified.'),
   },
-  shopify: {
-    required: ['SHOPIFY_STORE_DOMAIN', 'SHOPIFY_ADMIN_ACCESS_TOKEN'],
-    run: async (env, f) => {
-      const domain = env.SHOPIFY_STORE_DOMAIN.replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim().toLowerCase()
-      if (!/^[a-z0-9-]+\.myshopify\.com$/.test(domain)) return fail('The store domain should look like your-store.myshopify.com (not your custom domain).')
-      const got = await probe(f, 'Shopify', `https://${domain}/admin/api/2024-10/shop.json`, { 'x-shopify-access-token': env.SHOPIFY_ADMIN_ACCESS_TOKEN })
-      return judge('Shopify', got, (j) => {
-        const plan = String(j?.shop?.plan_name ?? '')
-        const cannotSell = /^(affiliate|partner_test|trial|developer_preview|staff|plus_partner_sandbox)$/i.test(plan) || /developer|trial|sandbox/i.test(String(j?.shop?.plan_display_name ?? ''))
-        return `Verified${j?.shop?.name ? `, store "${j.shop.name}"` : ''}${plan ? `, plan "${j.shop.plan_display_name ?? plan}"` : ''}.${cannotSell ? ' This plan cannot take real orders.' : ''}`
-      })
-    },
-  },
-  gumroad: {
-    required: ['GUMROAD_API_KEY'],
-    run: async (env, f) => judge('Gumroad', await probe(f, 'Gumroad', 'https://api.gumroad.com/v2/user', bearer(env.GUMROAD_API_KEY)), (j) => `Verified${j?.user?.email ? ` as ${j.user.email}` : ''}.`),
-  },
   sendgrid: {
     required: ['SENDGRID_API_KEY'],
     run: async (env, f) => judge('SendGrid', await probe(f, 'SendGrid', 'https://api.sendgrid.com/v3/scopes', bearer(env.SENDGRID_API_KEY)), (j) => `Verified${Array.isArray(j?.scopes) ? `, ${j.scopes.length} permissions` : ''}.`),
   },
-  discord: {
-    required: ['DISCORD_WEBHOOK_URL'],
-    run: async (env, f) => {
-      if (!/^https:\/\/(?:ptb\.|canary\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[\w-]+$/.test(env.DISCORD_WEBHOOK_URL)) return fail('That does not look like a Discord webhook URL.')
-      return judge('Discord', await probe(f, 'Discord', env.DISCORD_WEBHOOK_URL), (j) => `Verified${j?.name ? `, webhook "${j.name}"` : ''}.`)
-    },
-  },
-  mailchimp: {
-    required: ['MAILCHIMP_API_KEY'],
-    run: async (env, f) => {
-      const dc = env.MAILCHIMP_SERVER_PREFIX || env.MAILCHIMP_API_KEY.split('-')[1]
-      if (!dc || !/^[a-z0-9]+$/i.test(dc)) return fail('Mailchimp keys end in a server prefix like -us21. Enter it in the Server prefix field.')
-      return judge('Mailchimp', await probe(f, 'Mailchimp', `https://${dc}.api.mailchimp.com/3.0/ping`, { authorization: `Basic ${Buffer.from(`anystring:${env.MAILCHIMP_API_KEY}`).toString('base64')}` }), () => 'Verified.')
-    },
-  },
 }
-
-/** Whether a service has an automatic check. The rest are saved but never claimed as working. */
-export const hasAutomaticCheck = (providerId: string): boolean => providerId in CHECKS
 
 export async function checkConnection(providerId: string, env: Env, fetchFn: Fetch = fetch): Promise<Result> {
   const check = CHECKS[providerId]

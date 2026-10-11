@@ -1,6 +1,5 @@
 import { DaemonManager } from './daemonManager'
 import { OpencodeBridge } from './opencodeBridge'
-import * as projects from './projects'
 import type { DaemonState } from '../src/types/opencode'
 
 /**
@@ -120,21 +119,15 @@ function runningCount(): number {
  * be confirmed is left alone. Everything evicted can be restarted transparently; the cost of
  * evicting is a few seconds, the cost of not evicting is unbounded process growth.
  *
- * A store is never a candidate at all, regardless of `pinnedSpaceIds`. Pinning is pushed by the
- * renderer and depends on it correctly tracking every open Station session - any gap there (a
- * store created outside the normal flow, a restart, a timing window before the next pin push)
- * would otherwise silently expose a store meant to run 24/7 to eviction. Checked straight
- * against `projects.listStores()` instead, which has no such dependency.
  */
 export async function enforceBudget(): Promise<void> {
   if (runningCount() <= MAX_RUNNING_DAEMONS) return
   busyCheckThrottledUntil = Date.now() + 5_000
 
-  const storeIds = new Set(projects.listStores().map((store) => store.id))
   const candidates = [...pool.entries()]
     .filter(([id, entry]) => {
       const status = entry.daemon.getState().status
-      return id !== focusedSpaceId && !pinnedSpaceIds.has(id) && !storeIds.has(id) && (status === 'running' || status === 'starting')
+      return id !== focusedSpaceId && !pinnedSpaceIds.has(id) && (status === 'running' || status === 'starting')
     })
     .sort((a, b) => a[1].lastUsed - b[1].lastUsed)
 
@@ -182,14 +175,6 @@ export function request(spaceId: string, method: string, path: string, body?: un
   const entry = pool.get(spaceId)
   if (!entry) return Promise.resolve({ ok: false, status: 0, data: null, error: 'opencode daemon is not running' })
   return entry.bridge.request(method, path, body)
-}
-
-export function isOpen(spaceId: string): boolean {
-  return pool.has(spaceId)
-}
-
-export function openSpaceIds(): string[] {
-  return [...pool.keys()]
 }
 
 /** Best-effort synchronous kill for process-exit paths where awaiting is impossible. */

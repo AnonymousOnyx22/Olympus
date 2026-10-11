@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  Hardened-runtime entitlements for the Olympus MAIN app bundle.
+  Hardened-runtime entitlements for the Kern MAIN app bundle.
 
   macOS "Hardened Runtime" (electron-builder `mac.hardenedRuntime: true`)
   requires every restricted operation to be declared here. Anything not listed
-  is killed by the kernel at runtime — the app crashes with no useful message.
+  is killed by the kernel at runtime - the app crashes with no useful message.
   So the rule is: add an entitlement only when a crash demands it, never
   "just in case". An over-broad entitlement set is a security liability and will
   be questioned during App Store review (if you ever ship there) or by a
   customer's own security audit.
 
-  WHAT OLYMPUS NEEDS
+  WHAT KERN NEEDS
   - allow-jit / allow-unsigned-executable-memory
       Chromium's V8 JIT-compiles code at runtime and this app is not signed
       with a secure-runtime-codec entitlement for the JIT. Without these two,
       every renderer window dies at startup. This is the single most common
       reason a hardened-runtime Electron app fails to launch.
 
-  WHAT OLYMPUS DOES NOT NEED, and why
+  WHAT KERN DOES NOT NEED, and why
   - com.apple.security.device.camera / .microphone
-      Olympus has no media capture. Do not add these "for the preview pane";
+      Kern has no media capture. Do not add these "for the preview pane";
       the embedded preview is an <iframe> of the user's own localhost server
       and never needs hardware.
   - com.apple.security.device.location
-      Olympus is a local coding harness. It has no reason to know where the
+      Kern is a local coding harness. It has no reason to know where the
       user is.
   - com.apple.security.network.client / .network.server (as app-sandbox keys)
-      These are the App Sandbox keys. Olympus is NOT sandboxed — it must spawn
+      These are the App Sandbox keys. Kern is NOT sandboxed - it must spawn
       `opencode serve`, read and write arbitrary project directories, and run a
-      PTY, none of which are possible inside the App Sandbox. All of Olympus'
+      PTY, none of which are possible inside the App Sandbox. All of Kern's
       own network traffic goes to 127.0.0.1 on a random high port chosen at
       launch, and loopback is not restricted by any entitlement. The user's
       model servers (Ollama, LM Studio, vLLM) are likewise all on 127.0.0.1.
@@ -39,7 +39,7 @@
 
   Note: this file is the app's own entitlements. The helper/renderer child
   process (which loads the Chrome helpers) needs its own, slightly different
-  set — see entitlementsInherit -> build/entitlemas.mac.plist.
+  set - see entitlementsInherit -> build/entitlements.inherit.mac.plist.
 -->
 <plist version="1.0">
   <dict>

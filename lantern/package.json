@@ -1,9 +1,9 @@
 {
-  "name": "olympus",
-  "productName": "Olympus",
+  "name": "kern",
+  "productName": "Kern",
   "version": "0.1.0",
-  "description": "Local-first desktop execution harness for the opencode agent, powered by local LLMs.",
-  "author": "TODO",
+  "description": "A clear workspace for independent AI agents.",
+  "author": "Nick",
   "license": "SEE LICENSE IN LICENSE",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -16,9 +16,6 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "dist": "electron-builder",
-    "site:build": "node tools/build-site.mjs",
-    "site:check": "node tools/build-site.mjs --check",
-    "site:images": "node tools/optimise-images.mjs && node tools/swap-to-webp.mjs",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",

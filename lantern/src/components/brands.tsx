@@ -8,6 +8,7 @@ import {
   siDeepseek,
   siGooglegemini,
   siHuggingface,
+  siKimi,
   siMetaai,
   siMistralai,
   siNvidia,
@@ -95,6 +96,8 @@ const Yi = svg(
 const Nvidia = officialLogo(siNvidia)
 // Nous / community fine-tunes - a compass rose
 const Nous = svg(<path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z" strokeWidth={1.6} />)
+// Moonshot AI - the Kimi mark
+const Kimi = officialLogo(siKimi)
 // Anthropic - the starburst
 const Anthropic = officialLogo(siAnthropic)
 // Generic local model - a chip
@@ -123,6 +126,7 @@ const BRANDS: Record<string, Brand> = {
   yi: { name: '01.AI', Logo: Yi },
   nvidia: { name: 'NVIDIA', Logo: Nvidia },
   nous: { name: 'Nous Research', Logo: Nous },
+  moonshot: { name: 'Moonshot AI', Logo: Kimi },
   generic: { name: 'Local model', Logo: Chip },
 }
 
@@ -142,6 +146,7 @@ const RULES: [RegExp, string][] = [
   [/glm|chatglm|codegeex/, 'zhipu'],
   [/(?:^|[^a-z])yi-?\d|yi-/, 'yi'],
   [/grok/, 'xai'],
+  [/kimi|moonshot/, 'moonshot'],
   [/nemotron|nvlm|nvidia/, 'nvidia'],
   [/smollm|zephyr|starchat|starcoder/, 'huggingface'],
   [/hermes|nous/, 'nous'],
@@ -160,7 +165,7 @@ const WORD_CASE: Record<string, string> = {
   llama: 'Llama', codellama: 'CodeLlama', gemma: 'Gemma', codegemma: 'CodeGemma', gemini: 'Gemini',
   mistral: 'Mistral', mixtral: 'Mixtral', codestral: 'Codestral', ministral: 'Ministral', devstral: 'Devstral',
   nemo: 'Nemo', phi: 'Phi', command: 'Command', granite: 'Granite', hermes: 'Hermes', nous: 'Nous',
-  yi: 'Yi', falcon: 'Falcon', starcoder: 'StarCoder', smollm: 'SmolLM', wizardlm: 'WizardLM',
+  kimi: 'Kimi', yi: 'Yi', falcon: 'Falcon', starcoder: 'StarCoder', smollm: 'SmolLM', wizardlm: 'WizardLM',
   openchat: 'OpenChat', dolphin: 'Dolphin', nemotron: 'Nemotron', aya: 'Aya', glm: 'GLM',
   instruct: 'Instruct', distill: 'Distill', abliterated: 'Abliterated', uncensored: 'Uncensored',
   chat: 'Chat', coder: 'Coder', code: 'Code', vision: 'Vision', math: 'Math', reasoning: 'Reasoning',

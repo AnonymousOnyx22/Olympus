@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { checkConnection, hasAutomaticCheck } from '../electron/connectionChecks'
+import { checkConnection } from '../electron/connectionChecks'
 
 const reply = (status: number, body: unknown = {}) => async () => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } })
 const seen: { url: string; headers: Record<string, string> }[] = []
@@ -74,45 +74,16 @@ describe('checkConnection', () => {
 
   it('says a connection is incomplete when a required field is empty, and does not call out', async () => {
     seen.length = 0
-    const result = await checkConnection('shopify', { SHOPIFY_STORE_DOMAIN: 'x.myshopify.com' }, spy(reply(200)) as never)
+    const result = await checkConnection('cloudflare-pages', {}, spy(reply(200)) as never)
     expect(result.status).toBe('incomplete')
-    expect(result.detail).toContain('SHOPIFY_ADMIN_ACCESS_TOKEN')
+    expect(result.detail).toContain('CLOUDFLARE_API_TOKEN')
     expect(seen).toHaveLength(0)
   })
 
-  it('rejects a Shopify custom domain, which cannot be used for the Admin API', async () => {
-    const result = await checkConnection('shopify', { SHOPIFY_STORE_DOMAIN: 'https://mystore.com', SHOPIFY_ADMIN_ACCESS_TOKEN: 't' }, reply(200) as never)
-    expect(result.status).toBe('failed')
-    expect(result.detail).toContain('your-store.myshopify.com')
-  })
-
-  it('verifies Shopify but warns when the plan cannot take real orders', async () => {
-    const dev = reply(200, { shop: { name: 'Test Shop', plan_name: 'affiliate', plan_display_name: 'Developer Preview' } })
-    const result = await checkConnection('shopify', { SHOPIFY_STORE_DOMAIN: 'test.myshopify.com', SHOPIFY_ADMIN_ACCESS_TOKEN: 't' }, dev as never)
-    expect(result.status).toBe('verified')
-    expect(result.detail).toContain('cannot take real orders')
-  })
-
-  it('does not warn for a normal paid Shopify plan', async () => {
-    const paid = reply(200, { shop: { name: 'Real Shop', plan_name: 'basic', plan_display_name: 'Basic' } })
-    const result = await checkConnection('shopify', { SHOPIFY_STORE_DOMAIN: 'real.myshopify.com', SHOPIFY_ADMIN_ACCESS_TOKEN: 't' }, paid as never)
-    expect(result.detail).not.toContain('cannot take real orders')
-  })
-
-  it('accepts a store-level Printful key that the account endpoint refuses', async () => {
-    const calls: string[] = []
-    const f = async (url: unknown) => { calls.push(String(url)); return String(url).endsWith('/stores') ? new Response('{}', { status: 403 }) : new Response('{}', { status: 200 }) }
-    const result = await checkConnection('printful', { PRINTFUL_API_KEY: 'k' }, f as never)
-    expect(result.status).toBe('verified')
-    expect(calls).toEqual(['https://api.printful.com/stores', 'https://api.printful.com/store'])
-  })
-
   it('never claims a service with no automatic test is working', async () => {
-    const result = await checkConnection('canva', { CANVA_ACCESS_TOKEN: 'x' }, reply(200) as never)
+    const result = await checkConnection('figma', { FIGMA_ACCESS_TOKEN: 'x' }, reply(200) as never)
     expect(result.status).toBe('unchecked')
     expect(result.detail).toContain('not tested')
-    expect(hasAutomaticCheck('canva')).toBe(false)
-    expect(hasAutomaticCheck('stripe')).toBe(true)
   })
   it('verifies AI model keys against the right service and never echoes the key', async () => {
     seen.length = 0

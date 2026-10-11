@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agents and approvals | Kern</title>
+<meta name="description" content="Run many agents side by side, review every edit in a diff, and choose how much each agent may do without asking.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#181818">
+<link rel="icon" type="image/svg+xml" href="assets/kern-mark.svg">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/connections.css">
+<link rel="stylesheet" href="css/demos.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site" data-site><div class="wrap site__row">
+<a class="lockup" href="index.html" aria-label="Kern, home"><svg width="26" height="26" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M9 7v26M30 7 17 20l13 13" stroke="#f2f2f2" stroke-width="4"/><path d="M9 20h8" stroke="#f2f2f2" stroke-width="4"/></svg>Kern</a>
+<nav class="nav" id="site-nav" aria-label="Primary" data-open="false"><span class="nav__ind" aria-hidden="true"></span><div class="nav__group is-current"><button type="button" class="nav__link" aria-haspopup="true" aria-expanded="false">Product<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m1 1 4 4 4-4"/></svg></button><div class="menu" role="menu" aria-label="Product"><a href="features.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z"/></svg></span><strong>Features</strong><small>Everything around your agents</small></a><a href="models.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 8h8v8H8V8Zm2-5v3m4-3v3m-4 12v3m4-3v3M3 10h3m-3 4h3m12-4h3m-3 4h3"/></svg></span><strong>Models</strong><small>Claude, GPT, Kimi, Grok and more</small></a><a href="agents.html" role="menuitem" aria-current="page"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8.2 7 10 4.2-1.8 7-5.4 7-10V6l-7-3Z"/></svg></span><strong>Agents and approvals</strong><small>Review every change</small></a><a href="projects.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg></span><strong>Projects</strong><small>Many projects, one window</small></a><a href="connections.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5m6-5v5M6 8h12v3a6 6 0 0 1-12 0V8Zm6 9v4"/></svg></span><strong>Connections</strong><small>Keys, handled once</small></a><a href="how-it-works.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span><strong>How it works</strong><small>From prompt to accepted change</small></a></div></div><div class="nav__group"><button type="button" class="nav__link" aria-haspopup="true" aria-expanded="false">Resources<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m1 1 4 4 4-4"/></svg></button><div class="menu" role="menu" aria-label="Resources"><a href="requirements.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></span><strong>Requirements</strong><small>What Kern needs</small></a><a href="faq.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg></span><strong>FAQ</strong><small>Short answers</small></a><a href="changelog.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v5l3 2m6-3a9 9 0 1 1-3-6.7"/></svg></span><strong>Changelog</strong><small>What is in this build</small></a></div></div><div class="nav__group"><button type="button" class="nav__link" aria-haspopup="true" aria-expanded="false">Trust<svg viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m1 1 4 4 4-4"/></svg></button><div class="menu" role="menu" aria-label="Trust"><a href="security.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5V11Z"/></svg></span><strong>Security</strong><small>How it stays on your machine</small></a><a href="privacy.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg></span><strong>Privacy</strong><small>What it collects (nothing)</small></a><a href="about.html" role="menuitem"><span class="menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 11v5m0-8h.01M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/></svg></span><strong>About</strong><small>What Kern is for</small></a></div></div></nav>
+<a class="btn btn--primary btn--sm site__cta" href="requirements.html">Get started <span class="arrow" aria-hidden="true">&rarr;</span></a>
+<button class="navtoggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Menu"><span></span><span></span><span></span></button>
+</div><div class="site__progress" aria-hidden="true"></div></header>
+<main id="main">
+<section class="page-head"><canvas class="dots dots--head" data-cell="14" aria-hidden="true"></canvas><div class="wrap"><p class="eyebrow">Agents and approvals</p><h1 class="h1-page">You stay in charge.</h1><p class="lede">Agents propose. You decide. Every window shows what its agent is doing and waits where you want it to.</p></div></section>
+<section class="section"><div class="wrap"><div class="sec__head" data-reveal><p class="eyebrow">Review</p><h2>Nothing is written until you accept.</h2><p class="lede">Edits pause in a diff. Accept to write them to disk, or reject and tell the agent why. Try it.</p></div>
+<div class="dv" data-diff data-reveal="scale">
+<div class="dv__head"><span>src/Hero.tsx</span><span>+2 &minus;2</span></div>
+<div class="dv__code" aria-label="Proposed change">
+<div class="dv__line"><i>11</i><b></b><span>  return (</span></div>
+<div class="dv__line"><i>12</i><b></b><span>    &lt;section className="hero"&gt;</span></div>
+<div class="dv__line del"><i>13</i><b>&minus;</b><span>      &lt;h1&gt;Welcome to my website&lt;/h1&gt;</span></div>
+<div class="dv__line del"><i>14</i><b>&minus;</b><span>      &lt;p&gt;Stuff I have made.&lt;/p&gt;</span></div>
+<div class="dv__line add"><i>13</i><b>+</b><span>      &lt;h1&gt;Design that gets out of the way&lt;/h1&gt;</span></div>
+<div class="dv__line add"><i>14</i><b>+</b><span>      &lt;p&gt;Small studio. Clear work.&lt;/p&gt;</span></div>
+<div class="dv__line"><i>15</i><b></b><span>    &lt;/section&gt;</span></div>
+</div>
+<div class="dv__bar"><span data-status role="status">1 edit waiting for review</span><div class="dv__actions"><input class="dv__reason" data-reason type="text" placeholder="Optional: tell the agent why you're rejecting…" aria-label="Reason for rejecting"><button type="button" class="mini" data-reject>Reject</button><button type="button" class="mini mini--solid" data-accept>Accept</button><button type="button" class="mini" data-reset hidden>Try again</button></div></div>
+</div></div></section>
+<section class="section"><div class="wrap"><div class="sec__head" data-reveal><p class="eyebrow">Approval modes</p><h2>Decide how much it may do alone.</h2><p class="lede">Pick a mode, then run the same three actions. Notice what stops and what doesn't.</p></div>
+<div data-modes data-reveal>
+<div class="seg" role="group" aria-label="Approval mode"><button type="button" data-mode="ask" aria-pressed="true">Ask for approval</button><button type="button" data-mode="edit" aria-pressed="false">Approve for me</button><button type="button" data-mode="bypass" aria-pressed="false">Full access</button></div>
+<p class="modeinfo" data-info></p>
+<button type="button" class="btn btn--primary run" data-run>Run the task <span class="arrow" aria-hidden="true">&rarr;</span></button>
+<ul class="tl" data-tl aria-live="polite"></ul>
+</div></div></section>
+<section class="section"><div class="wrap"><h2 class="sr-only">More about agents</h2><div class="grid grid--3">
+<div class="card" data-reveal><h3>A window per conversation</h3><p>Open as many as your machine can handle. Each shows streamed reasoning, tool calls you can expand and the live todo list.</p></div>
+<div class="card" data-reveal><h3>Queue the next message</h3><p>Add another message while an agent is working. It goes out when the agent is ready, and you can remove it before then.</p></div>
+<div class="card" data-reveal><h3>Stop and recover</h3><p>Stop any agent from its header. If one fails partway, a Continue button picks the work back up.</p></div>
+</div></div></section>
+<section class="cta"><canvas class="dots dots--cta" data-cell="18" aria-hidden="true"></canvas><div class="wrap"><h2 data-reveal>Many agents. One set of rules.</h2><div class="hero__actions" data-reveal><a class="btn btn--primary" href="projects.html">Projects <span class="arrow" aria-hidden="true">&rarr;</span></a><a class="btn" href="connections.html">Connections</a></div></div></section>
+</main>
+<footer class="foot"><div class="wrap"><div class="foot__cols">
+<div class="foot__brand"><a class="lockup" href="index.html"><svg width="22" height="22" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M9 7v26M30 7 17 20l13 13" stroke="#f2f2f2" stroke-width="4"/><path d="M9 20h8" stroke="#f2f2f2" stroke-width="4"/></svg>Kern</a><p>One workspace for every AI agent. Connect the models you use and work on separate projects at the same time.</p></div>
+<div><p class="foot__h">Product</p><ul><li><a href="features.html">Features</a></li><li><a href="models.html">Models</a></li><li><a href="agents.html">Agents and approvals</a></li><li><a href="projects.html">Projects</a></li><li><a href="connections.html">Connections</a></li><li><a href="how-it-works.html">How it works</a></li></ul></div><div><p class="foot__h">Resources</p><ul><li><a href="requirements.html">Requirements</a></li><li><a href="faq.html">FAQ</a></li><li><a href="changelog.html">Changelog</a></li></ul></div><div><p class="foot__h">Trust</p><ul><li><a href="security.html">Security</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="about.html">About</a></li></ul></div>
+</div><p class="foot__legal">&copy; 2026 Nick. All rights reserved. Kern is in private development and is not publicly distributed.</p></div></footer>
+<script src="js/dots.js" defer></script>
+<script src="js/demos.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>

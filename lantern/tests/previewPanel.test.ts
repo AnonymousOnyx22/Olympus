@@ -36,7 +36,7 @@ describe('project preview selection', () => {
     expect(container.querySelector('iframe')).toBeNull()
   })
   it('does not restore a remote URL saved in local storage', async () => {
-    localStorage.setItem('olympus.preview.A', 'https://example.com')
+    localStorage.setItem('kern.preview.A', 'https://example.com')
     await render('A')
     expect(container.querySelector('iframe')).toBeNull()
   })

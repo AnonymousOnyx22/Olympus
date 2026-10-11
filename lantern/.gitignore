@@ -25,7 +25,7 @@ Thumbs.db
 *.swp
 
 # NOTE: build/entitlemas.mac.plist and build/entitlements.mac.plist are
-# deliberately NOT ignored. They are source — electron-builder reads them to
+# deliberately NOT ignored. They are source - electron-builder reads them to
 # sign the macOS app, and an unsigned build is a Gatekeeper failure. Ignoring
 # them by accident is the kind of thing that only shows up on a release day,
 # so `build/icon.*` and `build/*.plist` are tracked.

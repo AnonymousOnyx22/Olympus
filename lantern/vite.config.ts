@@ -24,7 +24,7 @@ const RENDERER_CSP = [
 const CHARSET_TAG = '<meta charset="UTF-8" />'
 
 const productionCsp = (): Plugin => ({
-  name: 'olympus-csp',
+  name: 'kern-csp',
   apply: 'build',
   transformIndexHtml(html) {
     // This injection used to fail silently: if the charset tag changed shape, the packaged

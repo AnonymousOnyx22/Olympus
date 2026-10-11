@@ -33,9 +33,7 @@ export function ensureMonaco(): Promise<void> {
 
     loader.config({ monaco })
 
-    // Still registered as 'olympus-light' because editors reference the theme by that name;
-    // it is the dark Aegean-night palette now.
-    monaco.editor.defineTheme('olympus-light', {
+    monaco.editor.defineTheme('kern-dark', {
       base: 'vs-dark',
       inherit: true,
       rules: [],

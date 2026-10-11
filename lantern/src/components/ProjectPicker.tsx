@@ -87,11 +87,21 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
       className="fixed inset-0 z-50 flex items-start justify-center bg-midnight/70 p-4 pt-[12vh] backdrop-blur-[2px]"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
-      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} className="flex max-h-[70vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean-lg">
+      <div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={title} onKeyDown={event => {
+        const editing = event.target instanceof HTMLInputElement
+        if (editing && event.key !== 'ArrowDown') return
+        if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return
+        const items = [...event.currentTarget.querySelectorAll<HTMLButtonElement>('nav button:not(:disabled)')]
+        if (!items.length) return
+        const current = items.indexOf(document.activeElement as HTMLButtonElement)
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (current + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length
+        event.preventDefault()
+        items[next]?.focus()
+      }} className="app-choice-dialog flex max-h-[70vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-float-lg">
         <header className="shrink-0 border-b border-slate-200 px-4 pb-3 pt-4">
           <h2 className="text-[14px] font-semibold text-slate-900">{title}</h2>
           <p className="mt-1 text-[11.5px] leading-relaxed text-slate-500">{hint}</p>
-          <div className="mt-3 flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-aether-400">
+          <div className="mt-3 flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-accent-400">
             <span className="shrink-0 text-slate-400">
               <Glyph path={Paths.search} className="h-3.5 w-3.5" />
             </span>
@@ -113,7 +123,7 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
               const isCurrent = space.id === currentId
               const select = () => pick(space)
               return (
-                <div key={space.id} className={`flex items-center gap-2 rounded-xl transition ${isCurrent ? 'bg-aether-50 ring-1 ring-aether-200' : 'hover:bg-slate-50'}`}>
+                <div key={space.id} className={`flex items-center gap-2 rounded-xl transition ${isCurrent ? 'bg-accent-50 ring-1 ring-accent-200' : 'hover:bg-slate-50'}`}>
                   <button
                     type="button"
                     onClick={select}
@@ -121,13 +131,13 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
                     title={space.available ? (space.path ? `${space.name} - ${space.path}` : space.name) : 'This folder is missing'}
                     className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2.5 py-2.5 text-left disabled:cursor-default disabled:opacity-50"
                   >
-                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl text-[12px] font-semibold uppercase ${isCurrent ? 'bg-aether-100 text-aether-700' : 'bg-slate-100 text-slate-500'}`}>
+                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl text-[12px] font-semibold uppercase ${isCurrent ? 'bg-accent-100 text-accent-700' : 'bg-slate-100 text-slate-500'}`}>
                       {space.id === GENERAL_SPACE ? <Glyph path={Paths.folder} className="h-3.5 w-3.5" /> : space.name.slice(0, 1)}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex min-w-0 items-center gap-2">
                         <span className="truncate text-[13px] font-medium text-slate-900">{space.name}</span>
-                        {isCurrent && <span className="shrink-0 rounded-md bg-aether-100 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-aether-700">Current</span>}
+                        {isCurrent && <span className="shrink-0 px-1.5 py-px text-[11px] font-medium text-accent-700">Current</span>}
                         {!!space.agentCount && (
                           <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-px font-mono text-[9.5px] text-slate-500" title="Open agent windows">
                             {space.agentCount} agent{space.agentCount === 1 ? '' : 's'}
@@ -159,7 +169,7 @@ export default function ProjectPicker({ spaces, currentId, initialQuery, title, 
           <button
             type="button"
             onClick={onAddFolder}
-            className="flex h-8 items-center gap-1.5 rounded-xl bg-white px-3 text-[11.5px] font-medium text-aether-700 ring-1 ring-aether-200 transition hover:bg-aether-50"
+            className="flex h-8 items-center gap-1.5 rounded-xl bg-white px-3 text-[11.5px] font-medium text-accent-700 ring-1 ring-accent-200 transition hover:bg-accent-50"
           >
             <Glyph path={Paths.plus} className="h-3.5 w-3.5" />
             Add a folder…

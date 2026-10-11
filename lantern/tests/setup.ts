@@ -1,7 +1,7 @@
 // Shared test setup.
 //
 // The single most important job here is stopping any test from touching the
-// REAL user data directory. If a test reads or writes %APPDATA%/olympus, it
+// REAL user data directory. If a test reads or writes %APPDATA%/Kern, it
 // mutates the developer's actual project list, and a bug in a test looks
 // exactly like a bug in the app. Every suite that imports a module calling
 // app.getPath() gets the temp sandbox through the `electron` mock below.
@@ -17,7 +17,7 @@ let sandbox = ''
 vi.mock('electron', () => ({
   app: {
     getPath: (_name: string) => sandbox,
-    getName: () => 'Olympus',
+    getName: () => 'Kern',
     getVersion: () => '0.0.0-test',
   },
   // Surface enough of the Electron surface that importing a module which
@@ -33,7 +33,7 @@ vi.mock('electron', () => ({
 }))
 
 beforeEach(() => {
-  sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'olympus-test-'))
+  sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'kern-test-'))
 })
 
 afterEach(() => {

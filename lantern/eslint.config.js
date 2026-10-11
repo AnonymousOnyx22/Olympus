@@ -1,4 +1,4 @@
-// Flat ESLint config for Olympus.
+// Flat ESLint config for Kern.
 //
 // NOTE ON THE FILE EXTENSION: this is `.js` using CommonJS `require`, because
 // package.json has no `"type": "module"` and adding one would change how
@@ -7,7 +7,7 @@
 // first `import`.
 //
 // Design intent: catch real bugs (unreachable code, a misused hook, a floating
-// promise) without becoming a style committee. Olympus has no Prettier and no
+// promise) without becoming a style committee. Kern has no Prettier and no
 // in-house style rules beyond what tsc already enforces, so every rule here
 // either catches a defect or documents a deliberate exception.
 //
@@ -33,8 +33,8 @@
 // Upstream tracking is typescript-eslint#10940, and it is not resolved in the
 // 8.71 release this repo pins.
 //
-// Rather than downgrade the compiler — the app typechecks clean on TS 7 and
-// downgrading it would be a worse outcome than a lint shim — the block below
+// Rather than downgrade the compiler - the app typechecks clean on TS 7 and
+// downgrading it would be a worse outcome than a lint shim - the block below
 // makes `require('typescript')` resolve to ts6, the TypeScript 6 API installed
 // alongside it. That is the side-by-side arrangement Microsoft's TS 7
 // announcement recommends for this exact situation. TS 6 parses the project's
@@ -105,43 +105,31 @@ module.exports = tseslint.config(
       'react-hooks/purity': 'warn',
       'react-hooks/use-memo': 'warn',
       // setState during render is a genuine React bug: it discards the output
-      // of the current render pass. Nothing in Olympus does this today.
+      // of the current render pass. Nothing in Kern does this today.
       'react-hooks/set-state-in-render': 'error',
-      // Duplicates set-state-in-effect above, and would flag the same 12 sites.
+      // Duplicates set-state-in-effect below, and would flag the same sites.
       'react-hooks/no-deriving-state-in-effects': 'off',
-      'react-hooks/set-state-in-effect': 'warn',
 
-      // eslint-plugin-react-hooks v7 ships several NEW rules that did not exist
-      // in v4/v5. All three below fire on existing, working code that must not
-      // be edited here, so they are demoted to warn and documented. They are
-      // worth reading before flipping any of them to error:
+      // eslint-plugin-react-hooks v7 adds React Compiler rules. Kern does not use the compiler, and
+      // the patterns they flag are deliberate and working, so they are off rather than left as
+      // noise that hides real warnings:
       //
-      //   refs                  (18 hits) Reading a ref during render is legal
-      //     when the value is not used to decide what to render. The hits are
-      //     imperative wiring: xterm instances, ResizeObserver targets, fit
-      //     calls. Converting them would mean restructuring terminal and
-      //     preview lifecycles, which is a real refactor with real regression
-      //     risk on a product about to be sold.
-      //   set-state-in-effect   (12 hits) The stream handler dispatches a
-      //     `reset` action on session change and sets a loaded flag; the
-      //     terminal lazily creates its PTY when it becomes visible. That is
-      //     synchronising with an external system (the daemon, the OS pty),
-      //     which is what effects are for. Splitting it into the
-      //     "derive-during-render" style the rule wants would be a rewrite.
-      //   exhaustive-deps      (5 hits)  Already a warn in the plugin's own
-      //     recommended preset. Left as warn for the same reason: the deps are
-      //     intentionally partial around refs and connection state.
+      //   refs                  Reading a ref during render is legal when it is not used to decide
+      //     what to render. The hits are imperative wiring (xterm instances, ResizeObserver targets,
+      //     "latest callback" refs).
+      //   set-state-in-effect   The stream handler resets on session change, and the terminal
+      //     creates its PTY when it becomes visible. That is synchronising with an external system
+      //     (the daemon, the OS pty), which is what effects are for.
       //
-      // The rules that DO catch real defects on this codebase are kept at
-      // error above: rules-of-hooks and set-state-in-render, which catch
-      // conditional/out-of-order hook calls and render-phase mutation. Both
-      // pass clean on the current source.
-      'react-hooks/refs': 'warn',
+      // Turn them on to hunt for refactors, not as a gate. exhaustive-deps stays a warning; the few
+      // deliberate exceptions carry an inline disable with the reason.
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/refs': 'off',
       'react-hooks/exhaustive-deps': 'warn',
 
       // --- correctness, high value -----------------------------------------
       // Unreachable code after a throw/return is almost always a refactor
-      // leftover, and on a first paid release that is a real defect risk.
+      // leftover, and that is a real defect risk.
       'no-unreachable': 'error',
       'no-constant-condition': ['error', { checkLoops: false }],
       'no-cond-assign': 'error',

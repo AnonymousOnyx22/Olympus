@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { ensureMonaco } from './monacoSetup'
+import { errorText } from '../errorText'
 
 interface EditorWorkspaceProps {
   spaceId: string
@@ -34,7 +35,7 @@ const FILE_OVERSCAN = 12
 const FILE_VIEWPORT_ROWS = 30
 
 export default function EditorWorkspace({ spaceId, visible, switchGuardRef, projectKey, available, onRun, runDisabled }: EditorWorkspaceProps) {
-  const [explorerOpen, setExplorerOpen] = useState(() => localStorage.getItem('olympus.explorerCollapsed') !== 'true')
+  const [explorerOpen, setExplorerOpen] = useState(() => localStorage.getItem('kern.explorerCollapsed') !== 'true')
   const [files, setFiles] = useState<string[]>([])
   const [selected, setSelected] = useState<string | null>(null)
   const [bufferSpaceId, setBufferSpaceId] = useState(spaceId)
@@ -79,7 +80,7 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
         if (latest.current.spaceId === owner && latest.current.selected === file && latest.current.content === text) setSavedContent(text)
         return true
       } catch (reason) {
-        setError(reason instanceof Error ? reason.message : String(reason))
+        setError(errorText(reason))
         return false
       } finally {
         setSaving(false)
@@ -115,7 +116,7 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
         setContent(text)
         setSavedContent(text)
       } catch (reason) {
-        if (sequence === readSequence.current) setError(reason instanceof Error ? reason.message : String(reason))
+        if (sequence === readSequence.current) setError(errorText(reason))
       } finally {
         if (sequence === readSequence.current) setLoading(false)
       }
@@ -156,10 +157,11 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
       setLoading(false)
     }).catch((reason) => {
       if (!cancelled) {
-        setError(reason instanceof Error ? reason.message : String(reason))
+        setError(errorText(reason))
         setLoading(false)
       }
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- readSequence is a counter, not a DOM ref
     return () => { cancelled = true; ++readSequence.current }
   }, [available, projectKey, spaceId])
 
@@ -206,12 +208,12 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
           Explorer
           <span className="ml-auto font-mono font-normal tracking-normal text-slate-400">{files.length}</span>
         </div>
-        <div className="border-b border-aether-100 p-2">
+        <div className="border-b border-accent-100 p-2">
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Find file"
-            className="h-7 w-full rounded-lg bg-white px-2 text-[11px] text-slate-700 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-aether-400"
+            className="h-7 w-full rounded-lg bg-white px-2 text-[11px] text-slate-700 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-accent-400"
           />
         </div>
         <div
@@ -231,14 +233,14 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
               type="button"
               onClick={() => void openFile(file)}
               title={file}
-              className={`flex h-8 w-full min-w-0 items-center gap-2 px-3 text-left transition ${selected === file ? 'bg-aether-50 text-slate-900' : 'text-slate-600 hover:bg-slate-100'}`}
+              className={`flex h-8 w-full min-w-0 items-center gap-2 px-3 text-left transition ${selected === file ? 'bg-accent-50 text-slate-900' : 'text-slate-600 hover:bg-slate-100'}`}
             >
-              <svg className={`h-3.5 w-3.5 shrink-0 ${selected === file ? 'text-aether-600' : 'text-slate-400'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 2h8l4 4v16H6V2Z" /><path d="M14 2v5h5" /></svg>
+              <svg className={`h-3.5 w-3.5 shrink-0 ${selected === file ? 'text-accent-600' : 'text-slate-400'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 2h8l4 4v16H6V2Z" /><path d="M14 2v5h5" /></svg>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[11.5px]">{basename(file)}</span>
                 {dirname(file) && <span className="block truncate text-[9px] text-slate-400">{dirname(file)}</span>}
               </span>
-              {selected === file && dirty && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aether-400" />}
+              {selected === file && dirty && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-400" />}
             </button>
           ))}
           <div style={{ height: Math.max(0, (shownFiles.length - windowEnd) * FILE_ROW_HEIGHT) }} aria-hidden="true" />
@@ -247,11 +249,11 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
 
       <section className="flex min-w-0 flex-1 flex-col">
         <div className="flex h-9 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3">
-          <button onClick={() => setExplorerOpen((open) => { localStorage.setItem('olympus.explorerCollapsed', String(open)); return !open })} aria-expanded={explorerOpen} aria-label={explorerOpen ? 'Collapse file explorer' : 'Expand file explorer'} title={explorerOpen ? 'Collapse file explorer' : 'Expand file explorer'} className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">
+          <button onClick={() => setExplorerOpen((open) => { localStorage.setItem('kern.explorerCollapsed', String(open)); return !open })} aria-expanded={explorerOpen} aria-label={explorerOpen ? 'Collapse file explorer' : 'Expand file explorer'} title={explorerOpen ? 'Collapse file explorer' : 'Expand file explorer'} className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 3v18" /></svg>
           </button>
           <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-slate-500">{selected ?? 'No file selected'}</span>
-          {dirty && <span className="text-[10px] text-aether-600">Modified</span>}
+          {dirty && <span className="text-[10px] text-accent-600">Modified</span>}
           <button
             type="button"
             disabled={!dirty || saving}
@@ -265,7 +267,7 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
             disabled={runDisabled}
             onClick={onRun}
             title="Run project (Ctrl/⌘ J for terminal)"
-            className="rounded-lg px-2 py-1 text-[10.5px] text-aether-600 transition hover:bg-aether-50 hover:text-aether-700 disabled:opacity-30"
+            className="rounded-lg px-2 py-1 text-[10.5px] text-accent-600 transition hover:bg-accent-50 hover:text-accent-700 disabled:opacity-30"
           >
             <span aria-hidden="true">&#9655;</span> Run
           </button>
@@ -274,10 +276,10 @@ export default function EditorWorkspace({ spaceId, visible, switchGuardRef, proj
           {selected ? (
             monacoReady ? (
             <Editor
-              path={`olympus://${projectKey}/${selected}`}
+              path={`kern://${projectKey}/${selected}`}
               value={content}
               language={languageFor(selected)}
-              theme="olympus-light"
+              theme="kern-dark"
               onChange={(value) => setContent(value ?? '')}
               options={{
                 automaticLayout: true,

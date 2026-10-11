@@ -1,3 +1,5 @@
+import InterfaceState from './InterfaceState'
+import Popover from './Popover'
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
@@ -9,17 +11,16 @@ import TodoPanel, { extractTodos } from './TodoPanel'
 import { api } from '../services/api'
 import type { MessageEntry } from '../services/streamHandler'
 import type { LocalProvider, ModelRef, Part, PermissionReply, PermissionRequest, ReasoningPart, Session, ToolPart } from '../types/opencode'
+import { errorText } from '../errorText'
 
 interface ChatCanvasProps {
+  loading?: boolean
   compact?: boolean
   spaceId: string
   mode: 'agent' | 'thread'
   projectName: string
   projectPath?: string
   projectLocked?: boolean
-  welcomeTitle?: string
-  welcomeDescription?: string
-  composerPlaceholder?: string
   onNewSession: () => void
   /**
    * This space's chats, newest first. Omitted in compact (agent pane) mode - a pane owns a
@@ -36,8 +37,6 @@ interface ChatCanvasProps {
   onDismissError: () => void
   permissions: PermissionRequest[]
   onReviewEdits: () => void
-  /** False when the plan is shown elsewhere instead (Station puts it in its own side panel). */
-  showInlineTodos?: boolean
 
   model: ModelRef | null
   variant: string | null
@@ -85,13 +84,13 @@ const Reasoning = memo(function Reasoning({ part }: { part: ReasoningPart }) {
     <div className="group/reasoning relative py-0.5 pl-5">
       <span
         aria-hidden="true"
-        className={`absolute left-0 top-px select-none text-[13px] leading-5 transition-colors ${streaming ? 'text-aether-500' : 'text-slate-400'}`}
+        className={`absolute left-0 top-px select-none text-[13px] leading-5 transition-colors ${streaming ? 'text-accent-500' : 'text-slate-400'}`}
       >
         →
       </span>
       <p className="whitespace-pre-wrap break-words text-[12.5px] italic leading-relaxed text-slate-500">
         {part.text}
-        {streaming && <span className="ml-0.5 inline-block h-3 w-[2px] translate-y-[2px] animate-pulse bg-aether-400 align-middle" />}
+        {streaming && <span className="ml-0.5 inline-block h-3 w-[2px] translate-y-[2px] animate-pulse bg-accent-400 align-middle" />}
       </p>
       {secs !== null && (
         <span className="mt-0.5 block text-[10px] tabular-nums text-slate-500 opacity-0 transition-opacity group-hover/reasoning:opacity-100">
@@ -162,7 +161,7 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
         onClick={() => setOpen((v) => !v)}
         className="group flex w-full items-center gap-2 rounded-md px-2 py-1 text-left transition hover:bg-slate-50"
       >
-        <span className={`grid h-4 w-4 shrink-0 place-items-center ${running ? 'text-aether-500' : s.status === 'error' ? 'text-rose-500' : 'text-slate-400'}`}>
+        <span className={`grid h-4 w-4 shrink-0 place-items-center ${running ? 'text-accent-500' : s.status === 'error' ? 'text-rose-500' : 'text-slate-400'}`}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d={TOOL_ICON[part.tool] ?? 'M12 3v18M3 12h18'} />
           </svg>
@@ -221,7 +220,7 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
         layout="position"
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className="overflow-hidden rounded-md bg-aether-50/40 ring-1 ring-aether-100"
+        className="overflow-hidden rounded-md bg-accent-50/40 ring-1 ring-accent-100"
       >
         {row}
       </motion.div>
@@ -229,7 +228,7 @@ const ToolCard = memo(function ToolCard({ part }: { part: ToolPart }) {
   }
 
   return (
-    <motion.div layout="position" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}>
+    <motion.div layout="position" initial={false} animate={{ opacity: 1, y: 0 }}>
       {row}
     </motion.div>
   )
@@ -262,12 +261,14 @@ function PermissionCard({ spaceId, request, onReviewEdits }: { spaceId: string; 
   }
   const isEdit = request.permission === 'edit'
   const command = typeof request.metadata.command === 'string' ? request.metadata.command : null
-  const subject = command ?? request.patterns.join(', ')
+  // The daemon's pattern can drop the drive letter on Windows; the real path is in the metadata.
+  const filepath = typeof request.metadata.filepath === 'string' ? request.metadata.filepath : null
+  const subject = command ?? filepath ?? request.patterns.join(', ')
   const label =
     isEdit ? 'wants to edit' : request.permission === 'bash' ? 'wants to run' : request.permission === 'external_directory' ? 'wants to access outside the project' : `requests “${request.permission}”`
 
   return (
-    <motion.div layout initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="rounded-xl bg-amber-50 p-3 ring-1 ring-amber-400/20">
+    <motion.div layout initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} className="permission-card rounded-xl bg-amber-50 p-3 ring-1 ring-amber-400/20">
       <div className="flex items-center gap-2 text-[11px]">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" />
         <span className="font-medium text-amber-600">Agent paused</span>
@@ -280,13 +281,13 @@ function PermissionCard({ spaceId, request, onReviewEdits }: { spaceId: string; 
       {error && <p className="mt-1.5 text-[11px] text-rose-600">{error}</p>}
       <div className="mt-2.5 flex gap-2">
         {isEdit ? (
-          <button onClick={onReviewEdits} className="rounded-lg bg-amber-400 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-amber-300">
+          <button onClick={onReviewEdits} className="rounded-lg bg-accent-600 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-accent-500">
             Review diff →
           </button>
         ) : (
           <>
-            <button disabled={busy} onClick={() => reply('once')} className="rounded-lg bg-emerald-500 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50">Allow</button>
-            <button disabled={busy} onClick={() => reply('reject')} className="rounded-lg bg-rose-500 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-rose-600 disabled:opacity-50">Deny</button>
+            <button disabled={busy} onClick={() => reply('once')} className="rounded-lg bg-accent-600 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-accent-500 disabled:opacity-50">Allow</button>
+            <button disabled={busy} onClick={() => reply('reject')} className="rounded-lg border border-slate-200 px-3 py-1 text-[11px] font-semibold text-rose-600 transition hover:bg-rose-500/10 disabled:opacity-50">Deny</button>
           </>
         )}
       </div>
@@ -300,15 +301,15 @@ const MessageView = memo(function MessageView({ entry, mode }: { entry: MessageE
     const text = parts.filter((p): p is Extract<Part, { type: 'text' }> => p.type === 'text' && !p.synthetic).map((p) => p.text).join('\n')
     if (!text) return null
     return (
-      <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="prompt-line flex justify-end">
-        <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-aether-50 px-4 py-2.5 text-[13.5px] leading-relaxed text-slate-900 ring-1 ring-aether-100">{text.length > 1800 ? <details><summary className="cursor-pointer font-medium">{text.includes('You are the Station store manager.') ? 'Store request and build instructions' : 'Read full request'}</summary><div className="mt-2 max-h-80 overflow-y-auto">{text}</div></details> : text}</div>
+      <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="message-block prompt-line flex justify-end">
+        <div className="w-full whitespace-pre-wrap text-[13.5px] leading-relaxed text-slate-900">{text.length > 1800 ? <details><summary className="cursor-pointer font-medium">Read full request</summary><div className="mt-2 max-h-80 overflow-y-auto">{text}</div></details> : text}</div>
       </motion.div>
     )
   }
   const err = info.error && info.error.name !== 'MessageAbortedError' ? info.error.data?.message || info.error.name : null
   const aborted = info.error?.name === 'MessageAbortedError'
   return (
-    <div className="space-y-1.5">
+    <div className="message-block space-y-1.5">
       {parts.filter((part) => (mode === 'agent' || part.type !== 'tool') && !(part.type === 'tool' && part.tool === 'todowrite')).map((part) => <PartView key={part.id} part={part} />)}
       {mode === 'thread' && parts.some((part) => part.type === 'tool') && <details className="text-xs text-slate-500"><summary className="cursor-pointer py-1">Tool activity ({parts.filter((part) => part.type === 'tool').length})</summary><div className="space-y-0.5 py-1">{parts.filter((part) => part.type === 'tool').map((part) => <PartView key={part.id} part={part} />)}</div></details>}
       {aborted && <p className="pt-1 text-[11px] italic text-slate-400">Stopped.</p>}
@@ -317,7 +318,7 @@ const MessageView = memo(function MessageView({ entry, mode }: { entry: MessageE
   )
 })
 
-interface ComposerProps extends Pick<ChatCanvasProps, 'model' | 'variant' | 'providers' | 'onSelectModel' | 'onSelectVariant' | 'onRescan' | 'rescanning' | 'onAddEndpoint' | 'onRemoveEndpoint' | 'projectName' | 'projectLocked' | 'composerPlaceholder' | 'hasProject' | 'hasModels' | 'ready' | 'busy' | 'onChooseProject' | 'onAbort'> {
+interface ComposerProps extends Pick<ChatCanvasProps, 'model' | 'variant' | 'providers' | 'onSelectModel' | 'onSelectVariant' | 'onRescan' | 'rescanning' | 'onAddEndpoint' | 'onRemoveEndpoint' | 'projectName' | 'projectLocked' | 'hasProject' | 'hasModels' | 'ready' | 'busy' | 'onChooseProject' | 'onAbort'> {
   onSubmit: (text: string, priority?: boolean) => Promise<void>
   autoFocus?: boolean
 }
@@ -345,14 +346,14 @@ function Composer(props: ComposerProps) {
       await props.onSubmit(text, priority)
       setDraft('')
     } catch (error) {
-      setSendError(error instanceof Error ? error.message : String(error))
+      setSendError(errorText(error))
     } finally {
       setSending(false)
     }
   }
 
   return (
-    <div className="rounded-2xl bg-white p-2.5 shadow-aegean">
+    <div className="chat-composer rounded-lg border border-slate-200 bg-white p-3">
       <div className="flex items-end gap-2 pl-1.5">
         <textarea
           ref={inputRef}
@@ -368,31 +369,20 @@ function Composer(props: ComposerProps) {
           autoFocus={props.autoFocus}
           disabled={!props.ready}
           aria-label="Message agent"
-          placeholder={!props.hasModels ? 'Connect a model to start' : props.busy ? 'Type another message to queue it' : props.composerPlaceholder ?? (!props.hasProject ? 'Ask anything, or add a project for code' : 'Give the agent a task...')}
+          placeholder={!props.hasModels ? 'Connect a model to start' : props.busy ? 'Add a message to the queue' : (!props.hasProject ? 'Ask anything, or add a project for code' : 'Give the agent a task...')}
           className="max-h-[220px] min-h-[26px] flex-1 resize-none bg-transparent py-1.5 text-[14px] leading-6 text-slate-900 placeholder-slate-400 outline-none disabled:cursor-not-allowed"
         />
-        {props.busy ? (
-          <button onClick={props.onAbort} title="Stop" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-slate-100 text-slate-900 transition hover:bg-rose-500/80 hover:text-white active:scale-90">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="3" /></svg>
-          </button>
-        ) : (
-          <button onClick={() => void submit()} disabled={!canSend} title="Send (Enter)" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-aether-600 text-white transition hover:bg-aether-500 active:scale-90 disabled:bg-slate-100 disabled:text-slate-400 disabled:active:scale-100">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
-          </button>
-        )}
+
       </div>
 
-      {sendError && <p className="px-2 pb-1 pt-2 text-[11px] text-rose-600">Could not send: {sendError}</p>}
+      {sendError && <InterfaceState compact tone="error" title="Message could not send" description={sendError} />}
       {props.busy && draft.trim() && (
         <p className="px-2 pb-1 pt-1 text-[10.5px] text-slate-500">Enter queues · Ctrl/⌘+Enter sends next</p>
       )}
 
       {/* controls row - project on the left, model picker on the right (like the reference GUI) */}
-      <div className="mt-1 flex items-center justify-between gap-2">
-        {props.projectLocked ? <span className="flex max-w-[45%] items-center gap-1.5 px-2 py-1.5 text-[12px] text-slate-500" title={props.projectName}>
-          <svg className="h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
-          <span className="truncate">{props.projectName}</span>
-        </span> : <button onClick={props.onChooseProject} className="flex max-w-[45%] items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]" title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
+      <div className="composer-controls mt-1 flex items-center gap-2">
+        {!props.projectLocked && <button onClick={props.onChooseProject} className="flex max-w-[45%] items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]" title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
           <svg className="h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
           <span className="truncate">{props.hasProject ? props.projectName : 'Choose project'}</span>
         </button>}
@@ -408,6 +398,10 @@ function Composer(props: ComposerProps) {
           onRemoveEndpoint={props.onRemoveEndpoint}
           direction="up"
         />
+        <div className="composer-actions">
+          {props.busy && <button type="button" onClick={props.onAbort} title="Stop" aria-label="Stop agent" className="composer-stop"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="1" /></svg></button>}
+          <button type="button" onClick={() => void submit()} disabled={!canSend} title={props.busy ? 'Queue message' : 'Send (Enter)'} aria-label={props.busy ? 'Queue message' : 'Send message'} className="composer-send"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg></button>
+        </div>
       </div>
     </div>
   )
@@ -430,23 +424,14 @@ function ChatSwitcher({ spaceName, sessions, activeSessionId, onSelect, onNew }:
   onNew: () => void
 }) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!open) return
-    const close = (event: MouseEvent) => { if (!ref.current?.contains(event.target as Node)) setOpen(false) }
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false) }
-    window.addEventListener('mousedown', close)
-    window.addEventListener('keydown', escape)
-    return () => { window.removeEventListener('mousedown', close); window.removeEventListener('keydown', escape) }
-  }, [open])
-
+  const trigger = useRef<HTMLButtonElement>(null)
   const active = sessions.find((session) => session.id === activeSessionId)
   return (
-    <div className="relative shrink-0" ref={ref}>
-      <button
+    <div className="shrink-0">
+      <button ref={trigger}
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        aria-haspopup="menu"
+        aria-haspopup="dialog"
         title={`Chats in ${spaceName}`}
         className="flex h-6 max-w-[190px] items-center gap-1.5 rounded-lg px-1.5 text-[11px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
       >
@@ -457,11 +442,10 @@ function ChatSwitcher({ spaceName, sessions, activeSessionId, onSelect, onNew }:
         <span aria-hidden="true" className="shrink-0 text-[9px] text-slate-400">▼</span>
       </button>
       {open && (
-        <div role="menu" className="absolute right-0 top-full z-50 mt-2 max-h-72 w-72 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-aegean-lg">
+        <Popover trigger={trigger} onClose={() => setOpen(false)} label="Choose a chat" width={320} className="popover-content">
           <button
-            role="menuitem"
             onClick={() => { setOpen(false); onNew() }}
-            className="mb-1 flex w-full items-center gap-2 rounded-xl px-2 py-2 text-left text-[12px] font-medium text-aether-700 transition hover:bg-aether-50"
+            className="mb-1 flex w-full items-center gap-2 rounded-xl px-2 py-2 text-left text-[12px] font-medium text-accent-700 transition hover:bg-accent-50"
           >
             <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
             New chat
@@ -471,11 +455,10 @@ function ChatSwitcher({ spaceName, sessions, activeSessionId, onSelect, onNew }:
             return (
               <button
                 key={session.id}
-                role="menuitem"
-                onClick={() => { setOpen(false); onSelect(session.id) }}
-                className={`flex w-full items-start gap-2 rounded-xl px-2 py-1.5 text-left transition hover:bg-slate-50 ${selected ? 'bg-aether-50 ring-1 ring-aether-200' : ''}`}
+                    onClick={() => { setOpen(false); onSelect(session.id) }}
+                className={`flex w-full items-start gap-2 rounded-xl px-2 py-1.5 text-left transition hover:bg-slate-50 ${selected ? 'bg-accent-50 ring-1 ring-accent-200' : ''}`}
               >
-                <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${selected ? 'bg-aether-500' : 'bg-slate-200'}`} />
+                <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${selected ? 'bg-accent-500' : 'bg-slate-200'}`} />
                 <span className="min-w-0 flex-1">
                   <span className={`block truncate text-[12px] ${selected ? 'font-medium text-slate-900' : 'text-slate-700'}`}>{session.title}</span>
                   <span className="block truncate font-mono text-[9.5px] text-slate-400">{new Date(session.time.updated).toLocaleString()}</span>
@@ -484,7 +467,7 @@ function ChatSwitcher({ spaceName, sessions, activeSessionId, onSelect, onNew }:
             )
           })}
           {sessions.length === 0 && <p className="px-2 py-3 text-center text-[11.5px] text-slate-400">No chats here yet.</p>}
-        </div>
+        </Popover>
       )}
     </div>
   )
@@ -513,7 +496,6 @@ export default function ChatCanvas(props: ChatCanvasProps) {
   const composerProps: ComposerProps = {
     projectName: props.projectName,
     projectLocked: props.projectLocked,
-    composerPlaceholder: props.composerPlaceholder,
     model: props.model,
     variant: props.variant,
     providers: props.providers,
@@ -532,7 +514,7 @@ export default function ChatCanvas(props: ChatCanvasProps) {
     onSubmit: send,
   }
 
-  const showWelcome = props.messages.length === 0 && !props.busy
+  const showWelcome = props.ready && props.messages.length === 0 && !props.busy && !props.error
   const todos = useMemo(() => extractTodos(props.messages), [props.messages])
 
   return (
@@ -540,39 +522,40 @@ export default function ChatCanvas(props: ChatCanvasProps) {
       {!props.compact && <header className="flex h-10 shrink-0 items-center gap-2 border-b border-slate-200 px-3">
         <StatusOrb kind={props.busy ? 'working' : props.permissions.length ? 'attention' : props.ready ? 'ready' : 'connecting'} size={13} />
         <span className="min-w-0 truncate font-mono text-[11px] text-slate-500" title={props.projectPath}>{props.projectName}</span>
-        <span role="status" className={`ml-auto shrink-0 text-[10px] ${props.permissions.length ? 'text-amber-600' : props.busy ? 'text-aether-600' : 'text-slate-400'}`}>{props.permissions.length ? 'Needs approval' : props.busy ? 'Working' : props.ready ? 'Ready' : 'Connecting'}</span>
+        <span role="status" className={`ml-auto shrink-0 text-[10px] ${props.permissions.length ? 'text-amber-600' : props.busy ? 'text-accent-600' : 'text-slate-400'}`}>{props.permissions.length ? 'Needs approval' : props.busy ? 'Working' : props.ready ? 'Ready' : 'Connecting'}</span>
         {props.sessions && <ChatSwitcher spaceName={props.projectName} sessions={props.sessions} activeSessionId={props.activeSessionId ?? null} onSelect={props.onSelectSession ?? (() => {})} onNew={props.onNewSession} />}
         <button onClick={props.onNewSession} disabled={props.navigationLocked || !props.ready} aria-label="New chat" title="New chat" className="grid h-6 w-6 shrink-0 place-items-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-30">+</button>
       </header>}
       <div ref={scrollRef} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto">
-        <div className={`mx-auto space-y-4 p-4 ${props.mode === 'thread' ? 'max-w-3xl' : ''}`}>
+        <div className={`conversation-content mx-auto space-y-4 p-4 ${props.mode === 'thread' ? 'max-w-3xl' : ''}`}>
           {!props.compact && <div className="mb-6 border-b border-slate-200 pb-4">
             <h1 className="text-sm font-semibold text-slate-900">OpenCode <span className="ml-1 font-normal text-slate-500">{props.mode === 'thread' ? 'Thread' : 'Agent'}</span></h1>
             <p className="mt-1 font-mono text-[11px] text-slate-500">{props.model ? `${props.model.providerID} / ${props.model.modelID}` : 'No model connected'}</p>
             <p className="mt-1 truncate font-mono text-[11px] text-slate-500" title={props.projectPath}>{props.projectPath ?? 'General workspace'}</p>
           </div>}
+          {props.loading && <InterfaceState tone="loading" title="Loading conversation" description="Your messages and latest activity will appear here." />}
           {showWelcome && <div className="max-w-lg space-y-3 py-4">
-            <h2 className="text-base font-medium text-slate-900">{props.welcomeTitle ?? (props.compact ? 'Give this agent a task' : props.hasProject ? 'What are we working on?' : 'Your next project starts here.')}</h2>
-            <p className="text-xs leading-relaxed text-slate-500">{props.welcomeDescription ?? (props.hasProject ? 'Give the agent a task. Follow its commands, file edits, and results here while you work.' : 'Open a project to work with files, run commands, and preview your app. Or start a conversation in General.')}</p>
+            <h2 className="text-base font-medium text-slate-900">{props.compact ? 'Give this agent a task' : props.hasProject ? 'What are we working on?' : 'Your next project starts here.'}</h2>
+            <p className="text-xs leading-relaxed text-slate-500">{(props.hasProject ? 'Its commands, file edits and results appear here as it works.' : 'Open a project to work with files, run commands, and preview your app. Or start a conversation in General.')}</p>
             {!props.hasProject && <button onClick={props.onChooseProject} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 transition hover:bg-slate-50">Choose a project</button>}
             {!props.hasModels && <p className="border-l border-slate-200 pl-3 text-xs leading-relaxed text-slate-500">Start a local model server or connect a provider in OpenCode, then select a model below.</p>}
           </div>}
           {props.messages.map((entry) => <MessageView key={entry.info.id} entry={entry} mode={props.mode} />)}
           <AnimatePresence>{props.permissions.map((request) => <PermissionCard key={request.id} spaceId={props.spaceId} request={request} onReviewEdits={props.onReviewEdits} />)}</AnimatePresence>
-          {props.error && <div role="alert" className="flex items-start gap-2 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-600 ring-1 ring-rose-200"><span className="flex-1">{props.error}</span><button aria-label="Dismiss agent error" className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded hover:bg-rose-100" onClick={props.onDismissError}><svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg></button></div>}
-          {props.showInlineTodos !== false && todos && todos.length > 0 && <TodoPanel todos={todos} />}
+          {props.error && <InterfaceState compact tone="error" title="Agent needs attention" description={props.error} action={<button type="button" onClick={props.onDismissError}>Dismiss</button>} />}
+          {todos && todos.length > 0 && <TodoPanel todos={todos} />}
           {props.busy && <AgentStatus label={props.activity} />}
         </div>
       </div>
-      <div className="shrink-0 border-t border-slate-200 p-3">
-        <div className={props.mode === 'thread' ? 'mx-auto max-w-3xl' : ''}>
+      <div className="composer-dock shrink-0 p-3">
+        <div className="composer-content mx-auto">
               <AnimatePresence initial={false}>
                 {props.queuedMessages.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 8, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
                     exit={{ opacity: 0, y: 8, height: 0 }}
-                    className="mb-2 overflow-hidden rounded-xl bg-slate-50 ring-1 ring-slate-200"
+                    className="queued-messages mb-2 overflow-hidden rounded-xl bg-slate-50 ring-1 ring-slate-200"
                   >
                     <div className="flex items-center px-3 py-1.5 text-[10.5px] text-slate-500">
                       <span>Queued messages</span>
@@ -587,10 +570,10 @@ export default function ChatCanvas(props: ChatCanvasProps) {
                         >
                           <span className="w-4 shrink-0 text-center font-mono text-[9px] text-slate-400">{index + 1}</span>
                           <span className="min-w-0 flex-1 truncate text-[11.5px] text-slate-700">{message.text}</span>
-                          {message.priority && <span className="rounded bg-aether-100 px-1.5 py-0.5 text-[9px] font-medium text-aether-700">Next</span>}
+                          {message.priority && <span className="rounded bg-accent-100 px-1.5 py-0.5 text-[9px] font-medium text-accent-700">Next</span>}
                           <button
                             onClick={() => props.onRemoveQueued(message.id)}
-                            className="grid h-5 w-5 place-items-center rounded text-slate-400 opacity-0 transition hover:bg-slate-200 hover:text-slate-700 group-hover:opacity-100"
+                            className="grid h-5 w-5 place-items-center rounded text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
                             title="Remove queued message"
                           >
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" /></svg>
@@ -602,7 +585,7 @@ export default function ChatCanvas(props: ChatCanvasProps) {
                 )}
               </AnimatePresence>
           <Composer {...composerProps} />
-          <p className="mt-2 px-1 text-[10px] text-slate-500">Enter to send <span className="px-1">/</span> Shift+Enter for a new line{props.busy ? ' / Messages are queued while the agent works' : ''}</p>
+          <p className="composer-help mt-2 px-1 text-[10px] text-slate-500">Enter to send <span className="px-1">/</span> Shift+Enter for a new line{props.busy ? ' / Messages are queued while the agent works' : ''}</p>
         </div>
       </div>
     </main>

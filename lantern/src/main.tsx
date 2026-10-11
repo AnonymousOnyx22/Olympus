@@ -24,9 +24,20 @@ window.addEventListener('error', (event) => {
   }).catch(() => {})
 })
 
+// The app was called Olympus before it was Kern; carry its saved UI state over once.
+try {
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const key = localStorage.key(i)
+    if (!key?.startsWith('olympus.')) continue
+    const next = `kern.${key.slice('olympus.'.length)}`
+    if (localStorage.getItem(next) === null) localStorage.setItem(next, localStorage.getItem(key) ?? '')
+    localStorage.removeItem(key)
+  }
+} catch { /* storage unavailable; start with defaults */ }
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ErrorBoundary label="Olympus could not start">
+    <ErrorBoundary label="Kern could not start">
       <App />
     </ErrorBoundary>
   </StrictMode>,

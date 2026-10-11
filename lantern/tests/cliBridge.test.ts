@@ -13,7 +13,7 @@ describe('cliBridge helpers', () => {
   it('finds the project folder from the system prompt, only if it exists', () => {
     const dir = os.tmpdir()
     expect(workingDirectory([{ role: 'system', content: `<env>\nWorking directory: ${dir}\nPlatform: win32\n</env>` }])).toBe(dir)
-    expect(workingDirectory([{ role: 'system', content: 'Working directory: C:\definitely\not\here' }])).toBeNull()
+    expect(workingDirectory([{ role: 'system', content: 'Working directory: C:\\definitely\\not\\here' }])).toBeNull()
     expect(workingDirectory([{ role: 'user', content: `Working directory: ${dir}` }])).toBeNull()
   })
   it('uses the last user message as the prompt', () => {
@@ -21,7 +21,7 @@ describe('cliBridge helpers', () => {
   })
   it('answers title requests without a CLI run', () => {
     expect(isTitleRequest([{ role: 'system', content: 'You are a title generator. Reply with a title.' }])).toBe(true)
-    expect(isTitleRequest([{ role: 'system', content: 'You are the Station store manager.' }])).toBe(false)
+    expect(isTitleRequest([{ role: 'system', content: 'You are a coding agent working in this project.' }])).toBe(false)
     expect(titleFrom('Build me a store   for dog people today please thanks')).toBe('Build me a store for dog')
   })
   it('formats stream chunks and tool lines', () => {

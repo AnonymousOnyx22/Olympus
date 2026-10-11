@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
 import fs from 'node:fs'
 import path from 'node:path'
 import * as cliBridge from './cliBridge'
+import { resolveUserDataDir } from './profile'
 import { buildOpencodeConfig, basicAuthHeader, detectOpencodeVersion, probeInstalledProviders } from './daemonManager'
 import * as pool from './spacePool'
 import { sameDirectory, sessionsInDirectory } from './sessionScope'
@@ -9,9 +10,10 @@ import { discoverProviders, fetchDaemonProviders, mergeProviders, isChatModel, m
 import { getSettings, updateSettings } from './settings'
 import * as projects from './projects'
 import * as connections from './connections'
-import * as browserSignIn from './browserSignIn'
 import { gitStatus, gitAction } from './git'
-import type { OlympusSettings, LocalProvider, StartDaemonResult } from '../src/types/opencode'
+import type { KernSettings, LocalProvider, StartDaemonResult } from '../src/types/opencode'
+
+app.setPath('userData', resolveUserDataDir(app.getPath('appData')))
 
 const MAX_READ_BYTES = 5 * 1024 * 1024
 const MAX_PROJECT_FILES = 3000
@@ -33,7 +35,7 @@ const send = (channel: string, ...args: unknown[]) => {
     const event = args[1] as { type?: string; properties?: { info?: { directory?: unknown } } }
     if (event?.type?.startsWith('session.') && event.properties?.info?.directory && !sameDirectory(event.properties.info.directory, pool.state(String(args[0])).cwd)) return
   }
-  if (process.env.OLYMPUS_DEBUG_IPC) console.log('[ipc]', channel, ...args)
+  if (process.env.KERN_DEBUG_IPC) console.log('[ipc]', channel, ...args)
   if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(channel, ...args)
 }
 
@@ -76,7 +78,7 @@ function onTrusted<T extends unknown[]>(channel: string, fn: (event: Electron.Ip
 }
 
 /**
- * Olympus needs no camera, microphone, geolocation, notification, or sensor access, and its
+ * Kern needs no camera, microphone, geolocation, notification, or sensor access, and its
  * renderer only ever talks to the main process. Electron approves renderer permission
  * requests unless a handler is registered, so deny them all rather than relying on the CSP.
  */
@@ -154,19 +156,18 @@ async function startForProject(spaceId: string, dir: string, force = false): Pro
     'daemon:log',
     spaceId,
     online.length
-      ? `[olympus] local model servers: ${online.map((p) => `${p.name} (${p.models.length})`).join(', ')}`
-      : '[olympus] no local model servers found - will still load models configured via the opencode CLI.',
+      ? `[kern] local model servers: ${online.map((p) => `${p.name} (${p.models.length})`).join(', ')}`
+      : '[kern] no local model servers found - will still load models configured via the opencode CLI.',
   )
-  // Every saved connection is available to every project automatically - nothing to opt into
-  // per store, just somewhere to check what's there (Station's "Connections" button).
-  const allConnectionIds = connections.CONNECTION_PROVIDERS.map((p) => p.id)
-  const connectionEnv = { ...connections.envForConnections(allConnectionIds), ...browserSignIn.sessionEnv(allConnectionIds) }
+  // A project's agent gets every saved connection except the ones withheld from it on the
+  // Connections page.
+  const connectionEnv = connections.envForConnections(connections.connectionIdsForProject(spaceId, settings.connectionOptOut))
   const state = await pool.start(spaceId, resolved, buildOpencodeConfig(local, settings.selectedModel, settings.permissionMode), connectionEnv)
   // Once the daemon is up, fold in the providers it knows (e.g. authenticated OpenCode Zen).
   const providers = await listAllProviders(spaceId)
   const daemonOnly = providers.filter((p) => p.source === 'opencode' && p.models.length)
   if (daemonOnly.length) {
-    send('daemon:log', spaceId, `[olympus] opencode providers: ${daemonOnly.map((p) => `${p.name} (${p.models.length})`).join(', ')}`)
+    send('daemon:log', spaceId, `[kern] opencode providers: ${daemonOnly.map((p) => `${p.name} (${p.models.length})`).join(', ')}`)
   }
   return { state, providers }
 }
@@ -294,16 +295,16 @@ function projectRunCommand(spaceId = focusedSpaceId): string | null {
  * 450ms timeouts back to back, blocking the main process for seconds on every attempt.
  */
 async function discoverPreview(): Promise<string[]> {
-  let olympusDevPort = -1
+  let kernDevPort = -1
   try {
-    olympusDevPort = Number(new URL(process.env.VITE_DEV_SERVER_URL ?? '').port)
+    kernDevPort = Number(new URL(process.env.VITE_DEV_SERVER_URL ?? '').port)
   } catch {
     // Packaged builds do not have a Vite development URL.
   }
   const ports = [5173, 5174, 5175, 5176, 5177, 5178, 5179, 5180, 3000, 3001, 4173, 4321, 8080, 8000, 4200]
   const results = await Promise.all(
     ports
-      .filter((candidate) => candidate !== olympusDevPort)
+      .filter((candidate) => candidate !== kernDevPort)
       .map(async (port) => {
         const url = `http://127.0.0.1:${port}`
         try {
@@ -383,21 +384,6 @@ function registerIpc() {
   })
   handle('connections:verify', (_e, providerId: unknown) => connections.verifyConnection(String(providerId)))
   handle('connections:clear', (_e, providerId: unknown) => connections.clearConnection(String(providerId)))
-  handle('connections:openSignIn', async (_e, providerId: unknown) => {
-    await browserSignIn.openSignIn(String(providerId))
-    return connections.listConnectionStatus()
-  })
-  handle('connections:forgetSignIn', (_e, providerId: unknown) => {
-    browserSignIn.forgetSession(String(providerId))
-    return connections.listConnectionStatus()
-  })
-  handle('stores:list', () => projects.listStores())
-  handle('stores:create', (_e, root: unknown, name: unknown, displayName: unknown) => projects.createStore(String(root), String(name), typeof displayName === 'string' ? displayName : undefined))
-  handle('stores:remove', async (_e, id: unknown, deleteFiles: unknown) => {
-    const storeId = String(id)
-    await pool.stop(storeId).catch(() => {})
-    return projects.removeStore(storeId, deleteFiles === true)
-  })
   handle('projects:reveal', async (_e, id: unknown) => {
     const proj = projects.findProject(String(id))
     if (!proj?.exists) throw new Error('That folder no longer exists')
@@ -427,7 +413,7 @@ function registerIpc() {
     if (!/^https?:$/.test(url.protocol)) throw new Error('URL must be http(s)')
     const hostname = url.hostname.replace(/^\[|\]$/g, '').toLowerCase()
     const loopback = hostname === 'localhost' || hostname === '::1' || /^127(?:\.\d{1,3}){3}$/.test(hostname)
-    if (!loopback) throw new Error('Olympus only connects to model servers on this computer')
+    if (!loopback) throw new Error('Kern only connects to model servers on this computer')
     if (url.username || url.password) throw new Error('Do not put credentials in a local endpoint URL')
     baseURL = baseURL.replace(/\/+$/, '')
     const settings = getSettings()
@@ -441,8 +427,8 @@ function registerIpc() {
   })
 
   handle('settings:get', () => getSettings())
-  handle('settings:set', (_e, patch: Partial<OlympusSettings>) => {
-    const allowed: Partial<OlympusSettings> = {}
+  handle('settings:set', (_e, patch: Partial<KernSettings>) => {
+    const allowed: Partial<KernSettings> = {}
     if (patch && 'selectedModel' in patch) allowed.selectedModel = patch.selectedModel ?? null
     if (patch && 'lastProject' in patch) allowed.lastProject = patch.lastProject ?? null
     if (patch && 'permissionMode' in patch && ['ask', 'edit', 'bypass'].includes(String(patch.permissionMode))) {
@@ -452,6 +438,9 @@ function registerIpc() {
       allowed.selectedVariants = Object.fromEntries(
         Object.entries(patch.selectedVariants).filter((entry): entry is [string, string] => typeof entry[1] === 'string'),
       )
+    }
+    if (patch && 'connectionOptOut' in patch && patch.connectionOptOut && typeof patch.connectionOptOut === 'object') {
+      allowed.connectionOptOut = patch.connectionOptOut
     }
     return updateSettings(allowed)
   })
@@ -531,20 +520,8 @@ function registerIpc() {
     const message = String(error?.message ?? 'unknown renderer error').slice(0, 2000)
     const stack = typeof error?.stack === 'string' ? error.stack.slice(0, 4000) : ''
     const componentStack = typeof error?.componentStack === 'string' ? error.componentStack.slice(0, 2000) : ''
-    console.error(`[olympus] renderer error: ${message}\n${stack}\n${componentStack}`)
+    console.error(`[kern] renderer error: ${message}\n${stack}\n${componentStack}`)
   })
-
-  /**
-   * Licence state, read-only, for display.
-   *
-   * Deliberately NOT wired into a gate in front of createWindow(). Olympus is sold as a
-   * free unlimited trial, so an unlicensed machine must still get the whole application;
-   * blocking the window here would contradict what the site promises and would break every
-   * install whose signing secret has not been set yet. Enforcement is a product decision
-   * that belongs in a later release, deliberately left off until it is made. The secret
-   * and the raw key never cross this boundary - only the summary does.
-   */
-  handle('license:state', () => ({ product: 'Olympus', model: 'Beta ? no public release', valid: true, trial: false, expired: false, daysLeft: 0, email: null }))
 
   handle('workspace:runCommand', () => projectRunCommand())
   handle('preview:discover', () => discoverPreview())
@@ -569,7 +546,7 @@ function registerIpc() {
 
 /**
  * opencode's HTTP surface and config schema are moving while the project is in flux, so
- * Olympus states which versions it expects rather than failing confusingly on a later one.
+ * Kern states which versions it expects rather than failing confusingly on a later one.
  */
 const MIN_OPENCODE = '1.18.0'
 
@@ -593,11 +570,11 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1360,
     height: 860,
-    minWidth: 940,
+    minWidth: 360,
     minHeight: 600,
-    title: 'Olympus',
+    title: 'Kern',
     icon: APP_ICON,
-    backgroundColor: '#0f1115',
+    backgroundColor: '#181818',
     autoHideMenuBar: true,
     show: false,
     webPreferences: {
@@ -633,14 +610,6 @@ function createWindow() {
 // Never let the renderer navigate away, spawn new Electron windows, or gain new device access.
 app.on('web-contents-created', (_e, contents) => {
   lockDownPermissions(contents.session)
-
-  if (browserSignIn.isSignInSession(contents.session)) {
-    // A real sign-in window: it must be free to navigate the provider's own site (and any
-    // OAuth popups it opens), but still gets no camera/mic/etc access from lockDownPermissions
-    // above.
-    contents.setWindowOpenHandler(() => ({ action: 'allow' }))
-    return
-  }
 
   contents.on('did-fail-load', (_event, code, description, url, isMainFrame) => {
     if (!isMainFrame && code !== -3) send('preview:error', url, description)
@@ -695,10 +664,10 @@ if (!app.requestSingleInstanceLock()) {
   })
   void app.whenReady().then(() => {
     // Ensures Windows uses our icon (not electron.exe's) for the taskbar button.
-    if (process.platform === 'win32') app.setAppUserModelId('com.olympus.app')
+    if (process.platform === 'win32') app.setAppUserModelId('com.kern.app')
     cliBridge.setBridgeEnv(() => {
       const ids = connections.CONNECTION_PROVIDERS.map((p) => p.id)
-      return { ...connections.envForConnections(ids), ...browserSignIn.sessionEnv(ids) }
+      return connections.envForConnections(ids)
     })
     void cliBridge.startCliBridge()
     registerIpc()

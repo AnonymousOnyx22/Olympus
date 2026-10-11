@@ -100,8 +100,8 @@ interface RunHandlers { text: (chunk: string) => void; done: (error?: string) =>
 let extraEnv: () => Record<string, string | undefined> = () => ({})
 export function setBridgeEnv(provider: () => Record<string, string | undefined>): void { extraEnv = provider }
 
-/** Set OLYMPUS_BRIDGE_LOG to a file path to record what the bridge does with each request (never the prompt text). */
-const debug = (message: string): void => { const file = process.env.OLYMPUS_BRIDGE_LOG; if (file) { try { fs.appendFileSync(file, `${new Date().toISOString()} ${message}
+/** Set KERN_BRIDGE_LOG to a file path to record what the bridge does with each request (never the prompt text). */
+const debug = (message: string): void => { const file = process.env.KERN_BRIDGE_LOG; if (file) { try { fs.appendFileSync(file, `${new Date().toISOString()} ${message}
 `) } catch { /* logging only */ } } }
 
 let lastCwd: { dir: string; at: number } | null = null
@@ -244,8 +244,6 @@ function runCodex(exe: string, cwd: string, model: string, prompt: string, handl
 let server: http.Server | null = null
 let port = 0
 const token = randomBytes(24).toString('hex')
-
-export const bridgeToken = (): string => token
 
 function readBody(req: http.IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {

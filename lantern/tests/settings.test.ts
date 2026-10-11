@@ -59,7 +59,7 @@ describe('migrateSettings', () => {
   })
 
   it('does not downgrade a file written by a newer build', () => {
-    // A user who ran a newer Olympus, then downgraded, must not have their
+    // A user who ran a newer Kern, then downgraded, must not have their
     // schema version rewritten downward and have step N+1 silently re-run.
     const future = { schemaVersion: SETTINGS_SCHEMA_VERSION + 5, lastProject: '/x' }
     expect(migrateSettings(future).schemaVersion).toBe(SETTINGS_SCHEMA_VERSION + 5)
@@ -82,5 +82,13 @@ describe('migrateSettings', () => {
     const result = migrateSettings({ schemaVersion: '1', lastProject: '/x' } as unknown as Record<string, unknown>)
     expect(result.schemaVersion).toBe(SETTINGS_SCHEMA_VERSION)
     expect(result.lastProject).toBe('/x')
+  })
+})
+
+describe('connectionOptOut', () => {
+  it('keeps only non-empty lists of strings, so a malformed file cannot withhold or grant by accident', async () => {
+    const { updateSettings, getSettings } = await import('../electron/settings')
+    updateSettings({ connectionOptOut: { a: ['stripe', 'stripe', 7 as unknown as string, ''], b: [], c: 'nope' as unknown as string[] } })
+    expect(getSettings().connectionOptOut).toEqual({ a: ['stripe'] })
   })
 })

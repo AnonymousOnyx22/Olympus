@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { errorText } from '../errorText'
 
 interface PreviewPanelProps {
   projectKey: string
@@ -21,7 +22,7 @@ export default function PreviewPanel({ projectKey, available, visible }: Preview
 }
 
 function savedPreview(projectKey: string): string | null {
-  try { const saved = localStorage.getItem(`olympus.preview.${projectKey}`); return saved ? normalizeLocalUrl(saved) : null } catch { return null }
+  try { const saved = localStorage.getItem(`kern.preview.${projectKey}`); return saved ? normalizeLocalUrl(saved) : null } catch { return null }
 }
 
 function ProjectPreview({ projectKey, available, visible }: PreviewPanelProps) {
@@ -34,7 +35,7 @@ function ProjectPreview({ projectKey, available, visible }: PreviewPanelProps) {
     setUrl(address)
     setDraft(address)
     setError(null)
-    try { localStorage.setItem(`olympus.preview.${projectKey}`, address) } catch { /* storage unavailable */ }
+    try { localStorage.setItem(`kern.preview.${projectKey}`, address) } catch { /* storage unavailable */ }
   }
   const [checking, setChecking] = useState(false)
   const loadTimer = useRef<number | undefined>(undefined)
@@ -70,7 +71,7 @@ function ProjectPreview({ projectKey, available, visible }: PreviewPanelProps) {
       setCandidates(found)
       return found
     } catch (reason) {
-      if (alive.current) setError(reason instanceof Error ? reason.message : String(reason))
+      if (alive.current) setError(errorText(reason))
       return []
     } finally {
       if (alive.current) setChecking(false)
@@ -100,7 +101,7 @@ function ProjectPreview({ projectKey, available, visible }: PreviewPanelProps) {
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M20 6v5h-5M4 18v-5h5" /><path d="M18.5 9A7 7 0 0 0 6 6.5L4 9m2 6a7 7 0 0 0 12 2.5L20 15" /></svg>
         </button>
         <form className="flex min-w-0 flex-1" onSubmit={(event) => { event.preventDefault(); openDraft() }}>
-          <input value={draft} onChange={(event) => setDraft(event.target.value)} aria-label="Local preview address" placeholder="localhost:5173" className="h-7 w-full rounded-xl bg-slate-50 px-3 font-mono text-[10.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-aether-400" />
+          <input value={draft} onChange={(event) => setDraft(event.target.value)} aria-label="Local preview address" placeholder="localhost:5173" className="h-7 w-full rounded-xl bg-slate-50 px-3 font-mono text-[10.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-accent-400" />
         </form>
         <button type="button" onClick={() => void discover()} disabled={checking} className="h-7 rounded-lg px-2.5 text-[10.5px] text-slate-500 hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40">
           {checking ? 'Finding…' : 'Find servers'}
@@ -112,12 +113,12 @@ function ProjectPreview({ projectKey, available, visible }: PreviewPanelProps) {
           <iframe key={`${url}:${refresh}`} onLoad={() => { window.clearTimeout(loadTimer.current); setFrameLoading(false) }} src={url} title="Local project preview" sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts" className="h-full w-full border-0 bg-white" />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-aether-50 text-aether-500 ring-1 ring-aether-100">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-accent-50 text-accent-500 ring-1 ring-accent-100">
               <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M3 5h18v14H3V5Z" /><path d="M3 9h18M7 7h.01M10 7h.01" /></svg>
             </div>
             <div>
               <p className="text-[13px] text-slate-500">Choose this project's preview</p>
-              <p className="mt-1 max-w-sm px-4 text-[12px] text-slate-400">Run your project, then choose its address. Olympus remembers your choice for this project.</p>
+              <p className="mt-1 max-w-sm px-4 text-[12px] text-slate-400">Run your project, then choose its address. Kern remembers your choice for this project.</p>
             </div>
             {candidates.length > 0 && <ul className="space-y-2" aria-label="Available local servers">{candidates.map((address) => <li key={address}><button type="button" onClick={() => choose(address)} className="rounded-lg border border-slate-200 px-4 py-2 font-mono text-xs text-slate-700 hover:bg-slate-50">{address}</button></li>)}</ul>}
           </div>

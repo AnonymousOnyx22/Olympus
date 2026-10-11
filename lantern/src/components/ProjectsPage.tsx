@@ -1,6 +1,8 @@
+import InterfaceState from './InterfaceState'
 import { useDialogFocus } from './useDialogFocus'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ProjectInfo } from '../types/opencode'
+import { errorText } from '../errorText'
 
 interface ProjectsPageProps {
   projects: ProjectInfo[]
@@ -20,7 +22,7 @@ interface ProjectsPageProps {
 type SortKey = 'recent' | 'modified' | 'name'
 type Layout = 'grid' | 'list'
 
-const PREFS_KEY = 'olympus.projects.view'
+const PREFS_KEY = 'kern.projects.view'
 
 function loadPrefs(): { sort: SortKey; layout: Layout } {
   try {
@@ -46,7 +48,6 @@ function ago(time: number | null): string {
   return new Date(time).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-const errorText = (error: unknown) => (error instanceof Error ? error.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '') : String(error))
 
 const Icon = {
   folder: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />,
@@ -157,7 +158,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
               {hiddenCount > 0 && (
                 <>
                   {' · '}
-                  <button type="button" onClick={() => setShowHidden((v) => !v)} className="text-aether-600 hover:underline">
+                  <button type="button" onClick={() => setShowHidden((v) => !v)} className="text-accent-600 hover:underline">
                     {showHidden ? 'hide' : `show ${hiddenCount} hidden`}
                   </button>
                 </>
@@ -171,7 +172,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
           <button
             type="button"
             onClick={() => (roots.length ? setCreating(true) : void watchFolder())}
-            className="flex h-8 items-center gap-1.5 rounded-xl bg-aether-50 px-3 text-[11.5px] font-medium text-aether-700 ring-1 ring-aether-200 transition hover:bg-aether-100 active:scale-[0.98]"
+            className="flex h-8 items-center gap-1.5 rounded-xl bg-accent-50 px-3 text-[11.5px] font-medium text-accent-700 ring-1 ring-accent-200 transition hover:bg-accent-100 active:scale-[0.98]"
             title={roots.length ? 'Create a new folder inside a watched projects folder' : 'Watch a projects folder first'}
           >
             <Svg>{Icon.plus}</Svg>
@@ -182,7 +183,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
         {/* watched folders */}
         <section className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-3">
           <div className="flex items-center gap-2 px-1">
-            <span className="text-aether-600"><Svg>{Icon.radar}</Svg></span>
+            <span className="text-accent-600"><Svg>{Icon.radar}</Svg></span>
             <h2 className="text-[11.5px] font-medium text-slate-700">Watched folders</h2>
             <span className="text-[11px] text-slate-400">Every folder inside becomes a project. New ones appear automatically.</span>
           </div>
@@ -197,19 +198,14 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
                 </button>
               </div>
             ))}
-            <button type="button" onClick={() => void watchFolder()} className="flex h-8 items-center gap-1.5 rounded-xl border border-dashed border-slate-200 px-3 text-[11.5px] text-slate-500 transition hover:border-aether-300 hover:text-aether-600">
+            <button type="button" onClick={() => void watchFolder()} className="flex h-8 items-center gap-1.5 rounded-xl border border-dashed border-slate-200 px-3 text-[11.5px] text-slate-500 transition hover:border-accent-300 hover:text-accent-600">
               <Svg>{Icon.plus}</Svg>
               {roots.length ? 'Watch another folder' : 'Watch your projects folder'}
             </button>
           </div>
         </section>
 
-        {error && (
-          <div role="alert" className="mt-4 flex items-center gap-2 rounded-xl bg-rose-50 px-3 py-2 text-[12px] text-rose-700 ring-1 ring-rose-200">
-            <span className="flex-1">{error}</span>
-            <button type="button" onClick={() => setError(null)} className="rounded text-rose-600 hover:text-rose-700" title="Dismiss"><Svg className="h-3 w-3" width={2.4}>{Icon.close}</Svg></button>
-          </div>
-        )}
+        {error && <InterfaceState compact tone="error" title="Project action could not complete" description={error} action={<button type="button" onClick={() => setError(null)}>Dismiss</button>} />}
 
         {/* toolbar */}
         <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -234,7 +230,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
                 onClick={() => updatePrefs({ layout: key })}
                 title={key === 'grid' ? 'Grid view' : 'List view'}
                 aria-pressed={layout === key}
-                className={`grid h-full w-7 place-items-center rounded-lg transition ${layout === key ? 'bg-white text-slate-900 shadow-aegean' : 'text-slate-500 hover:text-slate-900'}`}
+                className={`grid h-full w-7 place-items-center rounded-lg transition ${layout === key ? 'bg-white text-slate-900 shadow-float' : 'text-slate-500 hover:text-slate-900'}`}
               >
                 <Svg>{Icon[key]}</Svg>
               </button>
@@ -260,21 +256,7 @@ export default function ProjectsPage({ projects, activeId, openAgentsByProject, 
             ))}
           </div>
         ) : (
-          <div className="mt-16 text-center">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-aether-50 text-aether-500 ring-1 ring-aether-100">
-              <Svg className="h-5 w-5" width={1.6}>{Icon.folder}</Svg>
-            </div>
-            <p className="mt-3 text-[12.5px] text-slate-500">
-              {projects.length === 0 ? 'No projects yet.' : 'No matching projects.'}
-            </p>
-            {projects.length === 0 && (
-              <p className="mt-1 text-[11.5px] text-slate-400">
-                <button type="button" onClick={() => void watchFolder()} className="text-aether-600 hover:underline">Watch your projects folder</button>
-                {' '}or{' '}
-                <button type="button" onClick={onAdd} className="text-aether-600 hover:underline">add a single folder</button>.
-              </p>
-            )}
-          </div>
+          <InterfaceState title={projects.length === 0 ? 'No projects yet' : 'No matching projects'} description={projects.length === 0 ? 'Add a folder to begin working with an agent.' : 'Try another name or clear your search.'} action={<button type="button" onClick={() => projects.length === 0 ? onAdd() : setQuery('')}>{projects.length === 0 ? 'Add folder' : 'Clear search'}</button>} />
         )}
       </div>
 
@@ -340,14 +322,14 @@ function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onRev
       ) : active ? (
         <span className="rounded-md bg-emerald-50 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-emerald-700 ring-1 ring-inset ring-emerald-200">Open</span>
       ) : null}
-      {project.firstSeen && <span className="rounded-md bg-aether-50 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-aether-700 ring-1 ring-inset ring-aether-200">New</span>}
+      {project.firstSeen && <span className="rounded-md bg-accent-50 px-1.5 py-px text-[9.5px] font-medium uppercase tracking-wide text-accent-700 ring-1 ring-inset ring-accent-200">New</span>}
       {!project.exists && <span className="rounded-md bg-amber-50 px-1.5 py-px text-[9.5px] font-medium text-amber-600 ring-1 ring-inset ring-amber-400/20">Folder missing</span>}
     </>
   )
 
   const avatar = (
     <span
-      className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-aether-50 text-[12px] font-semibold text-aether-700 ring-1 ring-aether-100"
+      className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-accent-50 text-[12px] font-semibold text-accent-700 ring-1 ring-accent-100"
     >
       {project.name.slice(0, 1).toUpperCase()}
     </span>
@@ -356,7 +338,7 @@ function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onRev
   const meta = (
     <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1 text-[10.5px] text-slate-500">
       {project.stack.map((tech) => (
-        <span key={tech} className="rounded-md bg-aether-100 px-1.5 py-px text-aether-700 ring-1 ring-inset ring-aether-500/30">{tech}</span>
+        <span key={tech} className="rounded-md bg-accent-100 px-1.5 py-px text-accent-700 ring-1 ring-inset ring-accent-500/30">{tech}</span>
       ))}
       {project.gitBranch && (
         <span className="flex items-center gap-1 font-mono" title="Git branch">
@@ -385,7 +367,7 @@ function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onRev
 
   if (layout === 'list') {
     return (
-      <div className={`group flex min-w-0 items-center gap-3 px-3 py-2.5 transition ${project.exists ? '' : 'opacity-60'} ${active ? 'bg-aether-50' : 'hover:bg-slate-50'}`}>
+      <div className={`group flex min-w-0 items-center gap-3 px-3 py-2.5 transition ${project.exists ? '' : 'opacity-60'} ${active ? 'bg-accent-50' : 'hover:bg-slate-50'}`}>
         <button type="button" onClick={onOpen} disabled={!openable} className="flex min-w-0 flex-1 items-center gap-3 text-left focus-visible:outline-none disabled:cursor-default">
           {avatar}
           <div className="min-w-0 flex-1">
@@ -408,7 +390,7 @@ function ProjectItem({ project, layout, active, openAgents, onOpen, onPin, onRev
         type="button"
         onClick={onOpen}
         disabled={!openable}
-        className={`flex h-[132px] w-full min-w-0 flex-col justify-between rounded-2xl bg-white px-4 py-3.5 text-left shadow-aegean ring-1 transition hover:bg-slate-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aether-400 disabled:cursor-default disabled:active:scale-100 ${active ? 'bg-aether-50 ring-aether-200' : 'ring-slate-200'}`}
+        className={`flex h-[132px] w-full min-w-0 flex-col justify-between rounded-2xl bg-white px-4 py-3.5 text-left shadow-float ring-1 transition hover:bg-slate-50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400 disabled:cursor-default disabled:active:scale-100 ${active ? 'bg-accent-50 ring-accent-200' : 'ring-slate-200'}`}
       >
         <div className="flex w-full min-w-0 items-start gap-2.5 pr-20">
           {avatar}
@@ -440,7 +422,7 @@ function IconButton({ label, onClick, children, on, danger, disabled }: { label:
       aria-pressed={on}
       disabled={disabled}
       className={`grid h-6 w-6 place-items-center rounded-lg transition disabled:opacity-30 ${
-        on ? 'text-aether-600 hover:bg-aether-50' : danger ? 'text-slate-400 hover:bg-rose-50 hover:text-rose-600' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+        on ? 'text-accent-600 hover:bg-accent-50' : danger ? 'text-slate-400 hover:bg-rose-50 hover:text-rose-600' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
       }`}
     >
       <Svg className="h-3.5 w-3.5" width={on ? 2.2 : 1.9}>{children}</Svg>
@@ -485,7 +467,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-midnight/70 p-4" onMouseDown={(event) => event.target === event.currentTarget && onCancel()}>
-      <form ref={dialogRef} tabIndex={-1} onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-project-title" className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-aegean-lg">
+      <form ref={dialogRef} tabIndex={-1} onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-project-title" className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-float-lg">
         <h2 id="new-project-title" className="text-[14px] font-semibold text-slate-900">New project</h2>
         <p className="mt-1 text-[11.5px] text-slate-500">Creates an empty folder in a watched folder.</p>
 
@@ -496,7 +478,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="my-new-app"
-          className="mt-1 w-full rounded-xl bg-slate-50 px-3 py-2 text-[12.5px] text-slate-900 placeholder:text-slate-400 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-aether-400"
+          className="mt-1 w-full rounded-xl bg-slate-50 px-3 py-2 text-[12.5px] text-slate-900 placeholder:text-slate-400 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-accent-400"
         />
 
         {roots.length > 1 && (
@@ -518,7 +500,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
         </p>
 
         <label className="mt-3 flex items-center gap-2 text-[11.5px] text-slate-500">
-          <input type="checkbox" checked={openAfter} onChange={(event) => setOpenAfter(event.target.checked)} className="accent-aether-600" />
+          <input type="checkbox" checked={openAfter} onChange={(event) => setOpenAfter(event.target.checked)} className="accent-accent-600" />
           Open it after creating
         </label>
 
@@ -526,7 +508,7 @@ function NewProjectDialog({ roots, defaultRoot, onCancel, onCreate }: {
 
         <div className="mt-5 flex justify-end gap-2">
           <button type="button" onClick={onCancel} className="h-8 rounded-xl bg-slate-100 px-3 text-[11.5px] font-medium text-slate-700 transition hover:bg-slate-200">Cancel</button>
-          <button type="submit" disabled={!name.trim() || busy} className="h-8 rounded-xl bg-aether-600 px-3 text-[11.5px] font-medium text-white transition hover:bg-aether-500 disabled:opacity-40">
+          <button type="submit" disabled={!name.trim() || busy} className="h-8 rounded-xl bg-accent-600 px-3 text-[11.5px] font-medium text-white transition hover:bg-accent-500 disabled:opacity-40">
             {busy ? 'Creating…' : 'Create'}
           </button>
         </div>

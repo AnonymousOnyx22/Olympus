@@ -60,6 +60,4 @@ export const api = {
   onResync: (handler: (spaceId: string) => void) => window.electronAPI.onResync(handler),
   openExternal: (url: string) => window.electronAPI.openExternal(url),
   opencodeStatus: () => window.electronAPI.opencodeStatus(),
-  /** Display-only. The key and the signing secret never reach the renderer. */
-  licenseState: () => window.electronAPI.licenseState(),
 }

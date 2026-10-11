@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion, Reorder } from 'framer-motion'
+import { motion, Reorder } from 'framer-motion'
+import Popover from './Popover'
 import { brandFor, prettyModelName } from './brands'
 import type { LocalProvider, ModelRef } from '../types/opencode'
+import { errorText } from '../errorText'
 
 interface ModelPickerProps {
   providers: LocalProvider[]
@@ -56,10 +58,10 @@ const FAMILY_ORDER = ['Opus', 'Sonnet', 'Haiku', 'Astra', 'Sol', 'Luna', 'Terra'
 const BRAND_ORDER = ['Anthropic', 'OpenAI', 'Google', 'xAI', 'DeepSeek', 'Qwen', 'Mistral AI', 'Meta']
 
 const accessStyle = {
-  local: { label: 'Local', className: 'bg-slate-100 text-slate-600 ring-slate-200' },
-  free: { label: 'Free', className: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
-  api: { label: 'API', className: 'bg-aether-50 text-aether-700 ring-aether-200' },
-  cli: { label: 'Your login', className: 'bg-violet-50 text-violet-700 ring-violet-200' },
+  local: { label: 'Local', className: 'text-slate-500' },
+  free: { label: 'Free', className: 'text-slate-500' },
+  api: { label: 'API', className: 'text-slate-500' },
+  cli: { label: 'Login', className: 'text-slate-500' },
 } as const
 
 const VARIANT_DESCRIPTIONS: Record<string, string> = {
@@ -99,7 +101,7 @@ const familyRank = (name: string) => {
 // workspace/context panel toggles elsewhere in this app - every ModelPicker instance
 // (the main composer, every agent pane) reads and writes the same key, so favoriting a
 // model in one place shows it pinned everywhere else too.
-const FAVORITES_KEY = 'olympus.favoriteModels'
+const FAVORITES_KEY = 'kern.favoriteModels'
 const rowKey = (row: Pick<Row, 'providerID' | 'modelID'>) => `${row.providerID}::${row.modelID}`
 
 function loadFavorites(): string[] {
@@ -124,7 +126,7 @@ function StarButton({ favorite, onClick, label }: { favorite: boolean; onClick: 
       aria-label={label}
       aria-pressed={favorite}
       className={`grid h-5 w-5 shrink-0 place-items-center rounded-full transition ${
-        favorite ? 'text-amber-400' : 'text-slate-300 ring-1 ring-inset ring-slate-200 hover:text-aether-400 hover:ring-aether-300'
+        favorite ? 'text-amber-400' : 'text-slate-300 ring-1 ring-inset ring-slate-200 hover:text-accent-400 hover:ring-accent-300'
       }`}
     >
       <motion.svg
@@ -144,27 +146,6 @@ function StarButton({ favorite, onClick, label }: { favorite: boolean; onClick: 
   )
 }
 
-/**
- * `onEscape` defaults to `onClose` but can be overridden to also return focus to whatever
- * opened the popover - appropriate for a keyboard dismissal, but not for an outside click,
- * which already moves focus to wherever the user clicked.
- */
-function useOutsideClose(ref: React.RefObject<HTMLElement | null>, onClose: () => void, open: boolean, onEscape: () => void = onClose) {
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose()
-    }
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onEscape()
-    window.addEventListener('mousedown', onDown)
-    window.addEventListener('keydown', onKey)
-    return () => {
-      window.removeEventListener('mousedown', onDown)
-      window.removeEventListener('keydown', onKey)
-    }
-  }, [ref, onClose, onEscape, open])
-}
-
 function ModelRow({ row, active, index, onClick, favorite, onToggleFavorite }: {
   row: Row; active: boolean; index: number; onClick: () => void; favorite: boolean; onToggleFavorite: () => void
 }) {
@@ -175,19 +156,19 @@ function ModelRow({ row, active, index, onClick, favorite, onToggleFavorite }: {
       initial={{ opacity: 0, x: -6 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: Math.min(index, 8) * 0.022, duration: 0.18, ease: 'easeOut' }}
-      className={`flex w-full items-center gap-1.5 rounded-lg py-1 pl-6 pr-2 text-left text-slate-900 transition-colors ${
-        active ? 'bg-aether-50' : 'hover:bg-slate-50'
+      className={`flex w-full items-center gap-1.5 rounded-lg py-2 pl-2 pr-2 text-left text-slate-900 transition-colors ${
+        active ? 'bg-accent-50' : 'hover:bg-slate-50'
       }`}
     >
       <StarButton favorite={favorite} onClick={onToggleFavorite} label={`${favorite ? 'Remove' : 'Add'} ${presentation.fullName} ${favorite ? 'from' : 'to'} favorites`} />
-      <button type="button" onClick={onClick} title={`${presentation.fullName} via ${row.providerName}`} className="flex min-w-0 flex-1 items-center gap-2 py-0.5 text-left">
-        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-aether-500' : 'bg-slate-300'}`} />
+      <button type="button" aria-pressed={active} onClick={onClick} title={`${presentation.fullName} via ${row.providerName} (${row.modelID})`} className="flex min-w-0 flex-1 items-center gap-2 py-0.5 text-left">
+        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-accent-500' : 'bg-slate-300'}`} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-mono text-[12px] text-slate-900">{presentation.version}</span>
+          <span className="block truncate text-[13px] text-slate-900">{presentation.fullName}</span><span className="block truncate text-[11px] text-slate-500">{row.providerName}</span>
         </span>
-        <span className={`shrink-0 rounded px-1.5 py-0.5 text-[9.5px] font-medium ring-1 ring-inset ${access.className}`}>{access.label}</span>
+        <span className={`shrink-0 rounded px-1.5 py-0.5 text-[11px] ${access.className}`}>{access.label}</span>
         {active && (
-          <motion.svg initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 600, damping: 20 }} className="h-3.5 w-3.5 shrink-0 text-aether-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+          <motion.svg initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 600, damping: 20 }} className="h-3.5 w-3.5 shrink-0 text-accent-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6 9 17l-5-5" />
           </motion.svg>
         )}
@@ -207,17 +188,17 @@ function FavoriteRow({ row, active, onClick, onToggleFavorite }: { row: Row; act
       whileDrag={{ scale: 1.03, boxShadow: '0 8px 20px -6px rgb(0 0 0 / 0.18)', zIndex: 1 }}
       transition={{ type: 'spring', stiffness: 500, damping: 32 }}
       className={`flex w-full cursor-grab items-center gap-1.5 rounded-lg py-1 pl-1 pr-2 text-left text-slate-900 transition-colors active:cursor-grabbing ${
-        active ? 'bg-aether-50' : 'hover:bg-slate-50'
+        active ? 'bg-accent-50' : 'hover:bg-slate-50'
       }`}
     >
       <svg className="h-3 w-3 shrink-0 text-slate-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.5" /><circle cx="9" cy="12" r="1.5" /><circle cx="9" cy="18" r="1.5" /><circle cx="15" cy="6" r="1.5" /><circle cx="15" cy="12" r="1.5" /><circle cx="15" cy="18" r="1.5" /></svg>
       <StarButton favorite onClick={onToggleFavorite} label={`Remove ${presentation.fullName} from favorites`} />
-      <button type="button" onClick={onClick} title={`${presentation.fullName} via ${row.providerName}`} className="flex min-w-0 flex-1 items-center gap-2 py-0.5 text-left">
-        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-aether-500' : 'bg-slate-300'}`} />
+      <button type="button" aria-pressed={active} onClick={onClick} title={`${presentation.fullName} via ${row.providerName} (${row.modelID})`} className="flex min-w-0 flex-1 items-center gap-2 py-0.5 text-left">
+        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-accent-500' : 'bg-slate-300'}`} />
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-mono text-[12px] text-slate-900">{presentation.version}</span>
+          <span className="block truncate text-[13px] text-slate-900">{presentation.fullName}</span><span className="block truncate text-[11px] text-slate-500">{row.providerName}</span>
         </span>
-        <span className={`shrink-0 rounded px-1.5 py-0.5 text-[9.5px] font-medium ring-1 ring-inset ${access.className}`}>{access.label}</span>
+        <span className={`shrink-0 rounded px-1.5 py-0.5 text-[11px] ${access.className}`}>{access.label}</span>
       </button>
     </Reorder.Item>
   )
@@ -227,7 +208,7 @@ function AddEndpoint({ onAddEndpoint, onDone }: { onAddEndpoint: ModelPickerProp
   const [name, setName] = useState('')
   const [url, setUrl] = useState('http://127.0.0.1:')
   const [error, setError] = useState<string | null>(null)
-  const input = 'w-full rounded-xl bg-slate-50 px-2.5 py-1.5 text-[11.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-aether-400'
+  const input = 'w-full rounded-xl bg-slate-50 px-2.5 py-1.5 text-[11.5px] text-slate-900 outline-none ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-accent-400'
   return (
     <form
       onSubmit={async (e) => {
@@ -245,7 +226,7 @@ function AddEndpoint({ onAddEndpoint, onDone }: { onAddEndpoint: ModelPickerProp
       <input className={`${input} font-mono`} placeholder="http://127.0.0.1:5001/v1" value={url} onChange={(e) => setUrl(e.target.value)} />
       {error && <p className="text-[10.5px] text-rose-600">{error}</p>}
       <div className="flex gap-1.5">
-        <button type="submit" className="flex-1 rounded-xl bg-aether-600 py-1.5 text-[11.5px] font-medium text-white transition hover:bg-aether-500">
+        <button type="submit" className="flex-1 rounded-xl bg-accent-600 py-1.5 text-[11.5px] font-medium text-white transition hover:bg-accent-500">
           Connect
         </button>
         <button type="button" onClick={onDone} className="rounded-xl px-3 py-1.5 text-[11.5px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-700">
@@ -256,12 +237,11 @@ function AddEndpoint({ onAddEndpoint, onDone }: { onAddEndpoint: ModelPickerProp
   )
 }
 
-export default function ModelPicker({ providers, selected, variant, onSelect, onSelectVariant, onRescan, rescanning, onAddEndpoint, onRemoveEndpoint, direction = 'up', anchored = false }: ModelPickerProps) {
+export default function ModelPicker({ providers, selected, variant, onSelect, onSelectVariant, onRescan, rescanning, onAddEndpoint, onRemoveEndpoint, direction = 'up' }: ModelPickerProps) {
   const [open, setOpen] = useState(false)
   const [variantOpen, setVariantOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [adding, setAdding] = useState(false)
-  const [openFamilies, setOpenFamilies] = useState<Set<string>>(() => new Set())
   const [endpointError, setEndpointError] = useState<string | null>(null)
   const [favoriteKeys, setFavoriteKeys] = useState<string[]>(() => loadFavorites())
   useEffect(() => saveFavorites(favoriteKeys), [favoriteKeys])
@@ -269,22 +249,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
     const key = rowKey(row)
     setFavoriteKeys((current) => current.includes(key) ? current.filter((item) => item !== key) : [...current, key])
   }
-  const ref = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const [anchor, setAnchor] = useState({ left: 8, bottom: 8 })
-  const positionMenu = () => {
-    const box = triggerRef.current?.getBoundingClientRect()
-    if (box) setAnchor({ left: Math.max(8, Math.min(box.left, window.innerWidth - 328)), bottom: window.innerHeight - box.top + 8 })
-  }
-  useOutsideClose(ref, () => {
-    setOpen(false)
-    setVariantOpen(false)
-  }, open || variantOpen, () => {
-    setOpen(false)
-    setVariantOpen(false)
-    triggerRef.current?.focus()
-  })
-
   const rows = useMemo<Row[]>(() => {
     const candidates = providers
       .filter((provider) => provider.online)
@@ -296,20 +261,9 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
       })))
       // Claude and GPT are used through their own CLI logins, never a paid API, so those API routes are not offered.
       .filter((row) => !(row.access === 'api' && ['Anthropic', 'OpenAI'].includes(brandFor(row.modelID).name)))
-    const score = (row: Row) => {
-      const brand = brandFor(row.modelID).name.toLowerCase().replace(/[^a-z0-9]/g, '')
-      const provider = `${row.providerID} ${row.providerName}`.toLowerCase().replace(/[^a-z0-9]/g, '')
-      const isSelected = selected?.providerID === row.providerID && selected.modelID === row.modelID
-      return (isSelected ? 100 : 0) + (row.access === 'cli' ? 30 : row.access === 'local' ? 20 : 0) + (provider.includes(brand) ? 10 : 0)
-    }
-    const canonical = new Map<string, Row>()
-    for (const row of candidates) {
-      const key = `${brandFor(row.modelID).name}/${prettyModelName(row.modelID)}`.toLowerCase()
-      const current = canonical.get(key)
-      if (!current || score(row) > score(current)) canonical.set(key, row)
-    }
-    return [...canonical.values()]
-  }, [providers, selected])
+    // Keep every route visible: identical model names can use different accounts/endpoints.
+    return candidates.sort((a, b) => prettyModelName(a.modelID).localeCompare(prettyModelName(b.modelID), undefined, { numeric: true }) || a.providerName.localeCompare(b.providerName))
+  }, [providers])
   // Favorites are pinned above everything else, in the order they were favorited (then however
   // the user has dragged them since). Only shown while browsing, not mid-search - a query already
   // narrows the list to what's relevant, and duplicating a favorite there would just be noise.
@@ -320,7 +274,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
   const showFavorites = !query.trim() && favoriteRows.length > 0
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    const base = q ? rows.filter((row) => `${brandFor(row.modelID).name} ${prettyModelName(row.modelID)}`.toLowerCase().includes(q)) : rows
+    const base = q ? rows.filter((row) => `${brandFor(row.modelID).name} ${prettyModelName(row.modelID)} ${row.modelID} ${row.providerName}`.toLowerCase().includes(q)) : rows
     return showFavorites ? base.filter((row) => !favoriteKeys.includes(rowKey(row))) : base
   }, [rows, query, showFavorites, favoriteKeys])
   const groups = useMemo<BrandGroup[]>(() => {
@@ -351,29 +305,13 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
       })
   }, [filtered])
 
-  useEffect(() => {
-    if (!open) return
-    const active = selected ? rows.find((row) => row.providerID === selected.providerID && row.modelID === selected.modelID) : null
-    const row = active ?? rows[0]
-    if (!row) return
-    const key = `${brandFor(row.modelID).name}:${presentModel(row.modelID).family}`
-    setOpenFamilies((current) => current.has(key) ? current : new Set([...current, key]))
-  }, [open, rows, selected])
-
   const choose = (row: Row) => {
     onSelect({ providerID: row.providerID, modelID: row.modelID })
     setOpen(false)
-    if ((providers.find((provider) => provider.id === row.providerID)?.variants?.[row.modelID]?.length ?? 0) > 0) {
-      if (anchored) positionMenu()
-      setVariantOpen(true)
-    }
+
   }
 
   const selectedBrand = selected ? brandFor(selected.modelID) : null
-  const selectedAccess = selected
-    ? providers.find((provider) => provider.id === selected.providerID)?.access?.[selected.modelID]
-      ?? (providers.find((provider) => provider.id === selected.providerID)?.source === 'local' ? 'local' : 'api')
-    : null
   const variants = selected
     ? providers.find((provider) => provider.id === selected.providerID)?.variants?.[selected.modelID] ?? []
     : []
@@ -381,44 +319,18 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
   const customEndpoints = providers.filter((p) => p.custom)
 
   return (
-    <div ref={ref} className="relative flex min-w-0 items-center gap-0.5">
-      {variants.length > 0 && (
-        <button
-          type="button"
-          onClick={() => {
-            if (anchored) positionMenu()
-            setOpen(false)
-            setVariantOpen((value) => !value)
-          }}
-          className={`flex items-center gap-1.5 rounded-xl px-2 py-1.5 text-[11.5px] transition active:scale-[0.98] ${
-            variantOpen ? 'bg-aether-50 text-aether-700 ring-1 ring-aether-200' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-          title={`Thinking mode: ${variant ? variantLabel(variant) : 'Auto'}`}
-          aria-label={`Thinking mode: ${variant ? variantLabel(variant) : 'Auto'}`}
-          aria-expanded={variantOpen}
-        >
-          <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M9.5 4.8A3.5 3.5 0 0 0 6 8.3v.5a3.1 3.1 0 0 0-1 5.9 3.7 3.7 0 0 0 4.5 4.5M14.5 4.8A3.5 3.5 0 0 1 18 8.3v.5a3.1 3.1 0 0 1 1 5.9 3.7 3.7 0 0 1-4.5 4.5M12 3v18M8 9.5c1.2.1 2.2.8 2.7 1.8M16 9.5c-1.2.1-2.2.8-2.7 1.8M8.8 15.7c.8-.5 1.4-1.2 1.6-2.1M15.2 15.7c-.8-.5-1.4-1.2-1.6-2.1" />
-          </svg>
-          <span>{variant ? variantLabel(variant) : 'Auto'}</span>
-          <svg className={`h-3 w-3 text-slate-400 transition ${variantOpen ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </button>
-      )}
-
+    <div className="model-picker relative flex min-w-0 items-center gap-1">
       <button
         ref={triggerRef}
         type="button"
         onClick={() => {
-          if (anchored) positionMenu()
           setVariantOpen(false)
           setOpen((value) => !value)
         }}
-        className="flex min-w-0 max-w-[280px] items-center gap-2 rounded-xl bg-white px-2.5 py-1.5 text-left ring-1 ring-slate-200 transition hover:bg-slate-50 active:scale-[0.98]"
+        className="flex min-w-0 max-w-[280px] items-center gap-2 rounded px-2 py-2 text-left transition hover:bg-slate-50"
         title="Choose a model"
-        aria-haspopup="listbox"
-        aria-expanded={open}
+        aria-haspopup="dialog"
+        aria-expanded={open || variantOpen}
       >
         {selectedBrand ? (
           <selectedBrand.Logo className="h-4 w-4 shrink-0 text-slate-700" title={selectedBrand.name} />
@@ -426,25 +338,16 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
           <span className="h-2 w-2 shrink-0 rounded-full bg-slate-300" />
         )}
         <span className="min-w-0 truncate text-[12.5px] font-medium text-slate-900">{selected ? prettyModelName(selected.modelID) : 'No model'}</span>
-        {selectedAccess && <span className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-medium ring-1 ring-inset ${accessStyle[selectedAccess].className}`}>{accessStyle[selectedAccess].label}</span>}
+
         <svg className={`h-3.5 w-3.5 shrink-0 text-slate-500 transition ${open ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="m6 9 6 6 6-6" />
         </svg>
       </button>
 
-      <AnimatePresence>
-        {variantOpen && variants.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97, y: direction === 'up' ? 5 : -5 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: direction === 'up' ? 4 : -4 }}
-            transition={{ type: 'spring', stiffness: 520, damping: 36 }}
-            style={{ transformOrigin: direction === 'up' ? 'bottom left' : 'top left', ...(anchored ? { left: anchor.left, bottom: anchor.bottom, maxWidth: 'calc(100vw - 16px)' } : {}) }}
-            className={`${anchored ? 'fixed' : 'absolute right-0'} z-40 w-60 overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-aegean-lg ${
-              anchored ? '' : direction === 'up' ? 'bottom-full mb-2' : 'top-full mt-2'
-            }`}
-          >
-            <div className="px-2 pb-1.5 pt-1 text-[10px] font-medium uppercase tracking-[0.12em] text-slate-500">
+      {variantOpen && variants.length > 0 && (
+        <Popover trigger={triggerRef} onClose={() => setVariantOpen(false)} label="Thinking mode" direction={direction} width={320} className="reasoning-menu">
+          <button type="button" className="popover-item" onClick={() => { setVariantOpen(false); setOpen(true) }}>Back to models</button>
+            <div className="popover-heading">
               Thinking mode
             </div>
             {[null, ...variants].map((option) => {
@@ -459,45 +362,34 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                     onSelectVariant(option)
                     setVariantOpen(false)
                   }}
+                  aria-pressed={active}
                   className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition ${
-                    active ? 'bg-aether-50 text-slate-900' : 'hover:bg-slate-50'
+                    active ? 'bg-accent-50 text-slate-900' : 'hover:bg-slate-50'
                   }`}
                 >
-                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-aether-500' : 'bg-slate-300'}`} />
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-accent-500' : 'bg-slate-300'}`} />
                   <span className="min-w-0 flex-1">
                     <span className={`block text-[11.5px] font-medium ${active ? 'text-slate-900' : 'text-slate-700'}`}>{label}</span>
                     <span className="block truncate text-[10px] text-slate-400">{description}</span>
                   </span>
                   {active && (
-                    <svg className="h-3.5 w-3.5 shrink-0 text-aether-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <svg className="h-3.5 w-3.5 shrink-0 text-accent-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
                   )}
                 </button>
               )
             })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: direction === 'up' ? 6 : -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: direction === 'up' ? 6 : -6 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 34 }}
-            style={{ transformOrigin: direction === 'up' ? 'bottom left' : 'top left', ...(anchored ? { left: anchor.left, bottom: anchor.bottom, maxWidth: 'calc(100vw - 16px)' } : {}) }}
-            className={`${anchored ? 'fixed' : 'absolute'} z-30 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-aegean-lg ${
-              anchored ? '' : direction === 'up' ? 'bottom-full right-0 mb-2' : 'top-full right-0 mt-2'
-            }`}
-          >
+        </Popover>
+      )}
+      {open && (
+        <Popover trigger={triggerRef} onClose={() => setOpen(false)} label="Choose a model" direction={direction} width={360} className="model-menu">
             {adding ? (
               <AddEndpoint onAddEndpoint={onAddEndpoint} onDone={() => setAdding(false)} />
             ) : (
               <>
                 <div className="border-b border-slate-200 p-2">
-                  <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-2.5 py-1.5 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-aether-400">
+                  <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-2.5 py-1.5 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-accent-400">
                     <svg className="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" strokeLinecap="round" /></svg>
                     <input
                       type="search"
@@ -511,10 +403,10 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                   </div>
                 </div>
 
-                <div className="max-h-[320px] space-y-0.5 overflow-y-auto p-2">
+                <div className="model-menu-options max-h-[320px] space-y-0.5 overflow-y-auto p-2">
                   {showFavorites && (
                     <section className="mb-2 border-b border-slate-200 pb-2">
-                      <div className="flex items-center gap-2 px-2.5 pb-1.5 pt-0.5 text-[10.5px] font-medium uppercase tracking-[0.08em] text-slate-500">
+                      <div className="flex items-center gap-2 px-2.5 pb-1.5 pt-0.5 text-[12px] font-medium text-slate-500">
                         <svg className="h-3 w-3 text-amber-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3.5 2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6-4.4-4.2 6-.8Z" /></svg>
                         Favorites
                       </div>
@@ -538,9 +430,9 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                   )}
                   {filtered.length === 0 && favoriteRows.length === 0 ? (
                     <div className="px-2 py-6 text-center">
-                      <p className="text-[12px] text-slate-500">{rows.length === 0 ? 'No local models found' : 'No matches'}</p>
+                      <p className="text-[12px] text-slate-500">{rows.length === 0 ? 'No models connected' : 'No matches'}</p>
                       {rows.length === 0 && (
-                        <p className="mt-1 text-[11px] leading-relaxed text-slate-400">Start Ollama or LM Studio, then rescan below.</p>
+                        <p className="mt-1 text-[11px] leading-relaxed text-slate-400">Connect a provider in Connections, or start a local server and rescan.</p>
                       )}
                     </div>
                   ) : (
@@ -549,53 +441,17 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                       const BrandLogo = sample ? brandFor(sample.modelID).Logo : null
                       return (
                         <section key={group.name} className={groupIndex === 0 ? '' : 'mt-2 border-t border-slate-200 pt-2'}>
-                          <div className="flex items-center gap-2 px-2.5 pb-1.5 pt-0.5 text-[10.5px] font-medium uppercase tracking-[0.08em] text-slate-500">
+                          <div className="flex items-center gap-2 px-2.5 pb-1.5 pt-0.5 text-[12px] font-medium text-slate-500">
                             {BrandLogo && <BrandLogo className="h-3.5 w-3.5 text-slate-400" title={group.name} />}
                             {group.name}
                           </div>
                           <div className="space-y-0.5">
-                            {group.families.map((family) => {
-                              const key = `${group.name}:${family.name}`
-                              const expanded = !!query.trim() || openFamilies.has(key)
-                              const activeFamily = family.rows.some((row) => selected?.providerID === row.providerID && selected.modelID === row.modelID)
-                              return (
-                                <div key={key}>
-                                  <button
-                                    type="button"
-                                    onClick={() => setOpenFamilies((current) => {
-                                      const next = new Set(current)
-                                      if (next.has(key)) next.delete(key)
-                                      else next.add(key)
-                                      return next
-                                    })}
-                                    className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-left transition ${activeFamily ? 'text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}`}
-                                  >
-                                    <motion.svg animate={{ rotate: expanded ? 90 : 0 }} className="h-3 w-3 shrink-0 text-slate-400" viewBox="0 0 24 24" fill="currentColor"><path d="M8 4l10 8-10 8z" /></motion.svg>
-                                    <span className="text-[12px] font-medium">{family.name}</span>
-                                    <span className="ml-auto font-mono text-[9.5px] text-slate-400">{family.rows.length}</span>
-                                  </button>
-                                  <AnimatePresence initial={false}>
-                                    {expanded && (
-                                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} className="overflow-hidden">
-                                        <div className="space-y-0.5 pb-1">
-                                          {family.rows.map((row, index) => (
-                                            <ModelRow
-                                              key={`${row.providerID}/${row.modelID}`}
-                                              row={row}
-                                              index={index}
-                                              active={selected?.providerID === row.providerID && selected.modelID === row.modelID}
-                                              favorite={favoriteKeys.includes(rowKey(row))}
-                                              onToggleFavorite={() => toggleFavorite(row)}
-                                              onClick={() => choose(row)}
-                                            />
-                                          ))}
-                                        </div>
-                                      </motion.div>
-                                    )}
-                                  </AnimatePresence>
-                                </div>
-                              )
-                            })}
+                            {group.families.flatMap((family) => family.rows).map((row, index) => (
+                              <ModelRow key={rowKey(row)} row={row} index={index}
+                                active={selected?.providerID === row.providerID && selected.modelID === row.modelID}
+                                favorite={favoriteKeys.includes(rowKey(row))}
+                                onToggleFavorite={() => toggleFavorite(row)} onClick={() => choose(row)} />
+                            ))}
                           </div>
                         </section>
                       )
@@ -603,6 +459,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                   )}
                 </div>
 
+                {variants.length > 0 && <button type="button" className="popover-item model-reasoning-link" aria-label={`Thinking mode: ${variant ? variantLabel(variant) : 'Auto'}`} onClick={() => { setOpen(false); setVariantOpen(true) }}>Thinking mode<span className="ml-auto text-slate-500">{variant ? variantLabel(variant) : 'Auto'}</span></button>}
                 {customEndpoints.length > 0 && (
                   <div className="border-t border-slate-200 px-2 py-1.5">
                     {customEndpoints.map((endpoint) => (
@@ -613,7 +470,7 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                           onClick={() => {
                             setEndpointError(null)
                             void onRemoveEndpoint(endpoint.id).catch((error) =>
-                              setEndpointError(error instanceof Error ? error.message : String(error)),
+                              setEndpointError(errorText(error)),
                             )
                           }}
                           className="rounded-lg px-1.5 py-0.5 text-slate-500 hover:bg-rose-50 hover:text-rose-600"
@@ -645,9 +502,8 @@ export default function ModelPicker({ providers, selected, variant, onSelect, on
                 </div>
               </>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </Popover>
+      )}
     </div>
   )
 }
