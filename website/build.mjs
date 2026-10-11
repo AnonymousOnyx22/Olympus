@@ -253,7 +253,7 @@ pages.push({
 <section class="section"><div class="wrap"><div class="sec__head" data-reveal><p class="eyebrow">Review</p><h2>Nothing is written until you accept.</h2><p class="lede">Edits pause in a diff. Accept to write them to disk, or reject and tell the agent why. Try it.</p></div>
 <div class="dv" data-diff data-reveal="scale">
 <div class="dv__head"><span>src/Hero.tsx</span><span>+2 &minus;2</span></div>
-<div class="dv__code" aria-label="Proposed change">
+<div class="dv__code" role="region" aria-label="Proposed change" tabindex="0">
 <div class="dv__line"><i>11</i><b></b><span>  return (</span></div>
 <div class="dv__line"><i>12</i><b></b><span>    &lt;section className="hero"&gt;</span></div>
 <div class="dv__line del"><i>13</i><b>&minus;</b><span>      &lt;h1&gt;Welcome to my website&lt;/h1&gt;</span></div>

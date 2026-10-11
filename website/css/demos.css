@@ -84,7 +84,7 @@
 @keyframes pjin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .pj.is-flash { border-color: var(--lavender); background: #26233a; }
 .pj__main { display: grid; gap: 4px; min-width: 0; }
-.pj h3 { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.pj__title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
 .pj__path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 12px var(--mono); color: var(--text-3); }
 .pj__tag { padding: 2px 6px; border-radius: 3px; background: var(--selected); color: var(--text-2); font: 11px var(--mono); }
 .pj__side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
