@@ -336,7 +336,7 @@ pages.push({
 <section class="section"><div class="wrap"><h2 class="sr-only">The steps</h2><div class="steps">
 <div class="step" data-reveal><div><h3>Add your projects</h3><p>Point Kern at the folders you work in, or let it watch a parent folder. Each project appears in the sidebar and in the Projects page.</p></div></div>
 <div class="step" data-reveal><div><h3>Connect your models</h3><p>Models on your computer are found automatically. Add keys for hosted ones under Connections, or bridge to the Claude and Codex command line tools you already use.</p></div></div>
-<div class="step" data-reveal><div><h3>Open a window for each task</h3><p>Start a new agent, choose its project and pick a model for that window. Open as many as you want. Each is its own conversation.</p></div></div>
+<div class="step" data-reveal><div><h3>Open a window for each task</h3><p>Start a new agent, choose its project and pick a model for that window. Open as many as you want. Each is its own conversation, and its engine starts in the background only when you connect it.</p></div></div>
 <div class="step" data-reveal><div><h3>Work on separate things at the same time</h3><p>Follow reasoning and tool calls as they stream in, queue another message while an agent works, and watch the sidebar for which projects are busy or waiting on you.</p></div></div>
 <div class="step" data-reveal><div><h3>Review before anything is written</h3><p>Edits pause in the diff viewer. Accept to write them to disk, or reject with a reason. Shell commands wait for approval unless you chose a looser mode.</p></div></div>
 <div class="step" data-reveal><div><h3>Run it and ship it</h3><p>Switch to Code to edit files, run the project in the terminal and see your dev server in the preview. Commit and push from the header when you are happy.</p></div></div>
@@ -358,7 +358,7 @@ pages.push({
 <p>Kern has no model of its own, so bring at least one:</p>
 <ul><li>A local server: Ollama, LM Studio, vLLM or llama.cpp, or any OpenAI compatible server on this computer.</li><li>A key saved under Connections, for example Google Gemini, Mistral, Hugging Face or OpenRouter.</li><li>The Claude or Codex command line tools, if you already use them.</li></ul>
 <h2>The engine</h2>
-<p>Today Kern talks to models through the opencode command line engine, which you install once:</p>
+<p>Kern starts nothing when it opens. When you connect a chat, it starts an engine quietly in the background for that chat. Today that engine is opencode, which you install once:</p>
 <pre><code>npm i -g opencode-ai</code></pre>
 <p>It needs Node 20 or newer. If it lives somewhere unusual, set <code>KERN_OPENCODE_BIN</code> to its path.</p>
 <h2>Optional</h2>
@@ -378,6 +378,7 @@ pages.push({
 <details><summary>Which models can I connect?</summary><p>Claude, GPT, Gemini, Kimi, Grok, Llama, Mistral and models running on your own computer, depending on what you connect: a local server, a key (Gemini, Mistral, Hugging Face, OpenRouter, OpenCode Zen), or the Claude and Codex command line tools.</p></details>
 <details><summary>Do I have to pick one?</summary><p>No. Each window has its own model, so you can use several at once, on the same project or different ones.</p></details>
 <details><summary>Can several agents really work at the same time?</summary><p>Yes. Every conversation is its own window, and every window belongs to a project. Run as many side by side as your machine can handle.</p></details>
+<details><summary>Does Kern start anything when it opens?</summary><p>No. Opening Kern starts no model and no engine. Your chats show as not started, and an engine starts in the background only when you connect a chat or send a message in it.</p></details>
 <details><summary>Can I download it?</summary><p>Not yet. Kern is in private development and is not publicly distributed. There is no price, waitlist or release date.</p></details>
 <details><summary>Does my code leave my computer?</summary><p>Not through Kern. If a window uses a model on your computer, nothing leaves it. If it uses a hosted model, your prompts and the files the agent reads go to that provider, as they would anywhere. See <a href="privacy.html">Privacy</a>.</p></details>
 <details><summary>Can an agent change my files without asking?</summary><p>Only if you let it. By default edits and shell commands ask first. Full access is a deliberate choice you make per agent.</p></details>
@@ -399,6 +400,7 @@ pages.push({
 <tr><th scope="row">Agents ask first</th><td>Edits, shell commands and access outside the project are set to ask by default. Looser modes are your choice, per agent.</td></tr>
 <tr><th scope="row">Added endpoints stay local</th><td>Servers you add inside Kern must be on this computer (loopback addresses).</td></tr>
 <tr><th scope="row">Keys are encrypted</th><td>Saved values use your operating system's secret storage and are only decrypted in the main process.</td></tr>
+<tr><th scope="row">Nothing runs until you connect a chat</th><td>Opening the app starts no model and no engine. An engine starts in the background only when you connect a chat or send a message.</td></tr>
 <tr><th scope="row">No sharing, no automatic updates</th><td>Sharing and automatic updates are turned off for the agents Kern runs.</td></tr>
 <tr><th scope="row">No telemetry</th><td>No analytics, crash reporting or account. This website sets no cookies.</td></tr>
 </tbody></table>
@@ -437,6 +439,7 @@ pages.push({
 <h2>0.1.0, in development</h2>
 <ul>
 <li>One workspace for many agents: every conversation is its own window, each tied to a project.</li>
+<li>Nothing starts when the app opens. Chats show as not started, and each one connects its engine in the background when you ask.</li>
 <li>Connect local models, hosted models with a key, and the Claude and Codex command line tools. Pick a model per window.</li>
 <li>Diff review for every edit, separate approval for shell commands, and three approval modes.</li>
 <li>Projects library with search, sort, list and grid, pins, watched folders and missing folder handling.</li>

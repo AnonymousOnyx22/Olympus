@@ -36,7 +36,7 @@
 <p>Kern has no model of its own, so bring at least one:</p>
 <ul><li>A local server: Ollama, LM Studio, vLLM or llama.cpp, or any OpenAI compatible server on this computer.</li><li>A key saved under Connections, for example Google Gemini, Mistral, Hugging Face or OpenRouter.</li><li>The Claude or Codex command line tools, if you already use them.</li></ul>
 <h2>The engine</h2>
-<p>Today Kern talks to models through the opencode command line engine, which you install once:</p>
+<p>Kern starts nothing when it opens. When you connect a chat, it starts an engine quietly in the background for that chat. Today that engine is opencode, which you install once:</p>
 <pre><code>npm i -g opencode-ai</code></pre>
 <p>It needs Node 20 or newer. If it lives somewhere unusual, set <code>KERN_OPENCODE_BIN</code> to its path.</p>
 <h2>Optional</h2>

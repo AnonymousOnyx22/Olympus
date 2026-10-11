@@ -10,6 +10,9 @@ export interface AgentGridEntry {
   projectName: string
   projectPath?: string
   ready: boolean
+  /** No engine has been started for this project yet; it starts when the user connects the chat. */
+  idle?: boolean
+  onStartEngine?: () => void
   /** Why this project's agent could not start, if it failed; replaces an endless "Connecting". */
   startError?: string
   onRetryStart?: () => void
@@ -112,6 +115,8 @@ export default function AllAgentsGrid({ entries, hasProjects, conversations, onO
               projectName={entry.projectName}
               projectPath={entry.projectPath}
               ready={entry.ready}
+              idle={entry.idle}
+              onStartEngine={entry.onStartEngine}
               startError={entry.startError}
               onRetryStart={entry.onRetryStart}
               onClose={() => onClose(entry.spaceId, entry.sessionId)}

@@ -328,6 +328,10 @@ export interface ElectronAPI {
   startSpace(spaceId: string, force?: boolean): Promise<StartDaemonResult>
   /** Starts a space's daemon in the background, without changing which space is focused. */
   openSpace(spaceId: string): Promise<StartDaemonResult>
+  /** Focuses a space without starting an engine. */
+  focusSpace(spaceId: string): Promise<{ state: DaemonState }>
+  /** Models found without any engine: local servers and the Claude/Codex tools. */
+  discoverLocalModels(): Promise<LocalProvider[]>
   /** Spaces with open agent windows; the daemon pool never evicts these. */
   setPinnedSpaces(spaceIds: string[]): Promise<void>
 

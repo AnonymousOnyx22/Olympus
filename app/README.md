@@ -9,8 +9,9 @@ lists providers you configured in opencode, and bridges to the Claude and Codex 
 
 ## What it does
 
-- **Runs the agent for you.** Kern starts and supervises one `opencode serve` per open project, so
-  switching projects never interrupts another project's running agent.
+- **Starts nothing on its own.** Opening Kern starts no model and no engine. Each chat shows as not started
+  until you connect it (or send a message); then Kern starts that project's engine in the background, one per
+  project, so switching projects never interrupts another project's running agent.
 - **Agents.** Every open conversation is its own window in a grid. Stream reasoning, tool calls with
   expandable output, inline diffs and the agent's live todo list.
 - **Reviewable edits.** Edits pause in the diff viewer; nothing is written until you accept. Shell

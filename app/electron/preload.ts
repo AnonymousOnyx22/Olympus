@@ -21,6 +21,8 @@ const api: ElectronAPI = {
 
   startSpace: (spaceId, force) => ipcRenderer.invoke('space:start', spaceId, force),
   openSpace: (spaceId) => ipcRenderer.invoke('space:open', spaceId),
+  focusSpace: (spaceId) => ipcRenderer.invoke('space:focus', spaceId),
+  discoverLocalModels: () => ipcRenderer.invoke('models:local'),
   setPinnedSpaces: (spaceIds) => ipcRenderer.invoke('space:setPinned', spaceIds),
   closeSpace: (spaceId) => ipcRenderer.invoke('space:close', spaceId),
   listProjects: () => ipcRenderer.invoke('projects:list'),

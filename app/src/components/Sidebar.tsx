@@ -84,7 +84,7 @@ export default function Sidebar(props: SidebarProps) {
         <div className="sidebar-footer">
           <button type="button" onClick={() => setSkillsOpen(value => !value)} aria-expanded={skillsOpen} className="sidebar-section-toggle">Skills<span>{props.skills.length}</span><Chevron open={skillsOpen} /></button>
           {skillsOpen && <div className="sidebar-skills">{props.skills.length ? props.skills.map(skill => <p key={skill.name} title={skill.description}>{skill.name}</p>) : <p>No skills available</p>}</div>}
-          <div className="sidebar-status"><StatusOrb kind={daemonOrb} size={10} /><span role="status">{props.busy ? 'Agents working' : props.daemon.status === 'running' ? 'Ready' : props.daemon.status === 'starting' ? 'Starting' : props.daemon.status === 'error' ? 'Failed to start' : 'Offline'}</span></div>
+          <div className="sidebar-status"><StatusOrb kind={daemonOrb} size={10} /><span role="status">{props.busy ? 'Agents working' : props.daemon.status === 'running' ? 'Ready' : props.daemon.status === 'starting' ? 'Starting' : props.daemon.status === 'error' ? 'Failed to start' : 'Not started'}</span></div>
         </div>
       </>}
     </aside>

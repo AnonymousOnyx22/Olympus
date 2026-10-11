@@ -350,6 +350,17 @@ function registerIpc() {
     const id = normSpaceId(spaceId)
     return startForProject(id, resolveSpaceDir(id))
   })
+  // Focuses a space without starting an engine. The app uses this at launch so that opening Kern never
+  // starts an agent process; an engine starts only when a chat is actually connected.
+  handle('space:focus', (_e, spaceId: unknown) => {
+    const id = normSpaceId(spaceId)
+    focusedSpaceId = id
+    pool.setFocused(id)
+    updateSettings({ lastSpace: id })
+    return { state: pool.state(id) }
+  })
+  // Models that can be found without any engine: servers on this computer and the Claude/Codex tools.
+  handle('models:local', () => withCli(discoverProviders(getSettings().customEndpoints)))
   handle('space:close', (_e, spaceId: unknown) => pool.stop(normSpaceId(spaceId)))
   handle('space:setPinned', (_e, spaceIds: unknown) => {
     if (!Array.isArray(spaceIds)) throw new Error('Expected a list of spaces')

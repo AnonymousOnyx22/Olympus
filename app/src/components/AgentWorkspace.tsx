@@ -129,6 +129,9 @@ export interface AgentPaneProps extends AgentPaneShared {
   projectName: string
   projectPath?: string
   ready: boolean
+  /** No engine has been started for this project yet. It starts when the user connects this chat. */
+  idle?: boolean
+  onStartEngine?: () => void
   /** Set when this project's agent failed to start; shown instead of "Connecting". */
   startError?: string
   onRetryStart?: () => void
@@ -163,7 +166,15 @@ export function AgentPane(props: AgentPaneProps) {
     catch (reason) { stream.markIdle(); throw reason }
     finally { sending.current = false }
   }
+  const idle = !!props.idle && !props.ready
   const send = async (text: string, priority = false) => {
+    if (idle) {
+      // Nothing is running yet: start the engine now and hold the message until it is connected.
+      if (!model) throw new Error('Choose a model first.')
+      props.onStartEngine?.()
+      setQueue((items) => [...items, { id: crypto.randomUUID(), text, priority, model, variant }])
+      return
+    }
     if (!model || !stream.loaded) throw new Error('Wait for this agent to connect and select a model.')
     const item = { id: crypto.randomUUID(), text, priority, model, variant }
     if (busy || sending.current || queue.length > 0 || queuePaused) {
@@ -211,8 +222,8 @@ export function AgentPane(props: AgentPaneProps) {
   // Showing a generic "Working" next to this told you nothing the
   // real description didn't already say, just in a less useful form.
   const activity = describeActivity({ ...stream, permissions })
-  const orbKind: OrbKind = failed ? 'attention' : !props.ready || !stream.loaded ? 'connecting' : effectivePermissions.length || outcome || stalled ? 'attention' : busy ? 'working' : 'ready'
-  const statusLabel = failed ? "Couldn't start" : !props.ready || !stream.loaded ? 'Connecting' : effectivePermissions.length ? 'Needs approval' : stalled ? 'No recent progress' : busy ? activity : outcome === 'stopped' ? 'Stopped' : outcome === 'failed' ? 'Task failed' : 'Ready'
+  const orbKind: OrbKind = idle ? 'idle' : failed ? 'attention' : !props.ready || !stream.loaded ? 'connecting' : effectivePermissions.length || outcome || stalled ? 'attention' : busy ? 'working' : 'ready'
+  const statusLabel = idle ? 'Not started' : failed ? "Couldn't start" : !props.ready || !stream.loaded ? 'Connecting' : effectivePermissions.length ? 'Needs approval' : stalled ? 'No recent progress' : busy ? activity : outcome === 'stopped' ? 'Stopped' : outcome === 'failed' ? 'Task failed' : 'Ready'
   return <article ref={paneRef} aria-label={`Agent chat: ${props.title}`} data-session-id={props.sessionID} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-float">
     <header className="agent-header flex min-h-11 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3">
       {orbKind === 'working' ? <ThinkingMark size={13} /> : <StatusOrb kind={orbKind} size={13} />}
@@ -232,6 +243,10 @@ export function AgentPane(props: AgentPaneProps) {
       <button type="button" disabled={stream.refreshing} onClick={() => void stream.refresh()} className={buttonClass}>{stream.refreshing ? 'Checking…' : 'Check status'}</button>
       {outcome && !permissions.length && props.ready && stream.loaded && model && <button type="button" onClick={() => { setError(''); void send('Continue the previous task from the existing files and conversation. Inspect the last failure or cancellation first, check which work already completed, and resume only the unfinished work. Use explicit timeouts for commands; do not leave a foreground development server blocking a tool call.').catch((reason) => setError(errorText(reason))) }} className={buttonClass}>Continue task</button>}
     </div>}
+    {idle && <div role="status" className="flex flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50 px-3 py-2 text-[11.5px] text-slate-600">
+      <span className="min-w-0 flex-1">No engine is running for this chat. It starts only when you connect it, or when you send a message.</span>
+      {props.onStartEngine && <button type="button" onClick={props.onStartEngine} className={buttonClass}>Connect</button>}
+    </div>}
     {failed && <div role="alert" className="flex items-start gap-2 border-b border-rose-100 bg-rose-50 px-3 py-2 text-[11.5px] text-rose-700">
       <span className="min-w-0 flex-1 break-words">This project's agent couldn't start. {props.startError}</span>
       {props.onRetryStart && <button onClick={props.onRetryStart} className="shrink-0 rounded-lg bg-white px-2 py-1 font-medium text-rose-700 shadow-float transition hover:bg-rose-100">Retry</button>}
@@ -241,7 +256,7 @@ export function AgentPane(props: AgentPaneProps) {
       error={error || stream.error} onDismissError={() => { setError(''); stream.clearError() }} permissions={permissions} onReviewEdits={props.onReviewEdits}
       model={model} variant={variant} providers={props.providers} onSelectModel={(next) => { setModel(next); setVariant(null) }} onSelectVariant={(next) => { setVariant(next) }}
       onRescan={props.onRescan} rescanning={props.rescanning} onAddEndpoint={props.onAddEndpoint} onRemoveEndpoint={props.onRemoveEndpoint}
-      ready={props.ready && stream.loaded} hasProject hasModels={props.providers.some((provider) => provider.online && provider.models.length > 0)}
+      ready={(props.ready && stream.loaded) || idle} hasProject hasModels={props.providers.some((provider) => provider.online && provider.models.length > 0)}
       onChooseProject={() => {
         if (!canClose) { setError('Stop this agent and clear its queue or approvals before changing folders.'); return }
         props.goToProject(props.spaceId, props.sessionID)

@@ -153,6 +153,10 @@ export default function App() {
   const openRequested = useRef(new Set<string>())
   const startFailures = useRef(new Map<string, { count: number; notBefore: number }>())
   const [retryTick, setRetryTick] = useState(0)
+  // Spaces whose engine the user has asked for. Opening the app starts nothing: an engine starts only
+  // after a deliberate action (opening a project, adding an agent, or connecting a chat window).
+  const [engineWanted, setEngineWanted] = useState<Set<string>>(() => new Set())
+  const wantEngine = useCallback((id: string) => setEngineWanted((prev) => (prev.has(id) ? prev : new Set(prev).add(id))), [])
   const noteStartFailure = (id: string) => {
     const count = (startFailures.current.get(id)?.count ?? 0) + 1
     const wait = 2000 * 2 ** (count - 1)
@@ -182,6 +186,7 @@ export default function App() {
     switching.current = true
     try {
     if (editorSwitchGuard.current && !(await editorSwitchGuard.current())) return false
+    wantEngine(id)
     setSpaceId(id)
     setScreen('workspace')
     // The Workspace tab spans every open project, so switching focus shouldn't
@@ -203,7 +208,7 @@ export default function App() {
     if (chosen) void window.electronAPI.setSettings({ selectedModel: chosen })
     return true
     } finally { switching.current = false }
-  }, [])
+  }, [wantEngine])
 
   useEffect(() => {
     const offDaemon = window.electronAPI.onDaemonState((id, state) => setDaemonBySpace((prev) => ({ ...prev, [id]: state })))
@@ -251,11 +256,17 @@ export default function App() {
       setProjects(projectList)
       setPermissionMode(settings.permissionMode)
       setSelectedVariants(settings.selectedVariants)
-      // Starting the local agent process is the slowest step (it can take tens of seconds on a
-      // cold start). The startup screen keeps its bar moving from this checkpoint while it runs.
       setBootProgress(70)
-      // Start straight into a space so you can chat immediately (General by default).
-      await startSpace(settings.lastSpace ?? GENERAL_SPACE)
+      // Opening the app starts no engine. Focus the last project and list the models that need none
+      // (servers on this computer, the Claude and Codex tools); a chat connects its engine when you ask.
+      const lastSpace = settings.lastSpace ?? GENERAL_SPACE
+      setSpaceId(lastSpace)
+      setScreen('workspace')
+      await window.electronAPI.focusSpace(lastSpace)
+      const local = await window.electronAPI.discoverLocalModels()
+      setProviders(local)
+      startedWith.current = providersKey(local)
+      setModel(pickModel(local, settings.selectedModel))
     })()
       .catch((error) => setAppError(errorText(error)))
       .then(async () => {
@@ -267,7 +278,7 @@ export default function App() {
       })
       .finally(() => { window.clearTimeout(giveUp); setReady(true) })
     void api.opencodeStatus().then(setEnvIssue).catch(() => {})
-  }, [startSpace])
+  }, [])
 
   // A daemon that just came up (or came back) is the authority on who is busy. Reconciling
   // here also clears a space that was left marked busy by a daemon that died mid-run.
@@ -296,7 +307,7 @@ export default function App() {
   // its windows show the error and a Retry button instead.
   useEffect(() => {
     for (const [id, ids] of Object.entries(openIdsBySpace)) {
-      if (!ids.length || openRequested.current.has(id)) continue
+      if (!ids.length || openRequested.current.has(id) || !engineWanted.has(id)) continue
       const state = daemonBySpace[id]
       if (state?.status === 'running' || state?.status === 'starting') {
         if (state.status === 'running') startFailures.current.delete(id)
@@ -316,7 +327,7 @@ export default function App() {
         })
         .finally(() => openRequested.current.delete(id))
     }
-  }, [openIdsBySpace, daemonBySpace, retryTick])
+  }, [openIdsBySpace, daemonBySpace, retryTick, engineWanted])
 
   /** Clears a space's failure record and starts its daemon again, for the window's Retry button. */
   const retryStart = (id: string) => {
@@ -547,6 +558,7 @@ export default function App() {
 
   /** Adds a new agent to a project directly from the Workspace hub, starting its daemon first if needed. */
   const addAgentToSpace = async (id: string) => {
+    wantEngine(id)
     const result = await window.electronAPI.openSpace(id)
     setDaemonBySpace((prev) => ({ ...prev, [id]: result.state }))
     const session = await api.createSession(id, `Agent ${(openIdsBySpace[id]?.length ?? 0) + 1}`)
@@ -567,6 +579,7 @@ export default function App() {
       if (status[sessionId] && status[sessionId].type !== 'idle') {
         throw new Error('This agent is still working. Stop it before changing folders.')
       }
+      wantEngine(toId)
       const result = await window.electronAPI.openSpace(toId)
       if (result.state.status !== 'running') throw new Error(result.state.error || 'The selected project could not start.')
       setDaemonBySpace((prev) => ({ ...prev, [toId]: result.state }))
@@ -629,6 +642,8 @@ export default function App() {
         projectName: paneProject?.name ?? (id === GENERAL_SPACE ? 'General' : id),
         projectPath: paneProject?.path,
         ready: daemonState?.status === 'running',
+        idle: !engineWanted.has(id) && daemonState?.status !== 'running' && daemonState?.status !== 'starting',
+        onStartEngine: () => wantEngine(id),
         startError: daemonState?.status === 'error' ? daemonState.error || 'The agent could not start.' : undefined,
         onRetryStart: daemonState?.status === 'error' ? () => retryStart(id) : undefined,
       }
