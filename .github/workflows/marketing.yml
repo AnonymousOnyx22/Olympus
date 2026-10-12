@@ -1,0 +1,93 @@
+name: Marketing agent
+# Runs the Instagram agent for free on GitHub Actions. It does nothing until you set the repository
+# variable MARKETING_ENABLED to true, and it only posts for real when MARKETING_LIVE is also true.
+# See marketing/README.md for setup.
+on:
+  schedule:
+    - cron: '23 * * * *'   # every hour: publish approved posts that are due, then handle comments
+    - cron: '0 14 * * 0'   # Sunday: read the results and draft next week as a pull request
+  workflow_dispatch:
+    inputs:
+      command:
+        description: What to run
+        type: choice
+        options: [publish-and-engage, plan, report, status]
+        default: publish-and-engage
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: marketing-agent
+  cancel-in-progress: false
+
+jobs:
+  agent:
+    if: vars.MARKETING_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: marketing
+    env:
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_USERNAME: ${{ vars.IG_USERNAME }}
+      LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+      LLM_MODEL: ${{ vars.LLM_MODEL }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LIVE: ${{ vars.MARKETING_LIVE == 'true' && '1' || '0' }}
+      ASSET_BASE_URL: https://raw.githubusercontent.com/${{ github.repository }}/main/marketing/assets
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+
+      - name: Decide what to run
+        id: what
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "0 14 * * 0" ]; then echo "mode=weekly" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then echo "mode=${{ inputs.command }}" >> "$GITHUB_OUTPUT"
+          else echo "mode=publish-and-engage" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Publish approved posts and handle comments
+        if: steps.what.outputs.mode == 'publish-and-engage'
+        run: |
+          node src/cli.mjs publish
+          node src/cli.mjs engage
+
+      - name: Save what changed (post status, handled comments)
+        if: steps.what.outputs.mode == 'publish-and-engage'
+        run: |
+          git config user.name "kern-marketing-agent"
+          git config user.email "kern-marketing-agent@users.noreply.github.com"
+          git add queue state
+          git diff --cached --quiet || (git commit -m "Marketing agent: update post and comment status" && git pull --rebase origin main && git push)
+
+      - name: Read results and draft next week as a pull request
+        if: steps.what.outputs.mode == 'weekly' || steps.what.outputs.mode == 'plan'
+        run: |
+          branch="marketing/week-$(date -u +%Y-%m-%d)"
+          git config user.name "kern-marketing-agent"
+          git config user.email "kern-marketing-agent@users.noreply.github.com"
+          git checkout -b "$branch"
+          node src/cli.mjs report || echo "No report this week"
+          node src/cli.mjs plan --as approved
+          git add queue state
+          if git diff --cached --quiet; then echo "Nothing to propose"; exit 0; fi
+          git commit -m "Marketing agent: posts for the week of $(date -u +%Y-%m-%d)"
+          git push -u origin "$branch"
+          gh pr create --title "Instagram posts for the week of $(date -u +%Y-%m-%d)" \
+            --body "Drafted by the marketing agent from the brand brief and last week's results. **Merging approves every post in this pull request**; each goes out at its scheduled time. Edit a caption in the files, delete a file to drop a post, or close this pull request to approve nothing." \
+            --base main --head "$branch"
+
+      - name: Report only
+        if: steps.what.outputs.mode == 'report'
+        run: node src/cli.mjs report
+
+      - name: Status
+        if: steps.what.outputs.mode == 'status'
+        run: node src/cli.mjs status

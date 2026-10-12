@@ -1,0 +1,12 @@
+[
+  { "id": "what", "text": "Kern is a desktop app that connects all your AI agents and models in one workspace, so you can work on separate projects at the same time, one window per chat." },
+  { "id": "not-an-ai", "text": "Kern is not an AI model or an agent itself. It is the workspace you connect your models and agents to." },
+  { "id": "models", "text": "You can connect Claude, GPT, Gemini, Kimi, Grok, Llama, Mistral and models running on your own computer, depending on what you connect (a local server, an API key, or the Claude and Codex command line tools)." },
+  { "id": "per-window", "text": "Each window has its own model, so different windows and projects can use different models at the same time." },
+  { "id": "review", "text": "Edits stop in a diff and nothing is written until you accept them. Shell commands ask first. You choose how strict each agent is: ask for approval, approve for me, or full access." },
+  { "id": "projects", "text": "Kern keeps a library of your project folders with search, sort, pins and watched folders. Each window belongs to one project." },
+  { "id": "connections", "text": "Keys for services like AI model providers, Stripe, email and hosting are saved once, encrypted by your operating system, tested where the service allows, and given only to the projects you allow." },
+  { "id": "local", "text": "Kern keeps your projects, keys and conversations on your computer. It has no account, no analytics and no telemetry." },
+  { "id": "platforms", "text": "Kern is built for Windows, macOS and Linux desktops. There is no mobile version." },
+  { "id": "status", "text": "Kern is in private development and is not publicly available yet. There is no download, price, waitlist or release date." }
+]

@@ -1,0 +1,17 @@
+{
+  "timezone": "America/Toronto",
+  "postingSlots": ["12:30", "18:30"],
+  "postsPerWeek": 5,
+  "maxPostsPerDay": 1,
+  "maxHashtags": 8,
+  "staleAfterHours": 24,
+  "publicLaunch": false,
+  "bannedPhrases": ["guaranteed", "100%", "#1 ", "best in the world", "revolutionary", "game changer", "act now", "limited time"],
+  "autoReplyIntents": ["thanks", "question"],
+  "autoReplyMinConfidence": 0.8,
+  "maxAutoRepliesPerRun": 5,
+  "maxAutoRepliesPerDay": 20,
+  "replyMaxChars": 280,
+  "autoHideSpam": true,
+  "commentLookbackDays": 14
+}

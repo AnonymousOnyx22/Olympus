@@ -1,0 +1,44 @@
+[
+  {
+    "id": "hero",
+    "file": "kern-hero.jpg",
+    "type": "image",
+    "description": "Home page hero: \"Every agent. One workspace.\" with the animated violet dot background"
+  },
+  {
+    "id": "agents-working",
+    "file": "kern-agents-working.jpg",
+    "type": "image",
+    "description": "Four agent windows working side by side on different projects, each with a different model"
+  },
+  {
+    "id": "connections",
+    "file": "kern-connections.jpg",
+    "type": "image",
+    "description": "The Connections page: save a key once and choose which projects get it"
+  },
+  {
+    "id": "diff-review",
+    "file": "kern-diff-review.jpg",
+    "type": "image",
+    "description": "A diff waiting for review: nothing is written until you accept"
+  },
+  {
+    "id": "approval-modes",
+    "file": "kern-approval-modes.jpg",
+    "type": "image",
+    "description": "Three approval modes and what each lets an agent do without asking"
+  },
+  {
+    "id": "projects",
+    "file": "kern-projects.jpg",
+    "type": "image",
+    "description": "The projects library with search, pins and status for every agent"
+  },
+  {
+    "id": "model-picker",
+    "file": "kern-model-picker.jpg",
+    "type": "image",
+    "description": "One window, any model: a picker listing Claude, GPT, Gemini, Kimi, Grok and local models"
+  }
+]

@@ -126,3 +126,21 @@ jobs:
         with:
           name: ios-mobile-safari-screenshots
           path: website/ios-screenshots
+
+  marketing-agent:
+    name: marketing agent tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    defaults:
+      run:
+        working-directory: marketing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+      - run: npm test

@@ -7,6 +7,7 @@ Kern is not an agent itself.
 ```
 app/    The desktop app (Electron, React, TypeScript). See app/README.md
 website/    The marketing site (static HTML/CSS/JS). See website/README.md
+marketing/  A free Instagram agent: plans, schedules and posts content and handles comments. See marketing/README.md
 .github/    CI for the app
 ```
 
