@@ -519,7 +519,16 @@ export default function App() {
   // ---- human-in-the-loop edits --------------------------------------------
 
   const editRequests = useMemo(() => stream.permissions.filter((p) => p.permission === 'edit'), [stream.permissions])
-  const openEditReview = () => { setScreen('workspace'); setWorkspaceView('edits') }
+  /**
+   * Opens the diff review for the window that asked. Agent windows from several projects sit side by side, so
+   * the project that owns the pending edit may not be the focused one; focus it first, or the review would show
+   * the focused project's (empty) list instead.
+   */
+  const openEditReview = (targetSpaceId: string = spaceId) => {
+    const show = () => { setScreen('workspace'); setWorkspaceView('edits') }
+    if (targetSpaceId === spaceId) return show()
+    void startSpace(targetSpaceId).then(show).catch((error) => setAppError(errorText(error)))
+  }
 
   const hasProject = spaceId !== GENERAL_SPACE
   const project = projects.find((item) => item.id === spaceId)
@@ -742,7 +751,7 @@ export default function App() {
                   onRequestAddAgent={() => openPicker('agent')} onDelete={(id, sessionId) => api.deleteSession(id, sessionId).then(() => onSessionDeleted(id, sessionId))}
                   onClose={(id, sessionId) => setSpaceOpenIds(id, (openIdsBySpace[id] ?? []).filter((item) => item !== sessionId))} />
               </div>
-              {workspaceView === 'edits' && <div className="absolute inset-0"><DiffViewer spaceId={spaceId} requests={editRequests} /></div>}
+              {workspaceView === 'edits' && <div className="absolute inset-0"><DiffViewer spaceId={spaceId} requests={editRequests} loading={!stream.loaded} /></div>}
               <div className="absolute inset-0" style={{ display: workspaceView === 'code' ? 'block' : 'none' }}>
                 <EditorWorkspace spaceId={spaceId} visible={workspaceView === 'code'} switchGuardRef={editorSwitchGuard} projectKey={`${spaceId}:${daemon.cwd ?? ''}`} available={hasProject && running} onRun={() => void runProject()} runDisabled={!running} />
               </div>

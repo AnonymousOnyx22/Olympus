@@ -18,7 +18,7 @@ export interface AgentPaneShared {
   onRescan: () => void
   onAddEndpoint: (name: string, baseURL: string) => Promise<void>
   onRemoveEndpoint: (id: string) => Promise<void>
-  onReviewEdits: () => void
+  onReviewEdits: (spaceId: string) => void
   onOpenProjects: () => void
   /** Changes the folder used by this agent window. */
   goToProject: (spaceId: string, sessionId: string) => void

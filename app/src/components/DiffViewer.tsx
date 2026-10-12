@@ -10,6 +10,8 @@ interface DiffViewerProps {
   spaceId: string
   /** Pending `edit` permission requests; the agent is paused until each one is answered. */
   requests: PermissionRequest[]
+  /** True while the project's pending list is still being fetched, so an empty list is not yet "nothing to review". */
+  loading?: boolean
 }
 
 interface FileDiff {
@@ -229,7 +231,7 @@ function RequestReview({ spaceId, request }: { spaceId: string; request: Permiss
   )
 }
 
-export default function DiffViewer({ spaceId, requests }: DiffViewerProps) {
+export default function DiffViewer({ spaceId, requests, loading = false }: DiffViewerProps) {
   const current = requests[0]
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -263,7 +265,7 @@ export default function DiffViewer({ spaceId, requests }: DiffViewerProps) {
                 <path d="M8 3v12M16 9v12M5 6l3-3 3 3M13 18l3 3 3-3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <p className="text-sm text-slate-900">No pending edits</p>
+            <p className="text-sm text-slate-900">{loading ? 'Loading edits' : 'No pending edits'}</p>
             <p className="text-xs leading-relaxed text-slate-500">
               When the agent wants to change a file it pauses here. Nothing is written to disk until you accept.
             </p>

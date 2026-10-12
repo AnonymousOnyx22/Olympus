@@ -36,7 +36,7 @@ interface ChatCanvasProps {
   error: string | null
   onDismissError: () => void
   permissions: PermissionRequest[]
-  onReviewEdits: () => void
+  onReviewEdits: (spaceId: string) => void
 
   model: ModelRef | null
   variant: string | null
@@ -247,7 +247,7 @@ const PartView = memo(function PartView({ part }: { part: Part }) {
   }
 })
 
-function PermissionCard({ spaceId, request, onReviewEdits }: { spaceId: string; request: PermissionRequest; onReviewEdits: () => void }) {
+function PermissionCard({ spaceId, request, onReviewEdits }: { spaceId: string; request: PermissionRequest; onReviewEdits: (spaceId: string) => void }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const reply = async (r: PermissionReply) => {
@@ -281,7 +281,7 @@ function PermissionCard({ spaceId, request, onReviewEdits }: { spaceId: string; 
       {error && <p className="mt-1.5 text-[11px] text-rose-600">{error}</p>}
       <div className="mt-2.5 flex gap-2">
         {isEdit ? (
-          <button onClick={onReviewEdits} className="rounded-lg bg-accent-600 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-accent-500">
+          <button onClick={() => onReviewEdits(spaceId)} className="rounded-lg bg-accent-600 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-accent-500">
             Review diff →
           </button>
         ) : (
