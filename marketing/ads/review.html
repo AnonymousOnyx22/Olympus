@@ -1,0 +1,84 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Kern advert: review every change</title>
+<style>html,body{margin:0;background:#121212}canvas{display:block}</style>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script src="lib.js"></script>
+<script>
+const DURATION = 15
+const MONO = '"Cascadia Code", Consolas, monospace'
+const DIFF = [
+  { kind: ' ', code: 'expenses = [("rent", 1200), ("food", 400)]' },
+  { kind: ' ', code: 'def total(items):' },
+  { kind: ' ', code: '    return sum(a for _, a in items)' },
+  { kind: '+', code: '' },
+  { kind: '+', code: 'def average(items):' },
+  { kind: '+', code: '    return total(items) / len(items)' },
+]
+
+function diffCard(t, alpha) {
+  const k = outCubic(ramp(t, 3.6, 0.8)); if (k <= 0) return
+  const px = 60, w = 960, h = 860, py = 600 + (1 - k) * 160
+  const accepted = t > 8.1
+  x.save(); x.globalAlpha = alpha * k
+  rrect(px, py, w, h, 30); x.fillStyle = PANE; x.fill(); x.lineWidth = 2; x.strokeStyle = LINE; x.stroke()
+  text('budget.py', px + 40, py + 74, 38, 700, TEXT, 1, 'left')
+  // status badge
+  const label = accepted ? 'Applied' : 'Needs approval', col = accepted ? OK : WARN
+  rrect(px + w - 330, py + 38, 290, 56, 28); x.fillStyle = accepted ? 'rgba(52,211,153,.14)' : 'rgba(250,204,21,.14)'; x.fill()
+  text(label, px + w - 185, py + 76, 28, 600, col, 1)
+  x.fillStyle = LINE; x.fillRect(px, py + 120, w, 2)
+  // code lines
+  DIFF.forEach((l, i) => {
+    const q = outCubic(ramp(t, 4.6 + i * 0.35, 0.4)); if (q <= 0) return
+    const ly = py + 160 + i * 78
+    if (l.kind === '+') { x.globalAlpha = alpha * k * q; x.fillStyle = 'rgba(52,211,153,.14)'; x.fillRect(px + 20, ly, w - 40, 64) }
+    text(l.kind === '+' ? '+' : '', px + 46, ly + 44, 32, 600, OK, alpha * k * q, 'left', MONO)
+    text(l.code, px + 90, ly + 44, 30, 400, l.kind === '+' ? '#c8f7e1' : '#c9c9c9', alpha * k * q, 'left', MONO)
+  })
+  // buttons
+  const by = py + h - 150
+  const press = clamp(1 - Math.abs(t - 8.05) / 0.12)
+  const pulse = accepted ? 0 : 0.5 + 0.5 * Math.sin(t * 5)
+  x.globalAlpha = alpha * k
+  x.save(); x.translate(px + 300, by + 40); x.scale(1 - 0.06 * press, 1 - 0.06 * press)
+  rrect(-260, -48, 520, 96, 24); x.fillStyle = accepted ? '#2a2a2a' : VIOLET; x.shadowColor = VIOLET; x.shadowBlur = accepted ? 0 : 10 + 30 * pulse; x.fill(); x.shadowBlur = 0
+  text(accepted ? 'Edit accepted' : 'Accept edit', 0, 14, 38, 700, accepted ? OK : '#101010', 1)
+  x.restore()
+  rrect(px + 600, by - 8, 320, 96, 24); x.fillStyle = '#2a2a2a'; x.fill()
+  text('Reject', px + 760, by + 54, 38, 600, MUTED, 1)
+  x.restore()
+}
+
+function draw(t) {
+  x.clearRect(0, 0, W, H); x.fillStyle = '#121212'; x.fillRect(0, 0, W, H)
+  dotGrid(t)
+
+  const s1 = 1 - ramp(t, 3.0, 0.5)
+  if (s1 > 0) {
+    ;[['Agents move fast.', 0.3, TEXT], ['Do you know what they changed?', 1.4, LAV]].forEach(([s, at, col], i) => {
+      const k = outCubic(ramp(t, at, 0.6))
+      text(s, W / 2, 850 + i * 160 + (1 - k) * 40, i ? 58 : 76, 700, col, k * s1)
+    })
+  }
+
+  const f2 = ramp(t, 3.4, 0.5) * (1 - ramp(t, 9.4, 0.6))
+  if (f2 > 0) {
+    text('Review every change.', W / 2, 300, 84, 800, TEXT, f2)
+    text('Before it lands.', W / 2, 410, 84, 800, VIOLET, f2)
+    text('The agent pauses. You read the diff.', W / 2, 500, 38, 400, MUTED, f2)
+    diffCard(t, 1 - ramp(t, 9.4, 0.6))
+  }
+
+  const f3 = ramp(t, 9.9, 0.5) * (1 - ramp(t, 12.4, 0.5))
+  if (f3 > 0) {
+    mark(W / 2, 700, 260 * outBack(ramp(t, 9.9, 0.8)), f3)
+    text('Nothing is written', W / 2, 1000, 88, 800, TEXT, f3)
+    text('until you accept.', W / 2, 1110, 88, 800, VIOLET, f3)
+    text('Kern. Every agent. One workspace.', W / 2, 1260, 42, 400, MUTED, f3)
+  }
+
+  endCard(t, 12.9)
+}
+window.draw = draw; window.DURATION = DURATION
+</script>
