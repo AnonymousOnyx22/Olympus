@@ -1,0 +1,135 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Kern advert: every agent, one workspace</title>
+<style>html,body{margin:0;background:#121212}canvas{display:block}</style>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// A 15 second advert drawn from time alone: window.draw(t) paints the frame at second t, so the renderer
+// can step through it deterministically. Icons come from the website's model-icons.json (simple-icons, CC0).
+const ICONS = {}
+const c = document.getElementById('c'), x = c.getContext('2d')
+const W = 1080, H = 1920, DURATION = 15
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+const ramp = (t, start, len) => clamp((t - start) / len)
+const outCubic = (p) => 1 - Math.pow(1 - p, 3)
+const outBack = (p) => { const s = 1.5; p -= 1; return p * p * ((s + 1) * p + s) + 1 }
+const VIOLET = '#8b7bff', LAV = '#c9b8ff', TEXT = '#f2f2f2', MUTED = '#9a9a9a', PANE = '#1e1e1e', LINE = '#343434'
+
+function text(str, cx, y, size, weight, color, alpha = 1, align = 'center') {
+  x.save(); x.globalAlpha = clamp(alpha); x.fillStyle = color; x.textAlign = align; x.textBaseline = 'alphabetic'
+  x.font = `${weight} ${size}px "Segoe UI", system-ui, sans-serif`; x.fillText(str, cx, y); x.restore()
+}
+function rrect(px, py, w, h, r) { x.beginPath(); x.roundRect(px, py, w, h, r) }
+
+function dotGrid(t) {
+  const gap = 48
+  for (let gy = gap / 2; gy < H; gy += gap) for (let gx = gap / 2; gx < W; gx += gap) {
+    const d = Math.hypot(gx - W / 2, gy - H / 2)
+    const pulse = 0.5 + 0.5 * Math.sin(t * 1.6 - d * 0.006)
+    x.globalAlpha = 0.06 + 0.16 * pulse * (1 - clamp(d / 1300))
+    x.fillStyle = VIOLET; x.beginPath(); x.arc(gx, gy, 2 + 2.4 * pulse, 0, 7); x.fill()
+  }
+  x.globalAlpha = 1
+}
+
+function mark(cx, cy, size, alpha = 1) {
+  x.save(); x.globalAlpha = clamp(alpha); x.translate(cx - size / 2, cy - size / 2); x.scale(size / 40, size / 40)
+  rrect(0, 0, 40, 40, 6); x.fillStyle = '#181818'; x.fill(); x.lineWidth = 1; x.strokeStyle = LINE; x.stroke()
+  x.strokeStyle = TEXT; x.lineWidth = 4; x.lineJoin = 'miter'
+  x.stroke(new Path2D('M9 7v26M30 7 17 20l13 13')); x.stroke(new Path2D('M9 20h8'))
+  x.restore()
+}
+
+function icon(name, cx, cy, size, color, alpha = 1) {
+  const d = ICONS[name]; if (!d) return
+  x.save(); x.globalAlpha = clamp(alpha); x.translate(cx - size / 2, cy - size / 2); x.scale(size / 24, size / 24)
+  x.fillStyle = color; x.fill(new Path2D(d)); x.restore()
+}
+
+const PANES = [
+  { model: 'Claude', project: 'Landing page', at: 3.9 },
+  { model: 'Llama', project: 'Budget tracker', at: 4.2 },
+  { model: 'Kimi', project: 'Weather widget', at: 4.5 },
+  { model: 'Gemini', project: 'Notes API', at: 4.8 },
+]
+
+function pane(i, t, fade) {
+  const p = PANES[i], col = i % 2, row = Math.floor(i / 2)
+  const w = 470, h = 540, px = 55 + col * (w + 30), py = 560 + row * (h + 30)
+  const k = outCubic(ramp(t, p.at, 0.75)); if (k <= 0) return
+  const oy = (1 - k) * 220, a = k * fade
+  x.save(); x.globalAlpha = a; x.translate(0, oy)
+  rrect(px, py, w, h, 26); x.fillStyle = PANE; x.fill(); x.lineWidth = 2; x.strokeStyle = LINE; x.stroke()
+  icon(p.model, px + 52, py + 56, 36, TEXT)
+  text(p.model, px + 88, py + 68, 32, 700, TEXT, 1, 'left')
+  text(p.project, px + w - 28, py + 68, 24, 400, MUTED, 1, 'right')
+  x.fillStyle = LINE; x.fillRect(px, py + 100, w, 2)
+  // lines of work appearing one by one
+  const widths = [0.86, 0.64, 0.78, 0.5, 0.7, 0.42]
+  widths.forEach((f, n) => {
+    const q = outCubic(ramp(t, p.at + 0.7 + n * 0.32, 0.5))
+    rrect(px + 32, py + 138 + n * 46, (w - 64) * f * q, 16, 8)
+    x.fillStyle = n % 3 === 1 ? 'rgba(139,123,255,.55)' : 'rgba(242,242,242,.16)'; x.fill()
+  })
+  // the three glowing dots of a working agent
+  for (let d = 0; d < 3; d++) {
+    const g = 0.25 + 0.75 * Math.max(0, Math.sin(t * 5.2 - d * 0.9))
+    x.globalAlpha = a * g; x.fillStyle = LAV; x.beginPath(); x.arc(px + 44 + d * 26, py + h - 44, 7, 0, 7); x.fill()
+  }
+  text('Working', px + 130, py + h - 35, 26, 400, MUTED, a, 'left')
+  x.restore()
+}
+
+function draw(t) {
+  x.clearRect(0, 0, W, H); x.fillStyle = '#121212'; x.fillRect(0, 0, W, H)
+  dotGrid(t)
+
+  // scene 1: the problem
+  const s1 = 1 - ramp(t, 3.2, 0.5)
+  if (s1 > 0) {
+    const lines = [['One model per tab.', 0.3, TEXT], ['A new window for every project.', 1.3, TEXT], ['There is a better way.', 2.3, LAV]]
+    lines.forEach(([s, at, col], i) => {
+      const k = outCubic(ramp(t, at, 0.6))
+      text(s, W / 2, 800 + i * 150 + (1 - k) * 40, i === 2 ? 66 : 62, 700, col, k * s1)
+    })
+  }
+
+  // scene 2: four agents, one window
+  const f2 = ramp(t, 3.7, 0.5) * (1 - ramp(t, 8.3, 0.6))
+  if (f2 > 0) {
+    text('Four agents.', W / 2, 300, 96, 800, TEXT, f2)
+    text('One window.', W / 2, 420, 96, 800, VIOLET, f2)
+    text('Each one on its own project, at the same time.', W / 2, 500, 36, 400, MUTED, f2)
+    for (let i = 0; i < 4; i++) pane(i, t, 1 - ramp(t, 8.3, 0.6))
+  }
+
+  // scene 3: the product
+  const f3 = ramp(t, 8.9, 0.5) * (1 - ramp(t, 12.4, 0.5))
+  if (f3 > 0) {
+    const k = outBack(ramp(t, 8.9, 0.8))
+    mark(W / 2, 760, 300 * k, f3)
+    text('Kern', W / 2, 1050, 140, 800, TEXT, f3)
+    text('Every agent. One workspace.', W / 2, 1150, 52, 400, LAV, f3)
+    const names = ['Claude', 'GPT', 'Gemini', 'Kimi', 'Grok', 'Llama']
+    names.forEach((n, i) => {
+      const q = outCubic(ramp(t, 9.8 + i * 0.18, 0.5)); const row = Math.floor(i / 3), col = i % 3
+      const cx = W / 2 + (col - 1) * 250, cy = 1330 + row * 100
+      x.save(); x.globalAlpha = q * f3; rrect(cx - 105, cy - 40, 210, 72, 36); x.fillStyle = PANE; x.fill(); x.strokeStyle = LINE; x.lineWidth = 2; x.stroke(); x.restore()
+      text(n, cx, cy + 10, 34, 600, TEXT, q * f3)
+    })
+  }
+
+  // scene 4: honest status
+  const f4 = ramp(t, 12.9, 0.5)
+  if (f4 > 0) {
+    mark(W / 2, 640, 160, f4)
+    text('Early beta.', W / 2, 960, 120, 800, TEXT, f4)
+    text('Not public yet.', W / 2, 1090, 120, 800, VIOLET, f4)
+    text('Follow to watch it come together.', W / 2, 1250, 44, 400, MUTED, f4)
+    const g = 0.5 + 0.5 * Math.sin(t * 4)
+    x.globalAlpha = f4 * (0.5 + 0.5 * g); x.fillStyle = VIOLET; x.beginPath(); x.arc(W / 2, 1380, 14, 0, 7); x.fill(); x.globalAlpha = 1
+  }
+}
+window.draw = draw; window.DURATION = DURATION
+window.setIcons = (icons) => Object.assign(ICONS, icons)
+</script>
