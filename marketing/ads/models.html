@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Kern advert: pick any model</title>
+<style>html,body{margin:0;background:#121212}canvas{display:block}</style>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script src="lib.js"></script>
+<script>
+const DURATION = 15
+const ROWS = [
+  ['Claude', 'Login'], ['GPT', 'Login'], ['Gemini', 'Key'], ['Kimi', 'Key'],
+  ['Grok', 'Key'], ['Llama', 'Key'], ['Ollama', 'Local'], ['LM Studio', 'Local'],
+]
+
+function badge(name, cx, cy, alpha) {
+  if (ICONS[name]) return icon(name, cx, cy, 40, TEXT, alpha)
+  x.save(); x.globalAlpha = alpha; x.strokeStyle = TEXT; x.lineWidth = 3; x.beginPath(); x.arc(cx, cy, 20, 0, 7); x.stroke(); x.restore()
+  text(name[0], cx, cy + 11, 28, 700, TEXT, alpha)
+}
+
+function picker(t, alpha) {
+  const k = outCubic(ramp(t, 3.4, 0.8)); if (k <= 0) return
+  const px = 70, w = 940, py = 600 + (1 - k) * 160, h = 1040
+  x.save(); x.globalAlpha = alpha * k
+  rrect(px, py, w, h, 30); x.fillStyle = PANE; x.fill(); x.lineWidth = 2; x.strokeStyle = LINE; x.stroke()
+  rrect(px + 30, py + 30, w - 60, 80, 20); x.fillStyle = '#161616'; x.fill(); x.strokeStyle = LINE; x.stroke()
+  text('Search models', px + 70, py + 82, 32, 400, MUTED, 1, 'left')
+  // selection bar glides down the list, then settles on Kimi
+  const pos = t < 5.4 ? -1 : t < 9 ? clamp((t - 5.4) / 3.2) * 3 : 3
+  if (pos >= 0) { rrect(px + 20, py + 140 + pos * 106 - 6, w - 40, 96, 18); x.fillStyle = 'rgba(139,123,255,.20)'; x.fill(); x.strokeStyle = 'rgba(139,123,255,.55)'; x.stroke() }
+  ROWS.forEach(([name, tag], i) => {
+    const q = outCubic(ramp(t, 4.2 + i * 0.16, 0.45)); if (q <= 0) return
+    const cy = py + 188 + i * 106
+    x.globalAlpha = alpha * k * q
+    badge(name, px + 80, cy, 1)
+    text(name, px + 130, cy + 12, 38, 600, TEXT, 1, 'left')
+    const local = tag === 'Local'
+    rrect(px + w - 220, cy - 28, 170, 56, 28); x.fillStyle = local ? 'rgba(52,211,153,.14)' : 'rgba(255,255,255,.07)'; x.fill()
+    text(tag, px + w - 135, cy + 10, 28, 600, local ? OK : MUTED, 1)
+  })
+  x.restore()
+}
+
+function draw(t) {
+  x.clearRect(0, 0, W, H); x.fillStyle = '#121212'; x.fillRect(0, 0, W, H)
+  dotGrid(t)
+  const s1 = 1 - ramp(t, 3.0, 0.5)
+  if (s1 > 0) {
+    ;[['Which model is best?', 0.3, TEXT], ['It depends on the task.', 1.4, LAV]].forEach(([s, at, col], i) => {
+      const k = outCubic(ramp(t, at, 0.6)); text(s, W / 2, 850 + i * 160 + (1 - k) * 40, i ? 62 : 76, 700, col, k * s1)
+    })
+  }
+  const f2 = ramp(t, 3.2, 0.5) * (1 - ramp(t, 9.8, 0.6))
+  if (f2 > 0) {
+    text('Pick any model.', W / 2, 300, 92, 800, TEXT, f2)
+    text('In every window.', W / 2, 410, 92, 800, VIOLET, f2)
+    text('Switch per agent, not per app.', W / 2, 500, 38, 400, MUTED, f2)
+    picker(t, 1 - ramp(t, 9.8, 0.6))
+  }
+  const f3 = ramp(t, 10.3, 0.5) * (1 - ramp(t, 12.4, 0.5))
+  if (f3 > 0) {
+    mark(W / 2, 700, 260 * outBack(ramp(t, 10.3, 0.8)), f3)
+    text('Cloud or local.', W / 2, 1000, 96, 800, TEXT, f3)
+    text('Your choice.', W / 2, 1115, 96, 800, VIOLET, f3)
+    text('Kern. Every agent. One workspace.', W / 2, 1260, 42, 400, MUTED, f3)
+  }
+  endCard(t, 12.9)
+}
+window.draw = draw; window.DURATION = DURATION
+</script>
