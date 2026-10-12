@@ -103,8 +103,8 @@ export default function AgentWorkspace(props: Props) {
         </>
       )}
       <p className="text-[11px] text-slate-400">Ctrl/⌘ J terminal · Ctrl/⌘ B preview</p>
-    </div> : <div className="agent-grid min-h-0 flex-1 overflow-auto p-2">
-      {openIds.map((id, index) => <div key={id} className="agent-grid-cell p-1">
+    </div> : <div className="agent-grid min-h-0 flex-1 overflow-auto">
+      {openIds.map((id, index) => <div key={id} className="agent-grid-cell">
         <AgentPane {...props} sessionID={id} title={agentDisplayTitle(props.sessions?.find((session) => session.id === id)?.title, index)}
           onClose={() => onOpenIdsChange(openIds.filter((item) => item !== id))}
           onDelete={() => void deleteSession(id)} deleting={deletingId === id} />

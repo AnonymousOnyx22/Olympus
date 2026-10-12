@@ -104,9 +104,9 @@ export default function AllAgentsGrid({ entries, hasProjects, conversations, onO
     <div className="flex h-full min-h-0 flex-col">
       {header}
       {error && <p role="alert" className="px-3 py-2 text-xs text-rose-600">{error}</p>}
-      <div className="agent-grid min-h-0 flex-1 overflow-auto p-2">
+      <div className="agent-grid min-h-0 flex-1 overflow-auto">
         {entries.map((entry) => (
-          <div key={`${entry.spaceId}:${entry.sessionId}`} className="agent-grid-cell p-1">
+          <div key={`${entry.spaceId}:${entry.sessionId}`} className="agent-grid-cell">
             <AgentPane
               {...shared}
               spaceId={entry.spaceId}
