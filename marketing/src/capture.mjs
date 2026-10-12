@@ -20,6 +20,11 @@ const SHOTS = [
   { id: 'diff-review', file: 'kern-diff-review.jpg', page: 'agents.html', target: '[data-diff]', description: 'A diff waiting for review: nothing is written until you accept' },
   { id: 'approval-modes', file: 'kern-approval-modes.jpg', page: 'agents.html', target: '[data-modes]', description: 'Three approval modes and what each lets an agent do without asking', before: async (p) => { await p.locator('[data-mode="edit"]').click(); await p.locator('[data-run]').click(); await p.waitForTimeout(2200) } },
   { id: 'projects', file: 'kern-projects.jpg', page: 'projects.html', target: '[data-library]', description: 'The projects library with search, pins and status for every agent' },
+  { id: 'features-grid', file: 'kern-features.jpg', page: 'features.html', target: '.grid', description: 'Nine features around your agents: every model, many windows, separate projects, reviewable edits, approval modes, code view, git, local models, connections' },
+  { id: 'how-it-works', file: 'kern-how-it-works.jpg', page: 'how-it-works.html', target: '.steps', description: 'Six steps from adding projects to shipping: add projects, connect models, open a window per task, work in parallel, review, run and ship' },
+  { id: 'security', file: 'kern-security.jpg', page: 'security.html', target: 'table', description: 'Seven things the app enforces: no network access for the interface, ask first, local endpoints, encrypted keys, no telemetry' },
+  { id: 'three-ways', file: 'kern-three-ways.jpg', page: 'models.html', target: '.grid', description: 'Three ways to connect a model: on your computer, with a key, or with the Claude and Codex tools you already use' },
+  { id: 'principles', file: 'kern-principles.jpg', page: 'about.html', target: '.grid', description: 'Three principles: neutral, local and quiet' },
   { id: 'model-picker', file: 'kern-model-picker.jpg', page: 'models.html', target: '[data-modelpicker]', description: 'One window, any model: a picker listing Claude, GPT, Gemini, Kimi, Grok and local models', before: async (p) => { await p.locator('.mp__btn').click(); await p.waitForTimeout(400) } },
 ]
 

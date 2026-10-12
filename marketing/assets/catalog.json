@@ -40,5 +40,35 @@
     "file": "kern-model-picker.jpg",
     "type": "image",
     "description": "One window, any model: a picker listing Claude, GPT, Gemini, Kimi, Grok and local models"
+  },
+  {
+    "id": "features-grid",
+    "file": "kern-features.jpg",
+    "type": "image",
+    "description": "Nine features around your agents: every model, many windows, separate projects, reviewable edits, approval modes, code view, git, local models, connections"
+  },
+  {
+    "id": "how-it-works",
+    "file": "kern-how-it-works.jpg",
+    "type": "image",
+    "description": "Six steps from adding projects to shipping: add projects, connect models, open a window per task, work in parallel, review, run and ship"
+  },
+  {
+    "id": "security",
+    "file": "kern-security.jpg",
+    "type": "image",
+    "description": "Seven things the app enforces: no network access for the interface, ask first, local endpoints, encrypted keys, no telemetry"
+  },
+  {
+    "id": "three-ways",
+    "file": "kern-three-ways.jpg",
+    "type": "image",
+    "description": "Three ways to connect a model: on your computer, with a key, or with the Claude and Codex tools you already use"
+  },
+  {
+    "id": "principles",
+    "file": "kern-principles.jpg",
+    "type": "image",
+    "description": "Three principles: neutral, local and quiet"
   }
 ]
