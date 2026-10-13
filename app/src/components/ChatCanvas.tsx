@@ -382,7 +382,7 @@ function Composer(props: ComposerProps) {
 
       {/* controls row - project on the left, model picker on the right (like the reference GUI) */}
       <div className="composer-controls mt-1 flex items-center gap-2">
-        {!props.projectLocked && <button onClick={props.onChooseProject} className="flex max-w-[45%] items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]" title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
+        {!props.projectLocked && <button onClick={props.onChooseProject} className={`flex max-w-[45%] min-w-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-[0.97]`} title={props.hasProject ? 'Change project folder' : 'Open a project folder'}>
           <svg className="h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /></svg>
           <span className="truncate">{props.hasProject ? props.projectName : 'Choose project'}</span>
         </button>}

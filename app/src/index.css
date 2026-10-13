@@ -225,9 +225,11 @@ input:focus-visible { outline: 1px solid var(--text-secondary); outline-offset: 
 /* Conversation rhythm: one header, a readable column, and a separate writing area. */
 .agent-transcript { background: var(--surface-canvas); }
 .model-menu input[type="search"]:focus-visible { outline: none; }
-.agent-header { gap: 12px; min-height: 60px; padding: 12px 24px; background: var(--surface-canvas); }
+/* One solid pane: header, conversation and composer sit on the same surface with no seam between them. */
+.agent-pane { background: var(--surface-canvas); }
+.agent-header { gap: 8px; min-height: 56px; padding: 10px 14px; background: transparent; border: 0; }
 .agent-header > span:nth-child(2) { font-size: 14px; }
-.agent-header > [role="status"] { max-width: 140px; }
+.agent-header > [role="status"] { max-width: 110px; }
 .conversation-content { width: 100%; max-width: 880px; padding: 32px 28px 48px; }
 .composer-dock { padding: 24px 28px 16px; background: var(--surface-canvas); }
 .composer-content { max-width: 824px; }
@@ -321,3 +323,6 @@ input:focus-visible { outline: 1px solid var(--text-secondary); outline-offset: 
 .think-dots i:nth-child(2) { animation-delay: 0.16s; }
 .think-dots i:nth-child(3) { animation-delay: 0.32s; }
 @keyframes think-pulse { 0%, 70%, 100% { transform: scale(0.65); opacity: 0.4; } 35% { transform: scale(1.25); opacity: 1; } }
+
+/* In a narrow agent pane the project chip yields space so the model chip is never cut off. */
+.agent-pane .composer-controls > button:first-child { max-width: 28%; }
