@@ -377,7 +377,7 @@ function Composer(props: ComposerProps) {
 
       {sendError && <InterfaceState compact tone="error" title="Message could not send" description={sendError} />}
       {props.busy && draft.trim() && (
-        <p className="px-2 pb-1 pt-1 text-[10.5px] text-slate-500">Enter queues · Ctrl/⌘+Enter sends next</p>
+        <p className="px-2 pb-1 pt-1 text-[10.5px] text-slate-500">Enter queues · Ctrl/⌘+Enter sends now</p>
       )}
 
       {/* controls row - project on the left, model picker on the right (like the reference GUI) */}
@@ -400,7 +400,7 @@ function Composer(props: ComposerProps) {
         />
         <div className="composer-actions">
           {props.busy && <button type="button" onClick={props.onAbort} title="Stop" aria-label="Stop agent" className="composer-stop"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="1" /></svg></button>}
-          <button type="button" onClick={() => void submit()} disabled={!canSend} title={props.busy ? 'Queue message' : 'Send (Enter)'} aria-label={props.busy ? 'Queue message' : 'Send message'} className="composer-send"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg></button>
+          <button type="button" onClick={() => void submit()} disabled={!canSend} title={props.busy ? 'Queue message (Enter). Ctrl+Enter sends now.' : 'Send (Enter)'} aria-label={props.busy ? 'Queue message' : 'Send message'} className="composer-send"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg></button>
         </div>
       </div>
     </div>
@@ -585,7 +585,7 @@ export default function ChatCanvas(props: ChatCanvasProps) {
                 )}
               </AnimatePresence>
           <Composer {...composerProps} />
-          <p className="composer-help mt-2 px-1 text-[10px] text-slate-500">Enter to send <span className="px-1">/</span> Shift+Enter for a new line{props.busy ? ' / Messages are queued while the agent works' : ''}</p>
+          <p className="composer-help mt-2 px-1 text-[10px] text-slate-500">Enter to send <span className="px-1">/</span> Shift+Enter for a new line{props.busy ? ' / Ctrl+Enter sends now. Enter queues while the agent works' : ''}</p>
         </div>
       </div>
     </main>

@@ -177,6 +177,14 @@ export function AgentPane(props: AgentPaneProps) {
     }
     if (!model || !stream.loaded) throw new Error('Wait for this agent to connect and select a model.')
     const item = { id: crypto.randomUUID(), text, priority, model, variant }
+    if (priority && busy && !sending.current) {
+      // Ctrl/Cmd+Enter while the agent is working: stop the current run and send this now. Anything already
+      // queued stays queued and resumes after this message finishes.
+      aborting.current = true
+      try { await api.abort(props.spaceId, props.sessionID); stream.markIdle() } finally { aborting.current = false }
+      await deliver(item)
+      return
+    }
     if (busy || sending.current || queue.length > 0 || queuePaused) {
       setQueue((items) => priority ? [item, ...items] : [...items, item])
       return
