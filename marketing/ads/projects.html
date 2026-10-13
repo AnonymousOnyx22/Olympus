@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Kern advert: every project, one library</title>
+<style>html,body{margin:0;background:#121212}canvas{display:block}</style>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script src="lib.js"></script>
+<script>
+const DURATION = 15
+const LIST = [
+  ['landing-page', 'Working', OK], ['notes-api', 'Needs approval', WARN], ['budget-tracker', 'Ready', '#8a8a8a'],
+  ['weather-widget', 'Working', OK], ['portfolio-site', 'Ready', '#8a8a8a'], ['chat-bot', 'Working', OK],
+]
+const QUERY = 'api'
+
+function library(t, alpha) {
+  const k = outCubic(ramp(t, 3.4, 0.8)); if (k <= 0) return
+  const px = 70, w = 940, py = 600 + (1 - k) * 160, h = 1000
+  x.save(); x.globalAlpha = alpha * k
+  rrect(px, py, w, h, 30); x.fillStyle = PANE; x.fill(); x.lineWidth = 2; x.strokeStyle = LINE; x.stroke()
+  rrect(px + 30, py + 30, w - 60, 80, 20); x.fillStyle = '#161616'; x.fill(); x.strokeStyle = LINE; x.stroke()
+  // the search box types "api" and the list narrows to match
+  const typed = Math.min(QUERY.length, Math.max(0, Math.floor((t - 6.4) / 0.35)))
+  const q = QUERY.slice(0, typed)
+  text(q || 'Search projects', px + 70, py + 82, 32, 400, q ? TEXT : MUTED, 1, 'left')
+  const filtering = typed >= QUERY.length
+  let row = 0
+  LIST.forEach(([name, state, col], i) => {
+    const match = !filtering || name.includes(QUERY)
+    const appear = outCubic(ramp(t, 4.2 + i * 0.18, 0.45)); if (appear <= 0) return
+    const fade = match ? 1 : 1 - outCubic(ramp(t, 7.6, 0.5))
+    if (fade <= 0.01) return
+    const slot = filtering && t > 8.1 ? (match ? row++ : i) : i
+    const y = py + 140 + (filtering && match ? Math.min(slot, i) + (i - Math.min(slot, i)) * (1 - outCubic(ramp(t, 8.1, 0.5))) : i) * 118
+    x.globalAlpha = alpha * k * appear * fade
+    rrect(px + 24, y, w - 48, 100, 20); x.fillStyle = match && filtering ? 'rgba(139,123,255,.16)' : '#181818'; x.fill()
+    rrect(px + 48, y + 28, 44, 44, 10); x.fillStyle = '#2a2a2a'; x.fill()
+    text(name[0].toUpperCase(), px + 70, y + 60, 26, 700, TEXT, 1)
+    text(name, px + 112, y + 62, 34, 600, TEXT, 1, 'left')
+    x.fillStyle = col; x.beginPath(); x.arc(px + w - 300, y + 50, 10, 0, 7); x.fill()
+    text(state, px + w - 275, y + 60, 26, 500, MUTED, 1, 'left')
+  })
+  x.restore()
+}
+
+function draw(t) {
+  x.clearRect(0, 0, W, H); x.fillStyle = '#121212'; x.fillRect(0, 0, W, H)
+  dotGrid(t)
+  const s1 = 1 - ramp(t, 3.0, 0.5)
+  if (s1 > 0) {
+    ;[['Five projects.', 0.3, TEXT], ['Five terminals.', 1.0, TEXT], ['Where did that agent go?', 2.0, LAV]].forEach(([s, at, col], i) => {
+      const k = outCubic(ramp(t, at, 0.6)); text(s, W / 2, 800 + i * 140 + (1 - k) * 40, i === 2 ? 66 : 80, 700, col, k * s1)
+    })
+  }
+  const f2 = ramp(t, 3.2, 0.5) * (1 - ramp(t, 9.8, 0.6))
+  if (f2 > 0) {
+    text('Every project.', W / 2, 300, 92, 800, TEXT, f2)
+    text('One library.', W / 2, 410, 92, 800, VIOLET, f2)
+    text('Search, pin, and see who is working where.', W / 2, 500, 34, 400, MUTED, f2)
+    library(t, 1 - ramp(t, 9.8, 0.6))
+  }
+  const f3 = ramp(t, 10.3, 0.5) * (1 - ramp(t, 12.4, 0.5))
+  if (f3 > 0) {
+    mark(W / 2, 700, 260 * outBack(ramp(t, 10.3, 0.8)), f3)
+    text('Each window', W / 2, 1000, 96, 800, TEXT, f3)
+    text('belongs to a project.', W / 2, 1115, 96, 800, VIOLET, f3)
+    text('Kern. Every agent. One workspace.', W / 2, 1260, 42, 400, MUTED, f3)
+  }
+  endCard(t, 12.9)
+}
+window.draw = draw; window.DURATION = DURATION
+</script>
